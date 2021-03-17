@@ -1,14 +1,10 @@
 import TopAppBar from './TopAppBar';
-import logo from './logo.svg';
 
 function App() {
   return (
     <div>
-      <header>
-        <TopAppBar />
-      </header>
+      <TopAppBar />
       <main>
-        <img src={logo} alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>

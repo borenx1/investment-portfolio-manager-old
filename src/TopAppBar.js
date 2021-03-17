@@ -4,15 +4,11 @@ import Typography from '@material-ui/core/Typography';
 
 function TopAppBar() {
   return (
-    <div>
-      <AppBar>
-        <Toolbar>
-          <Typography variant="h6">
-            Account
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6">Account</Typography>
+      </Toolbar>
+    </AppBar>
   );
 }
 
