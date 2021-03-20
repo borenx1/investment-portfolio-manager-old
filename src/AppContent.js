@@ -3,7 +3,7 @@ import CapitalChanges from './capital-changes/CapitalChanges';
 import Journals from './journals/Journals';
 
 function AppContent(props) {
-  const { page, other } = props
+  const { page, ...other } = props
   switch (page) {
     case 'transactions':
       return <Transactions {...other} />;

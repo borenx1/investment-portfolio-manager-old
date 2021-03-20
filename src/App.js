@@ -71,17 +71,23 @@ class App extends React.Component {
     // Init with test data
     this.setState({activeAccount: 0, accounts: [{
       name: 'Coinbase Account',
-      txTypes: [{name: 'Trading', txs: [], columns: {
-        date: {name: 'Date', dateTimeFormat: 'date', hide: false},
-        base: {name: 'Asset', hide: false},
-        quote: {name: 'Quote currency', hide: false},
-        baseAmount: {},
-        quoteAmount: {},
-        feeBase: {},
-        feeQuote: {},
-        notes: {},
-        misc: [],
-      }, columnOrder: ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes']}],
+      txTypes: [
+        {
+          name: 'Trading', txs: [], columns: {
+            date: {name: 'Date', dateTimeFormat: 'date', hide: false},
+            base: {name: 'Asset', hide: false},
+            quote: {name: 'Quote currency', hide: false},
+            baseAmount: {},
+            quoteAmount: {},
+            feeBase: {},
+            feeQuote: {},
+            notes: {},
+            misc: [],
+          }, columnOrder: ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes']
+        },
+        {
+          name: 'Misc fees', txs: [],
+        }],
       assets: {BTC: {precision: 8, pricePrecision: 6, feeCurrency: 'base'}},
       baseCurrency: 'USD'
     }]});
