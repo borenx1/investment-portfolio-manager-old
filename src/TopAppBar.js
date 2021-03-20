@@ -50,7 +50,7 @@ function TopAppBar(props) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6">Account</Typography>
+        <Typography variant="h6">{ props.title }</Typography>
       </Toolbar>
     </AppBar>
   );

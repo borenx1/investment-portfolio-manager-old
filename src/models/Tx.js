@@ -2,8 +2,8 @@ export default class Tx {
   /**
    * Constructor for the Tx (Transaction) class.
    * @param {String} date Date/time of the transaction.
-   * @param {String} quote Quote currency/asset.
    * @param {String} base Base currency/asset.
+   * @param {String} quote Quote currency/asset.
    * @param {Boolean} buy true if buy, false if sell.
    * @param {Number} baseAmount Amount bought/sold.
    * @param {Number} quoteAmount Amount paid/received.
@@ -14,8 +14,8 @@ export default class Tx {
    */
   constructor(
     date,
-    quote,
     base,
+    quote,
     buy,
     baseAmount,
     quoteAmount,
@@ -25,8 +25,8 @@ export default class Tx {
     misc = []
   ) {
     this.date = date;
-    this.quote = quote;
     this.base = base;
+    this.quote = quote;
     this.buy = buy;
     this.baseAmount = baseAmount;
     this.quoteAmount = quoteAmount;
