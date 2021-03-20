@@ -3,12 +3,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import AddIcon from '@material-ui/icons/Add';
 import TransactionSheet from './TransactionSheet';
+import AddTransactionTypeForm from './AddTransactionTypeForm';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    // flexGrow: 1,
+    // backgroundColor: theme.palette.background.paper,
   },
 }));
 
@@ -21,8 +23,7 @@ function Transactions(props) {
   };
 
   return (
-    <div className={classes.root}>
-    {/* <div> */}
+    <div>
       <AppBar position="static">
         <Tabs value={activeTab} onChange={handleTabChange} aria-label="Transactions tab">
           {/* TODO update key */}
@@ -30,13 +31,18 @@ function Transactions(props) {
           {transactionTypes.map((txType, index) =>
             <Tab label={txType['name']} key={index} />
           )}
-          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+          <Tab icon={<AddIcon />} />
         </Tabs>
       </AppBar>
       {/* TODO update key */}
       {transactionTypes.map((txType, index) =>
         <TransactionSheet txType={txType} index={index} active={activeTab === index} key={index} />
       )}
+      <AddTransactionTypeForm
+        index={transactionTypes.length}
+        active={activeTab === transactionTypes.length}
+        key={transactionTypes.length}
+      />
     </div>
   );
 }
