@@ -1,8 +1,9 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import TopAppBar from './TopAppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import TopAppBar from './TopAppBar';
 import SideDrawer from './SideDrawer';
+import AppContent from './AppContent';
 
 const styles = {
   root: {
@@ -16,9 +17,21 @@ const styles = {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {drawerOpen: false};
+    this.state = {
+      // [account: {
+      //   txTypes: [{name: 'Trading', dateTimeformat: 'day', txs: [Tx,]}],
+      //   assets: {BTC: {precision: 8, pricePrecision, feeCurrency: 'base'}},
+      //   baseCurrency: 'USD'},
+      // ]
+      accounts: [],
+      activeAccount: null,
+      activePage: null,
+      drawerOpen: false
+    };
+
     this.openDrawer = this.openDrawer.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
+    this.handleDrawerNavigate = this.handleDrawerNavigate.bind(this);
   }
 
   openDrawer() {
@@ -27,6 +40,10 @@ class App extends React.Component {
 
   closeDrawer() {
     this.setState({drawerOpen: false});
+  }
+
+  handleDrawerNavigate(page) {
+    this.setState({activePage: page});
   }
 
   render() {
@@ -38,35 +55,12 @@ class App extends React.Component {
             drawerOpen={this.state.drawerOpen}
           />
           <aside>
-            <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} />
+            <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} onNavigate={this.handleDrawerNavigate} />
           </aside>
           <main className={this.props.classes.content}>
             {/* Spacing with (height = top app bar height) so content is not clipped by the fixed app bar */}
             <Toolbar />
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-              facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-              gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-              donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-              adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-              Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-              imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-              arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-              donec massa sapien faucibus et molestie ac.
-            </p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-              facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-              gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-              donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-              adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-              Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-              imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-              arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-              donec massa sapien faucibus et molestie ac.
-            </p>
+            <AppContent account={this.state.activeAccount} page={this.state.activePage} />
           </main>
         </div>
       </React.Fragment>

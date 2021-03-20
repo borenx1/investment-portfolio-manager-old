@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => ({
 
 function TopAppBar(props) {
   const classes = useStyles(props);
-
   return (
     <AppBar
       position="fixed"

@@ -83,19 +83,19 @@ function SideDrawer(props) {
       </div>
       <Divider />
       <List component="nav" aria-label="// TODO">
-        <ListItem button>
+        <ListItem button onClick={() => props.onNavigate('transactions')}>
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
           <ListItemText primary="Transactions" />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => props.onNavigate('capital-changes')}>
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
-          <ListItemText primary="Captial changes" />
+          <ListItemText primary="Capital changes" />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => props.onNavigate('journals')}>
           <ListItemIcon>
             <BookIcon />
           </ListItemIcon>
