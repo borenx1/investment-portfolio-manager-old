@@ -51,18 +51,6 @@ const defaultTxTypes = [
   },
 ];
 
-export class Account {
-  constructor(
-    name,
-    settings = defaultAccountSettings,
-    assets = defaultAssets,
-    txTypes = defaultTxTypes,
-  ) {
-    this.name = name;
-    this.settings = settings;
-    this.assets = assets;
-    this.txTypes = txTypes;
-  }
+export function account(name, settings = defaultAccountSettings, assets = defaultAssets, txTypes = defaultTxTypes,) {
+  return {name, settings, assets, txTypes};
 }
-
-export default Account;

@@ -6,7 +6,7 @@ import TopAppBar from './features/navigation/TopAppBar';
 import SideDrawer from './features/navigation/SideDrawer';
 import AppContent from './AppContent';
 import { addAccount } from './features/transactions/transactionsSlice';
-import { Account } from './models/Account';
+import { account } from './models/Account';
 
 const styles = {
   root: {
@@ -40,7 +40,7 @@ class App extends React.Component {
 
   componentDidMount() {
     // Init with test data
-    this.props.dispatch(addAccount(new Account('Coinbase')));
+    this.props.dispatch(addAccount(account('Coinbase')));
   }
 
   render() {
