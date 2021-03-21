@@ -14,7 +14,10 @@ const defaultAssets = [
 const defaultTxTypes = [
   {
     name: 'Trading',
-    transactions: [],
+    transactions: [
+      new Tx('01/01/2021', 'BTC', 'USD', true, 1, 50000, 0, 20, 'First transaction'),
+      new Tx('02/01/2021', 'BTC', 'USD', true, 0.5, 25000, 0, 10, 'Second transaction'),
+    ],
     columns: {
       date: new TransactionColumn('Date', Date, 0),
       base: new TransactionColumn('Asset', String, 1),
