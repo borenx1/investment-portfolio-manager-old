@@ -1,3 +1,4 @@
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,6 +14,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import BookIcon from '@material-ui/icons/Book';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { changePage, selectPage } from './navigationSlice';
 import { drawerWidth } from './constants';
 
 const useStyles = makeStyles(theme => ({
@@ -61,6 +63,8 @@ const useStyles = makeStyles(theme => ({
  */
 function SideDrawer(props) {
   const classes = useStyles();
+  const activePage = useSelector(selectPage);
+  const dispatch = useDispatch();
   return (
     <Drawer
       variant="permanent"
@@ -83,19 +87,31 @@ function SideDrawer(props) {
       </div>
       <Divider />
       <List component="nav" aria-label="// TODO">
-        <ListItem button onClick={() => props.onNavigate('transactions')}>
+        <ListItem
+          button
+          selected={activePage === 'transactions'}
+          onClick={() => dispatch(changePage('transactions'))}
+        >
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
           <ListItemText primary="Transactions" />
         </ListItem>
-        <ListItem button onClick={() => props.onNavigate('capital-changes')}>
+        <ListItem
+          button
+          selected={activePage === 'capital-changes'}
+          onClick={() => dispatch(changePage('capital-changes'))}
+        >
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
           <ListItemText primary="Capital changes" />
         </ListItem>
-        <ListItem button onClick={() => props.onNavigate('journals')}>
+        <ListItem
+          button
+          selected={activePage === 'journals'}
+          onClick={() => dispatch(changePage('journals'))}
+        >
           <ListItemIcon>
             <BookIcon />
           </ListItemIcon>

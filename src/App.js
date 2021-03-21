@@ -7,9 +7,11 @@ import AppContent from './AppContent';
 
 const styles = {
   root: {
+    // Allow content to grow
     display: 'flex'
   },
   content: {
+    // Let content grow horizontally
     flexGrow: 1,
   }
 }
@@ -19,14 +21,11 @@ class App extends React.Component {
     super(props);
     this.state = {
       accounts: [],
-      activeAccount: null,
-      activePage: 'transactions',
       drawerOpen: false,
     };
 
     this.openDrawer = this.openDrawer.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
-    this.handleDrawerNavigate = this.handleDrawerNavigate.bind(this);
   }
 
   openDrawer() {
@@ -35,14 +34,6 @@ class App extends React.Component {
 
   closeDrawer() {
     this.setState({drawerOpen: false});
-  }
-
-  handleDrawerNavigate(page) {
-    this.setState({activePage: page});
-  }
-
-  handleAccountChange(account) {
-    this.setState({activeAccount: 0});
   }
 
   getActiveAccount() {
@@ -104,12 +95,12 @@ class App extends React.Component {
             drawerOpen={this.state.drawerOpen}
           />
           <aside>
-            <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} onNavigate={this.handleDrawerNavigate} />
+            <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} />
           </aside>
           <main className={this.props.classes.content}>
             {/* Spacing with (height = top app bar height) so content is not clipped by the fixed app bar */}
             <Toolbar />
-            <AppContent account={this.getActiveAccount()} page={this.state.activePage} />
+            <AppContent account={this.getActiveAccount()} />
           </main>
         </div>
       </React.Fragment>

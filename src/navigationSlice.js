@@ -24,8 +24,8 @@ export const navigationSlice = createSlice({
 export const { changeAccount, changePage, changeTab } = navigationSlice.actions;
 
 // Selectors
-export const selectAccount = state => state.naviation.account;
-export const selectPage = state => state.naviation.page;
-export const selectTab = state => state.naviation.tab;
+export const selectAccount = state => state.navigation.account;
+export const selectPage = state => state.navigation.page;
+export const selectTab = state => state.navigation.tab;
 
 export default navigationSlice.reducer;

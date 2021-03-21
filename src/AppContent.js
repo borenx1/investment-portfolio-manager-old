@@ -1,19 +1,21 @@
+import { useSelector } from 'react-redux';
 import Transactions from './features/transactions/Transactions';
 import CapitalChanges from './features/capital-changes/CapitalChanges';
 import Journals from './features/journals/Journals';
+import { selectPage } from './navigationSlice';
 
 function AppContent(props) {
-  const { page, ...other } = props
-  switch (page) {
+  const activePage = useSelector(selectPage);
+  switch (activePage) {
     case 'transactions':
-      return <Transactions {...other} />;
+      return <Transactions {...props} />;
     case 'capital-changes':
-      return <CapitalChanges {...other} />;
+      return <CapitalChanges {...props} />;
     case 'journals':
-      return <Journals {...other} />;
+      return <Journals {...props} />;
     default:
-      console.warn(`Unable to navigate to page: ${page}`);
-      return <Transactions {...other} />;
+      console.warn(`Unable to navigate to page: ${activePage}`);
+      return <Transactions {...props} />;
   }
 }
 
