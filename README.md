@@ -31,5 +31,4 @@ npm start
 - Node.js
 - [React](https://reactjs.org/)
 - [Redux](https://redux.js.org/), [React-Redux](https://react-redux.js.org/)
-- Material Design
-- [Material-UI](https://material-ui.com/)
+- [Material-UI](https://material-ui.com/), [Material Design](https://material.io/design)
