@@ -13,11 +13,18 @@ export const transactionsSlice = createSlice({
         console.warn(`Attempted to add invalid account: ${action.payload}`);
       }
     },
+    addTransaction: (state, action) => {
+      // Takes payload: {account: activeAccountIndex, transaction: Tx, txType: Integer}
+      const account = state.accounts[action.payload.account];
+      const txType = action.payload.txType;
+      const transaction = action.payload.transaction;
+      account.txTypes[txType].transactions.push(transaction);
+    },
   }
 });
 
 // Actions
-export const { addAccount } = transactionsSlice.actions;
+export const { addAccount, addTransaction } = transactionsSlice.actions;
 
 // Selectors
 export const selectAccounts = state => state.transactions.accounts;

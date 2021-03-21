@@ -81,6 +81,8 @@ function TransactionSheet(props) {
         <AddIcon />
       </Fab>
       <AddEditTransactionDialog
+        txType={props.txType}
+        index={props.index}
         open={dialogOpen}
         edit={dialogEdit}
         onDialogClose={() => setDialogOpen(false)}

@@ -9,6 +9,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { addTransaction } from './transactionsSlice';
+import { selectActiveAccount } from '../navigation/navigationSlice';
+import { Tx } from '../../models/Tx';
 
 /**
  * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss:SSS" format
@@ -29,14 +32,24 @@ function AddEditTransactionDialog(props) {
   const [date, setDate] = useState('');
   const [base, setBase] = useState('');
   const [quote, setQuote] = useState('');
+  const [trade, setTrade] = useState('buy');
   const [baseAmount, setBaseAmount] = useState('');
   const [quoteAmount, setQuoteAmount] = useState('');
   const [price, setPrice] = useState(0);
   const [fee, setFee] = useState(0);
   const [feeCurrency, setFeeCurrency] = useState('quote');
   const [notes, setNotes] = useState('');
+  const dispatch = useDispatch();
+  const activeAccount = useSelector(selectActiveAccount);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    // TODO input validation
+    dispatch(addTransaction({
+      account: activeAccount,
+      txType: props.index,
+      transaction: new Tx(date, base, quote, trade === 'buy', baseAmount, quoteAmount, 0, fee, notes),
+    }));
     props.onDialogClose();
   };
   const handleOpenDialog = () => {
@@ -45,7 +58,6 @@ function AddEditTransactionDialog(props) {
     if (props.edit) {
       
     } else {
-      // Reset form
       resetForm();
     }
   }
@@ -54,6 +66,7 @@ function AddEditTransactionDialog(props) {
     setDate(getCurrentLocalDateTime());
     setBase('');
     setQuote('USD');
+    setTrade('buy');
     setBaseAmount('');
     setQuoteAmount('');
     setPrice('');
@@ -132,7 +145,7 @@ function AddEditTransactionDialog(props) {
                 <MenuItem value={'BTC'}>{ 'BTC' }</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <TextField
                 type="number"
                 fullWidth
@@ -142,6 +155,20 @@ function AddEditTransactionDialog(props) {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Trade Type"
+                required
+                value={trade}
+                onChange={(e) => setTrade(e.target.value)}
+              >
+                <MenuItem value={'buy'}>{ 'Buy' }</MenuItem>
+                <MenuItem value={'sell'}>{ 'Sell' }</MenuItem>
+              </TextField>
             </Grid>
             <Grid item xs={8}>
               <TextField
