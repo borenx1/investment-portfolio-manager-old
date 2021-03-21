@@ -3,29 +3,25 @@ import { createSlice } from '@reduxjs/toolkit';
 export const navigationSlice = createSlice({
   name: 'navigation',
   initialState: {
-    account: null,        // String or null
-    page: 'transactions', // String or null
-    tab: 0,               // Integer
+    user: 'New User',       // String or null
+    activeAccount: 0,       // Integer
+    page: 'transactions',   // String or null
   },
   reducers: {
     changeAccount: (state, action) => {
-      state.account = action.payload ? String(action.payload) : null;
+      state.activeAccount = action.payload ? String(action.payload) : null;
     },
     changePage: (state, action) => {
       state.page = action.payload ? String(action.payload) : null;
-    },
-    changeTab: (state, action) => {
-      state.tab = parseInt(action.payload) || 0;
     },
   }
 });
 
 // Actions
-export const { changeAccount, changePage, changeTab } = navigationSlice.actions;
+export const { changeAccount, changePage } = navigationSlice.actions;
 
 // Selectors
-export const selectAccount = state => state.navigation.account;
+export const selectActiveAccount = state => state.navigation.activeAccount;
 export const selectPage = state => state.navigation.page;
-export const selectTab = state => state.navigation.tab;
 
 export default navigationSlice.reducer;

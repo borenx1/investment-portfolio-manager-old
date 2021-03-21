@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx'
 import AppBar from '@material-ui/core/AppBar';
@@ -5,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import { selectActiveAccountName } from '../transactions/transactionsSlice';
 import { drawerWidth } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
@@ -34,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 function TopAppBar(props) {
   const classes = useStyles(props);
+  const activeAccountName = useSelector(selectActiveAccountName);
   return (
     <AppBar
       position="fixed"
@@ -50,7 +53,7 @@ function TopAppBar(props) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6">{ props.title }</Typography>
+        <Typography variant="h6">{ activeAccountName }</Typography>
       </Toolbar>
     </AppBar>
   );

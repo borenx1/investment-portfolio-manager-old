@@ -1,4 +1,4 @@
-export default class Tx {
+export class Tx {
   /**
    * Constructor for the Tx (Transaction) class.
    * @param {String} date Date/time of the transaction.
@@ -36,3 +36,16 @@ export default class Tx {
     this.misc = misc;
   }
 }
+
+export class TransactionColumn {
+  constructor(name, type, order, hide = false, precision = 2, dateTimeFormat = 'date') {
+    this.name = name;
+    this.type = type;
+    this.order = order;
+    this.hide = hide;
+    this.precision = precision;
+    this.dateTimeFormat = dateTimeFormat;
+  }
+}
+
+export default Tx;
