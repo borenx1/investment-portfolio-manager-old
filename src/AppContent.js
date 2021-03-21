@@ -1,6 +1,6 @@
-import Transactions from './transactions/Transactions';
-import CapitalChanges from './capital-changes/CapitalChanges';
-import Journals from './journals/Journals';
+import Transactions from './features/transactions/Transactions';
+import CapitalChanges from './features/capital-changes/CapitalChanges';
+import Journals from './features/journals/Journals';
 
 function AppContent(props) {
   const { page, ...other } = props
