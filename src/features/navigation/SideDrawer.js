@@ -15,7 +15,7 @@ import BookIcon from '@material-ui/icons/Book';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { changePage, selectPage } from './navigationSlice';
-import { drawerWidth } from './constants';
+import { drawerWidth } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
   root: {

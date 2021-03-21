@@ -1,8 +1,8 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import TopAppBar from './TopAppBar';
-import SideDrawer from './SideDrawer';
+import TopAppBar from './features/navigation/TopAppBar';
+import SideDrawer from './features/navigation/SideDrawer';
 import AppContent from './AppContent';
 
 const styles = {

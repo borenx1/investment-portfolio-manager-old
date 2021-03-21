@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import Transactions from './features/transactions/Transactions';
 import CapitalChanges from './features/capital-changes/CapitalChanges';
 import Journals from './features/journals/Journals';
-import { selectPage } from './navigationSlice';
+import { selectPage } from './features/navigation/navigationSlice';
 
 function AppContent(props) {
   const activePage = useSelector(selectPage);
