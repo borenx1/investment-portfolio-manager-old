@@ -29,5 +29,7 @@ npm start
 - CSS 3
 - JavaScript ES6
 - Node.js
-- React
+- [React](https://reactjs.org/)
+- [Redux](https://redux.js.org/), [React-Redux](https://react-redux.js.org/)
 - Material Design
+- [Material-UI](https://material-ui.com/)

@@ -1,25 +1,68 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import TopAppBar from './features/navigation/TopAppBar';
+import SideDrawer from './features/navigation/SideDrawer';
+import AppContent from './AppContent';
+import { addAccount } from './features/transactions/transactionsSlice';
+import { account } from './models/Account';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const styles = {
+  root: {
+    // Allow content to grow
+    display: 'flex',
+  },
+  content: {
+    // Let content grow horizontally
+    flexGrow: 1,
+  }
 }
 
-export default App;
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      drawerOpen: false,
+    };
+
+    this.openDrawer = this.openDrawer.bind(this);
+    this.closeDrawer = this.closeDrawer.bind(this);
+  }
+
+  openDrawer() {
+    this.setState({drawerOpen: true});
+  }
+
+  closeDrawer() {
+    this.setState({drawerOpen: false});
+  }
+
+  componentDidMount() {
+    // Init with test data
+    this.props.dispatch(addAccount(account('Coinbase')));
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <div className={this.props.classes.root}>
+          <TopAppBar
+            onMenuClick={this.openDrawer}
+            drawerOpen={this.state.drawerOpen}
+          />
+          <aside>
+            <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} />
+          </aside>
+          <main className={this.props.classes.content}>
+            {/* Spacing with (height = top app bar height) so content is not clipped by the fixed app bar */}
+            <Toolbar />
+            <AppContent />
+          </main>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default withStyles(styles)(connect()(App));
