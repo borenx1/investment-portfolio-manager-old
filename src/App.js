@@ -87,7 +87,8 @@ class App extends React.Component {
         },
         {
           name: 'Misc fees', txs: [],
-        }],
+        }
+      ],
       assets: {BTC: {precision: 8, pricePrecision: 6, feeCurrency: 'base'}},
       baseCurrency: 'USD'
     }]});
