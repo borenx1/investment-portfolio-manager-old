@@ -6,9 +6,12 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddEditAssetDialog from './AddEditAssetDialog';
+import { changeAccountingCurrency, selectActiveAccountAccountingCurrency } from './accountsSlice';
 
 function AccountSettings(props) {
   const [baseCurrencyDialogOpen, setBaseCurrencyDialogOpen] = useState(false);
+  const dispatch = useDispatch();
+  const accountingCurrency = useSelector(selectActiveAccountAccountingCurrency);
 
   return (
     <Fragment>
@@ -20,7 +23,11 @@ function AccountSettings(props) {
           </Grid>
         </Grid>
       </Container>
-      <AddEditAssetDialog open={baseCurrencyDialogOpen} onDialogClose={() => setBaseCurrencyDialogOpen(false)} />
+      <AddEditAssetDialog
+        open={baseCurrencyDialogOpen}
+        onDialogClose={() => setBaseCurrencyDialogOpen(false)}
+        edit={accountingCurrency}
+      />
     </Fragment>
   );
 }
