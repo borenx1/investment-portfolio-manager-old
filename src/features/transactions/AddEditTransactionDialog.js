@@ -47,6 +47,7 @@ function AddEditTransactionDialog(props) {
       journal: props.index,
       transaction: transaction(date, base, baseAmount, quote, quoteAmount, 0, fee, notes),
     }));
+    resetForm();
     props.onDialogClose();
   };
   const handleOpenDialog = () => {
