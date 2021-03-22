@@ -9,12 +9,12 @@ export const accountsSlice = createSlice({
   },
   reducers: {
     /**
-     * Change the active account. Receives an index from the payload. Invalid and negative numbers
-     * are evaluated as 0.
+     * Change the active account (-1 for all accounts). Receives an index from the payload. Invalid values
+     * are evaluated as 0. Negative numbers are evaluated as -1 (all accounts).
      */
     changeAccount: (state, action) => {
       const accountIndex = parseInt(action.payload);
-      state.activeAccount = accountIndex ? Math.max(accountIndex, 0) : 0;
+      state.activeAccount = accountIndex ? Math.max(accountIndex, -1) : 0;
     },
     addAccount: (state, action) => {
       if (action.payload) {
@@ -42,9 +42,10 @@ export const { changeAccount, addAccount, addDefaultAccount, addTransaction } = 
 
 // Selectors
 export const selectAccounts = state => state.accounts.accounts;
+export const selectActiveAccountIndex = state => state.accounts.activeAccount;
 export const selectActiveAccount = state => {
-  const accounts = state.accounts.accounts;
-  const activeAccount = state.accounts.activeAccount;
+  const accounts = selectAccounts(state);
+  const activeAccount = selectActiveAccountIndex(state);
   return activeAccount < accounts.length ? accounts[activeAccount] : null;
 }
 export const selectActiveAccountName = state => {
