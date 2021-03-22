@@ -17,10 +17,12 @@ import { selectActiveAccount } from '../accounts/accountsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-
+    borderRadius: 0,
+    boxShadow: 'none',
   },
+
   fab: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
@@ -43,10 +45,9 @@ function TransactionSheet(props) {
 
   return props.active && (
     <div role="tabpanel">
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className={classes.root}>
         <Table
           size={'small'}
-          className={classes.table}
         >
           <TableHead>
             <TableRow>
