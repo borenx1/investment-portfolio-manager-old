@@ -148,7 +148,10 @@ function SideDrawer(props) {
       </List>
       <Divider />
       <List component="nav" aria-label="Account settings">
-        <ListItem button>
+        <ListItem
+          button
+          selected={activePage === 'account-settings'}
+          onClick={() => dispatch(changePage('account-settings'))}>
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

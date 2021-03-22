@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +13,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle';
 import { selectAccounts, selectActiveAccountIndex, selectActiveAccountName, changeAccount } from '../accounts/accountsSlice';
 import { drawerWidth } from '../../constants';
-import React from 'react';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
