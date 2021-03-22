@@ -1,5 +1,3 @@
-import { Tx, TransactionColumn } from './Tx';
-
 const defaultAccountSettings = accountSettings(
   asset('United States Dollar', 'USD', '$', 2, 4),
 );

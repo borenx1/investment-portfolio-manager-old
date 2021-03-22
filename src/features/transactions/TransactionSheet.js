@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
-import { selectActiveAccountObject } from './transactionsSlice';
+import { selectActiveAccountObject } from '../accounts/accountsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,27 +47,24 @@ function TransactionSheet(props) {
         <Table
           size={'small'}
           className={classes.table}
-          aria-label="simple table"
         >
           <TableHead>
             <TableRow>
-              <TableCell>{ props.txType.columns.date.name }</TableCell>
-              <TableCell>{ props.txType.columns.base.name }</TableCell>
-              <TableCell>{ props.txType.columns.quote.name }</TableCell>
-              <TableCell>{ props.txType.columns.trade.name }</TableCell>
-              <TableCell>{ props.txType.columns.baseAmount.name }</TableCell>
-              <TableCell>{ props.txType.columns.quoteAmount.name }</TableCell>
-              <TableCell>{ props.txType.columns.price.name }</TableCell>
-              <TableCell>{ props.txType.columns.notes.name }</TableCell>
+              <TableCell>{ props.journal.columns.date.name }</TableCell>
+              <TableCell>{ props.journal.columns.base.name }</TableCell>
+              <TableCell>{ props.journal.columns.quote.name }</TableCell>
+              <TableCell>{ props.journal.columns.baseAmount.name }</TableCell>
+              <TableCell>{ props.journal.columns.quoteAmount.name }</TableCell>
+              <TableCell>{ props.journal.columns.price.name }</TableCell>
+              <TableCell>{ props.journal.columns.notes.name }</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.txType.transactions.map((tx, index) => (
+            {props.journal.transactions.map((tx, index) => (
               <TableRow key={index}>
                 <TableCell align="right">{tx.date}</TableCell>
                 <TableCell align="right">{tx.base}</TableCell>
                 <TableCell align="right">{tx.quote}</TableCell>
-                <TableCell>{tx.buy ? "Buy" : "Sell"}</TableCell>
                 <TableCell align="right">{tx.baseAmount}</TableCell>
                 <TableCell align="right">{tx.quoteAmount}</TableCell>
                 <TableCell align="right">{tx.quoteAmount / tx.baseAmount}</TableCell>
@@ -81,7 +78,7 @@ function TransactionSheet(props) {
         <AddIcon />
       </Fab>
       <AddEditTransactionDialog
-        txType={props.txType}
+        journal={props.journal}
         index={props.index}
         open={dialogOpen}
         edit={dialogEdit}

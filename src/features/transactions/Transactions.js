@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import AddIcon from '@material-ui/icons/Add';
 import TransactionSheet from './TransactionSheet';
 import AddTransactionTypeForm from './AddTransactionTypeForm';
-import { selectActiveAccountObject } from './transactionsSlice';
+import { selectActiveAccountObject } from '../accounts/accountsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +20,7 @@ function Transactions(props) {
   const classes = useStyles();
   const account = useSelector(selectActiveAccountObject);
   const dispatch = useDispatch();
-  const transactionTypes = account ? account.txTypes : [];
+  const journals = account ? account.journals : [];
   const [activeTab, setActiveTab] = React.useState(0);
 
   return (
@@ -29,20 +29,20 @@ function Transactions(props) {
         <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} aria-label="Transactions tab">
           {/* TODO update key */}
           {/* TODO aria labels */}
-          {transactionTypes.map((txType, index) =>
-            <Tab label={txType['name']} key={index} />
+          {journals.map((journal, index) =>
+            <Tab label={journal['name']} key={index} />
           )}
           <Tab icon={<AddIcon />} />
         </Tabs>
       </AppBar>
       {/* TODO update key */}
-      {transactionTypes.map((txType, index) =>
-        <TransactionSheet txType={txType} index={index} active={activeTab === index} key={index} />
+      {journals.map((journal, index) =>
+        <TransactionSheet journal={journal} index={index} active={activeTab === index} key={index} />
       )}
       <AddTransactionTypeForm
-        index={transactionTypes.length}
-        active={activeTab === transactionTypes.length}
-        key={transactionTypes.length}
+        index={journals.length}
+        active={activeTab === journals.length}
+        key={journals.length}
       />
     </div>
   );

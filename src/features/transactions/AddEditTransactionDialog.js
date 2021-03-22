@@ -9,9 +9,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { addTransaction } from './transactionsSlice';
+import { addTransaction } from '../accounts/accountsSlice';
 import { selectActiveAccount } from '../navigation/navigationSlice';
-import { Tx } from '../../models/Tx';
+import { transaction } from '../../models/Account';
 
 /**
  * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss:SSS" format
@@ -47,8 +47,8 @@ function AddEditTransactionDialog(props) {
     // TODO input validation
     dispatch(addTransaction({
       account: activeAccount,
-      txType: props.index,
-      transaction: new Tx(date, base, quote, trade === 'buy', baseAmount, quoteAmount, 0, fee, notes),
+      journal: props.index,
+      transaction: transaction(date, base, baseAmount, quote, quoteAmount, 0, fee, notes),
     }));
     props.onDialogClose();
   };

@@ -5,8 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import TopAppBar from './features/navigation/TopAppBar';
 import SideDrawer from './features/navigation/SideDrawer';
 import AppContent from './AppContent';
-import { addAccount } from './features/transactions/transactionsSlice';
-import { account } from './models/Account';
+import { addDefaultAccount } from './features/accounts/accountsSlice';
 
 const styles = {
   root: {
@@ -40,7 +39,7 @@ class App extends React.Component {
 
   componentDidMount() {
     // Init with test data
-    this.props.dispatch(addAccount(account('Coinbase')));
+    this.props.dispatch(addDefaultAccount('Coinbase'));
   }
 
   render() {

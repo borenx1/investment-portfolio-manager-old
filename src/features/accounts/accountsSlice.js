@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { account } from '../../models/Account';
+import { account, transaction } from '../../models/Account';
 
 export const accountsSlice = createSlice({
   name: 'transactions',
@@ -19,22 +19,22 @@ export const accountsSlice = createSlice({
       state.accounts.push(account(name));
     },
     addTransaction: (state, action) => {
-      // Takes payload: {account: activeAccountIndex, transaction: Tx, txType: Integer}
+      // Takes payload: {account: activeAccountIndex, transaction: Tx, journal: Integer}
       const account = state.accounts[action.payload.account];
-      const txType = action.payload.txType;
+      const journal = action.payload.journal;
       const transaction = action.payload.transaction;
-      account.txTypes[txType].transactions.push(transaction);
+      account.journals[journal].transactions.push(transaction);
     },
   }
 });
 
 // Actions
-export const { addAccount, addTransaction } = accountsSlice.actions;
+export const { addAccount, addDefaultAccount, addTransaction } = accountsSlice.actions;
 
 // Selectors
-export const selectAccounts = state => state.transactions.accounts;
+export const selectAccounts = state => state.accounts.accounts;
 export const selectActiveAccountObject = state => {
-  const accounts = state.transactions.accounts;
+  const accounts = state.accounts.accounts;
   const activeAccount = state.navigation.activeAccount;
   return activeAccount < accounts.length ? accounts[activeAccount] : null;
 }
