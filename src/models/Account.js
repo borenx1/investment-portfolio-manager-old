@@ -1,8 +1,8 @@
 const defaultAccountSettings = accountSettings(
-  asset('United States Dollar', 'USD', '$', 2, 4),
+  asset('United States Dollar', 'USD', 2, 4, true, '$'),
 );
 const defaultAssets = [
-  asset('Bitcoin', 'BTC', '₿', 8, 2),
+  asset('Bitcoin', 'BTC', 8, 2, true, '₿'),
 ];
 const defaultJournals = [
   journal(
@@ -37,13 +37,14 @@ export function accountSettings(baseCurrency = asset('United States Dollar', 'US
  * Asset settings.
  * @param {String} name Name of the asset, e.g. Bitcoin.
  * @param {String} ticker Ticker of the asset, e.g. BTC.
- * @param {String} symbol Symbol of the asset, e.g. ₿.
  * @param {Number} precision The precision used to record amounts.
  * @param {Number} pricePrecision The default precision used to show prices.
+ * @param {Boolean} isCurrency true if the asset is a currency.
+ * @param {String} symbol Symbol of the asset, e.g. ₿.
  * @returns An object with the given members.
  */
-export function asset(name, ticker, symbol, precision = 2, pricePrecision = 2) {
-  return {name, ticker, symbol, precision, pricePrecision};
+export function asset(name, ticker, precision = 2, pricePrecision = 2, isCurrency = false, symbol = '') {
+  return {name, ticker, precision, pricePrecision, isCurrency, symbol};
 }
 
 /**

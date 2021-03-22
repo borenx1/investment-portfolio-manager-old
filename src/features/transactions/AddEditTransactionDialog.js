@@ -70,10 +70,9 @@ function AddEditTransactionDialog(props) {
         fields.notes,
       ),
     }));
-    resetForm();
     props.onDialogClose();
   };
-  const handleOpenDialog = () => {
+  const handleDialogOpen = () => {
     // Init form fields according to add or edit mode
     if (props.edit) {
       
@@ -85,9 +84,10 @@ function AddEditTransactionDialog(props) {
   return (
     <AddEditDialog
       objectName={'Transaction'}
+      edit={Boolean(props.edit)}
       open={props.open}
       onClose={props.onDialogClose}
-      onEnter={handleOpenDialog}
+      onEnter={handleDialogOpen}
       onReset={resetForm}
       onSubmit={handleSubmit}
     >

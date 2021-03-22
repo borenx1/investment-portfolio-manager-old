@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Grid from "@material-ui/core/Grid";
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import AddEditDialog from '../../components/AddEditDialog';
 
 /**
  * Add or change asset dialog React function component.
@@ -19,60 +15,69 @@ import DialogTitle from '@material-ui/core/DialogTitle';
  * - edit: Asset object to edit, null if add new asset.
  */
 function AddEditAssetDialog(props) {
-  const [properties, setProperties] = useState({
+  const [fields, setFields] = useState({
     name: '',
     ticker: '',
-    precision: 2,
-    pricePrecision: 2,
-    currency: false,
+    precision: '',
+    pricePrecision: '',
+    isCurrency: '',
     symbol: '',
   });
 
-  const handleOpenDialog = () => {
-    console.log('dialog open');
+  const resetForm = () => {
+    setFields({
+      name: '',
+      ticker: '',
+      precision: 2,
+      pricePrecision: 2,
+      isCurrency: false,
+      symbol: '',
+    });
   };
 
-  const resetForm = () => {
-    console.log('reset');
+  const handleDialogOpen = () => {
+    if (props.edit) {
+      setFields({
+        name: props.edit.name,
+        ticker: props.edit.ticker,
+        precision: props.edit.precision,
+        pricePrecision: props.edit.pricePrecision,
+        isCurrency: props.edit.isCurrency,
+        symbol: props.edit.symbol,
+      });
+    } else {
+      resetForm();
+    }
   };
 
   const handleSubmit = () => {
     console.log('submitted');
-    resetForm();
     props.onDialogClose();
   };
 
   return (
-    <Dialog open={props.open} onClose={props.onDialogClose} onEnter={handleOpenDialog}>
-      <DialogTitle>{ `${props.edit ? 'Edit' : 'Add'} Transaction` }</DialogTitle>
-      <DialogContent>
-        <Grid
-          container
-        >
-          <Grid item>
-            <TextField
-              type="text"
-              fullWidth
-              label="Asset Name"
-              required
-              value={properties.name}
-              onChange={(e) => setProperties(p => ({...p, name: e.target.value}))}
-            />
-          </Grid>
+    <AddEditDialog
+      objectName={'Asset'}
+      edit={Boolean(props.edit)}
+      open={props.open}
+      onClose={props.onDialogClose}
+      onEnter={handleDialogOpen}
+      onReset={resetForm}
+      onSubmit={handleSubmit}
+    >
+      <Grid container spacing={1}>
+        <Grid item>
+          <TextField
+            type="text"
+            fullWidth
+            label="Asset Name"
+            required
+            value={fields.name}
+            onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
+          />
         </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={props.onDialogClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={resetForm} color="primary">
-          Reset form
-        </Button>
-        <Button onClick={handleSubmit} color="primary">
-          { props.edit ? 'Edit' : 'Add' }
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </Grid>
+    </AddEditDialog>
   );
 }
 
