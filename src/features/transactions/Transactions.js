@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import AddIcon from '@material-ui/icons/Add';
 import TransactionSheet from './TransactionSheet';
 import AddTransactionTypeForm from './AddTransactionTypeForm';
-import { selectActiveAccountObject } from '../accounts/accountsSlice';
+import { selectActiveAccount } from '../accounts/accountsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Transactions(props) {
   const classes = useStyles();
-  const account = useSelector(selectActiveAccountObject);
+  const account = useSelector(selectActiveAccount);
   const dispatch = useDispatch();
   const journals = account ? account.journals : [];
   const [activeTab, setActiveTab] = React.useState(0);

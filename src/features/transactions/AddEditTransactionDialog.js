@@ -10,7 +10,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { addTransaction } from '../accounts/accountsSlice';
-import { selectActiveAccount } from '../navigation/navigationSlice';
 import { transaction } from '../../models/Account';
 
 /**
@@ -40,13 +39,11 @@ function AddEditTransactionDialog(props) {
   const [feeCurrency, setFeeCurrency] = useState('quote');
   const [notes, setNotes] = useState('');
   const dispatch = useDispatch();
-  const activeAccount = useSelector(selectActiveAccount);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO input validation
     dispatch(addTransaction({
-      account: activeAccount,
       journal: props.index,
       transaction: transaction(date, base, baseAmount, quote, quoteAmount, 0, fee, notes),
     }));

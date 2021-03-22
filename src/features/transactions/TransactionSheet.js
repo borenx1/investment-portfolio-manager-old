@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
-import { selectActiveAccountObject } from '../accounts/accountsSlice';
+import { selectActiveAccount } from '../accounts/accountsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
