@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { account, transaction } from '../../models/Account';
+import { account } from '../../models/Account';
 
 export const accountsSlice = createSlice({
   name: 'transactions',
@@ -43,7 +43,7 @@ export const accountsSlice = createSlice({
       if (action.payload && 'currency' in action.payload) {
         // Updates the active account if no account provided
         const account = state.accounts[action.payload.account || state.activeAccount];
-        account.settings.baseCurrency = action.payload.currency;
+        account.settings.accountingCurrency = action.payload.currency;
       }
     },
   }
@@ -67,7 +67,7 @@ export const selectActiveAccountName = state => {
 }
 export const selectActiveAccountAccountingCurrency = state => {
   const activeAccount = selectActiveAccount(state);
-  return activeAccount ? activeAccount.settings.baseCurrency : null;
+  return activeAccount ? activeAccount.settings.accountingCurrency : null;
 }
 
 export default accountsSlice.reducer;

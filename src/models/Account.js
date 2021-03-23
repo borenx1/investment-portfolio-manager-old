@@ -26,12 +26,11 @@ const defaultJournals = [
 
 /**
  * Account settings.
- * @param {Object} baseCurrency The base currency of the account.
+ * @param {Object} accountingCurrency The accounting currency of the account.
  * @returns An object with the given members.
  */
-export function accountSettings(baseCurrency = asset('United States Dollar', 'USD', '$', 2, 4)) {
-  // TODO rename to accountingCurrency
-  return {baseCurrency};
+export function accountSettings(accountingCurrency = asset('United States Dollar', 'USD', '$', 2, 4)) {
+  return {accountingCurrency};
 }
 
 /**

@@ -43,7 +43,7 @@ function AddEditTransactionDialog(props) {
     setFields({
       date: getCurrentLocalDateTime(),
       base: '',
-      quote: account ? account.settings.baseCurrency.ticker : '',
+      quote: account ? account.settings.accountingCurrency.ticker : '',
       trade: 'buy',
       baseAmount: '',
       quoteAmount: '',
