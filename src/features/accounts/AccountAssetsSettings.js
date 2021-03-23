@@ -10,9 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
 import AddEditAssetDialog from './AddEditAssetDialog';
-import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
+import { addAsset, editAsset, selectActiveAccount } from './accountsSlice';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,29 +25,42 @@ const useStyles = makeStyles(theme => ({
 
 function AccountAssetsSettings(props) {
   const classes = useStyles();
-//   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
-//   const [accountingCurrencyfields, setAccountingCurrencyFields] = useState({
-//     name: '',
-//     ticker: '',
-//     precision: '',
-//     pricePrecision: '',
-//     isCurrency: false,
-//     symbol: '',
-//   });
+  const [addEditAssetDialogOpen, setAddEditAssetDialogOpen] = useState(false);
+  // Index of the Asset to edit when the edit asset button is clicked, set to -1 to add new asset
+  const [selectedAsset, setSelectedAsset] = useState(-1);
+  const [addEditAssetFields, setAddEditAssetFields] = useState({
+    name: '',
+    ticker: '',
+    precision: '',
+    pricePrecision: '',
+    isCurrency: false,
+    symbol: '',
+  });
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
-//   const accountingCurrency = account.settings.accountingCurrency;
+  const assets = account.assets;
 
-//   const handleChangeAccountingCurrency = () => {
-//     dispatch(changeAccountingCurrency({currency: {...accountingCurrencyfields}}));
-//     setAccountingCurrencyDialogOpen(false);
-//   };
+  const openAddAssetDialog = () => {
+    setSelectedAsset(-1);
+    setAddEditAssetDialogOpen(true);
+  };
+
+  const handleAddEditAsset = () => {
+    if (selectedAsset < 0) {
+      // Add
+      dispatch(addAsset({asset: {...addEditAssetFields}}));
+    } else {
+      // Edit
+      dispatch(editAsset({asset: {...addEditAssetFields}, index: selectedAsset}));
+    }
+    setAddEditAssetDialogOpen(false);
+  };
 
   return (
     <React.Fragment>
       <Paper component="section" elevation={0} variant="outlined" className={classes.root}>
         <Typography variant="h6">Assets</Typography>
-        {/* <TableContainer>
+        <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
@@ -60,32 +73,36 @@ function AccountAssetsSettings(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell>{ accountingCurrency.name }</TableCell>
-                <TableCell align="center">{ accountingCurrency.ticker }</TableCell>
-                <TableCell align="center">{ accountingCurrency.precision }</TableCell>
-                <TableCell align="center">{ accountingCurrency.pricePrecision }</TableCell>
-                <TableCell align="center">{ accountingCurrency.isCurrency ? 'Yes' : 'No' }</TableCell>
-                <TableCell align="center">{ accountingCurrency.symbol }</TableCell>
-              </TableRow>
+              {assets.map((a, i) =>
+                <TableRow>
+                  <TableCell>{ a.name }</TableCell>
+                  <TableCell align="center">{ a.ticker }</TableCell>
+                  <TableCell align="center">{ a.precision }</TableCell>
+                  <TableCell align="center">{ a.pricePrecision }</TableCell>
+                  <TableCell align="center">{ a.isCurrency ? 'Yes' : 'No' }</TableCell>
+                  <TableCell align="center">{ a.symbol }</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
         <Button
           variant="contained"
           color="primary"
-          startIcon={<EditIcon />}
-          onClick={() => setAccountingCurrencyDialogOpen(true)}
-        >Change Accounting Currency</Button> */}
+          startIcon={<AddIcon />}
+          onClick={openAddAssetDialog}
+        >
+            Add New Asset
+        </Button>
       </Paper>
-      {/* <AddEditAssetDialog
-        open={accountingCurrencyDialogOpen}
-        onDialogClose={() => setAccountingCurrencyDialogOpen(false)}
-        edit={accountingCurrency}
-        fields={accountingCurrencyfields}
-        onFieldsChange={fields => setAccountingCurrencyFields(fields)}
-        onSubmit={handleChangeAccountingCurrency}
-      /> */}
+      <AddEditAssetDialog
+        open={addEditAssetDialogOpen}
+        onDialogClose={() => setAddEditAssetDialogOpen(false)}
+        edit={selectedAsset === -1 ? null : assets[selectedAsset]}
+        fields={addEditAssetFields}
+        onFieldsChange={fields => setAddEditAssetFields(fields)}
+        onSubmit={handleAddEditAsset}
+      />
     </React.Fragment>
   );
 }

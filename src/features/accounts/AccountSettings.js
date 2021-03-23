@@ -1,5 +1,4 @@
-import { Fragment, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
@@ -15,7 +14,6 @@ const useStyles = makeStyles(theme => ({
 
 function AccountSettings(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   return (
     <Fragment>

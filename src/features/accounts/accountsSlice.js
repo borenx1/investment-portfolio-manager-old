@@ -49,11 +49,39 @@ export const accountsSlice = createSlice({
         console.warn(`changeAccountingCurrency: 'currency' not in payload`);
       }
     },
+    addAsset: (state, action) => {
+      if (action.payload && 'asset' in action.payload) {
+        // Updates the active account if no account provided
+        const account = state.accounts[action.payload.account || state.activeAccount];
+        // TODO: input validation
+        account.assets.push(action.payload.asset);
+      } else {
+        console.warn(`changeAccountingCurrency: 'asset' not in payload`);
+      }
+    },
+    editAsset: (state, action) => {
+      if (action.payload && 'asset' in action.payload && 'index' in action.payload) {
+        // Updates the active account if no account provided
+        const account = state.accounts[action.payload.account || state.activeAccount];
+        // TODO: input validation
+        account.assets[action.payload.index] = action.payload.asset;
+      } else {
+        console.warn(`changeAccountingCurrency: 'currency' not in payload`);
+      }
+    },
   }
 });
 
 // Actions
-export const { changeAccount, addAccount, addDefaultAccount, addTransaction, changeAccountingCurrency } = accountsSlice.actions;
+export const {
+  changeAccount,
+  addAccount,
+  addDefaultAccount,
+  addTransaction,
+  changeAccountingCurrency,
+  addAsset,
+  editAsset,
+} = accountsSlice.actions;
 
 // Selectors
 // TODO consider selector errors
@@ -71,6 +99,10 @@ export const selectActiveAccountName = state => {
 export const selectActiveAccountAccountingCurrency = state => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.settings.accountingCurrency : null;
+}
+export const selectActiveAccountAssets = state => {
+  const activeAccount = selectActiveAccount(state);
+  return activeAccount ? activeAccount.assets : [];
 }
 
 export default accountsSlice.reducer;

@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 function AccountMainSettings(props) {
   const classes = useStyles();
   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
-  const [accountingCurrencyfields, setAccountingCurrencyFields] = useState({
+  const [accountingCurrencyFields, setaccountingCurrencyFields] = useState({
     name: '',
     ticker: '',
     precision: '',
@@ -36,7 +36,7 @@ function AccountMainSettings(props) {
   const accountingCurrency = account.settings.accountingCurrency;
 
   const handleChangeAccountingCurrency = () => {
-    dispatch(changeAccountingCurrency({currency: {...accountingCurrencyfields}}));
+    dispatch(changeAccountingCurrency({currency: {...accountingCurrencyFields}}));
     setAccountingCurrencyDialogOpen(false);
   };
 
@@ -79,8 +79,8 @@ function AccountMainSettings(props) {
         open={accountingCurrencyDialogOpen}
         onDialogClose={() => setAccountingCurrencyDialogOpen(false)}
         edit={accountingCurrency}
-        fields={accountingCurrencyfields}
-        onFieldsChange={fields => setAccountingCurrencyFields(fields)}
+        fields={accountingCurrencyFields}
+        onFieldsChange={fields => setaccountingCurrencyFields(fields)}
         onSubmit={handleChangeAccountingCurrency}
       />
     </React.Fragment>
