@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -11,40 +12,42 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
 import AddEditAssetDialog from './AddEditAssetDialog';
-import SettingsSection from '../../components/SettingsSection';
 import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
 
 const useStyles = makeStyles(theme => ({
   root: {
-
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
   },
 }));
 
-function AccountMainSettings(props) {
+function AccountAssetsSettings(props) {
   const classes = useStyles();
-  const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
-  const [accountingCurrencyfields, setAccountingCurrencyFields] = useState({
-    name: '',
-    ticker: '',
-    precision: '',
-    pricePrecision: '',
-    isCurrency: false,
-    symbol: '',
-  });
+//   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
+//   const [accountingCurrencyfields, setAccountingCurrencyFields] = useState({
+//     name: '',
+//     ticker: '',
+//     precision: '',
+//     pricePrecision: '',
+//     isCurrency: false,
+//     symbol: '',
+//   });
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
-  const accountingCurrency = account.settings.accountingCurrency;
+//   const accountingCurrency = account.settings.accountingCurrency;
 
-  const handleChangeAccountingCurrency = () => {
-    dispatch(changeAccountingCurrency({currency: {...accountingCurrencyfields}}));
-    setAccountingCurrencyDialogOpen(false);
-  };
+//   const handleChangeAccountingCurrency = () => {
+//     dispatch(changeAccountingCurrency({currency: {...accountingCurrencyfields}}));
+//     setAccountingCurrencyDialogOpen(false);
+//   };
 
   return (
     <React.Fragment>
-      <SettingsSection>
-        <Typography variant="h6">Accouting Currency</Typography>
-        <TableContainer>
+      <Paper component="section" elevation={0} variant="outlined" className={classes.root}>
+        <Typography variant="h6">Assets</Typography>
+        {/* <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
@@ -73,18 +76,18 @@ function AccountMainSettings(props) {
           color="primary"
           startIcon={<EditIcon />}
           onClick={() => setAccountingCurrencyDialogOpen(true)}
-        >Change Accounting Currency</Button>
-      </SettingsSection>
-      <AddEditAssetDialog
+        >Change Accounting Currency</Button> */}
+      </Paper>
+      {/* <AddEditAssetDialog
         open={accountingCurrencyDialogOpen}
         onDialogClose={() => setAccountingCurrencyDialogOpen(false)}
         edit={accountingCurrency}
         fields={accountingCurrencyfields}
         onFieldsChange={fields => setAccountingCurrencyFields(fields)}
         onSubmit={handleChangeAccountingCurrency}
-      />
+      /> */}
     </React.Fragment>
   );
 }
 
-export default AccountMainSettings;
+export default AccountAssetsSettings;

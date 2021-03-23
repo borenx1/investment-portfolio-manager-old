@@ -1,12 +1,11 @@
 import { Fragment, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import AccountMainSettings from './AccountMainSettings';
+import AccountAssetsSettings from './AccountAssetsSettings';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +27,7 @@ function AccountSettings(props) {
           <AccountMainSettings />
         </Box>
         <Box my={2}>
-          <Divider variant="middle" />
+          <AccountAssetsSettings />
         </Box>
       </Container>
     </Fragment>
