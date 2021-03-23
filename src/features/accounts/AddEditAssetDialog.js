@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Grid from "@material-ui/core/Grid";
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import AddEditDialog from '../../components/AddEditDialog';
@@ -12,9 +10,9 @@ import AddEditDialog from '../../components/AddEditDialog';
  * 
  * Props:
  * - open: Dialog shows if true.
- * - handleCloseDialog - Function called when the dialog requests to be closed.
- * - handleOpenDialog - Function called before the dialog is opened.
+ * - onDialogClose - Function called when the dialog requests to be closed.
  * - edit: Asset object to edit, null if add new asset.
+ * - onSubmit - Function called when the add/edit button is pressed.
  */
 function AddEditAssetDialog(props) {
   const [fields, setFields] = useState({
@@ -52,11 +50,6 @@ function AddEditAssetDialog(props) {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('submitted');
-    props.onDialogClose();
-  };
-
   return (
     <AddEditDialog
       objectName={'Asset'}
@@ -65,7 +58,7 @@ function AddEditAssetDialog(props) {
       onClose={props.onDialogClose}
       onEnter={handleDialogOpen}
       onReset={resetForm}
-      onSubmit={handleSubmit}
+      onSubmit={props.onSubmit}
     >
       <Grid container spacing={2}>
         <Grid item xs={12}>

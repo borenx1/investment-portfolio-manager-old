@@ -44,6 +44,8 @@ export const accountsSlice = createSlice({
         // Updates the active account if no account provided
         const account = state.accounts[action.payload.account || state.activeAccount];
         account.settings.accountingCurrency = action.payload.currency;
+      } else {
+        console.warn(`changeAccountingCurrency: 'currency' not in payload`);
       }
     },
   }
