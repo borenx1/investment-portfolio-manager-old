@@ -21,7 +21,7 @@ function AccountMainSettings(props) {
     ticker: '',
     precision: '',
     pricePrecision: '',
-    isCurrency: '',
+    isCurrency: false,
     symbol: '',
   });
   const dispatch = useDispatch();
@@ -29,9 +29,7 @@ function AccountMainSettings(props) {
   const accountingCurrency = account.settings.accountingCurrency;
 
   const handleChangeAccountingCurrency = () => {
-    // Access fields in "AddEditAssetDialog". Might need to lift state up.
-    // console.log(this.fields);
-    // changeAccountingCurrency({currency: {}});
+    dispatch(changeAccountingCurrency({currency: {...accountingCurrencyfields}}));
     setAccountingCurrencyDialogOpen(false);
   };
 

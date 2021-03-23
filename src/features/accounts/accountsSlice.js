@@ -43,6 +43,7 @@ export const accountsSlice = createSlice({
       if (action.payload && 'currency' in action.payload) {
         // Updates the active account if no account provided
         const account = state.accounts[action.payload.account || state.activeAccount];
+        // TODO: input validation
         account.settings.accountingCurrency = action.payload.currency;
       } else {
         console.warn(`changeAccountingCurrency: 'currency' not in payload`);

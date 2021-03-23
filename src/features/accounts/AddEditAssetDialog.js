@@ -99,7 +99,7 @@ function AddEditAssetDialog(props) {
           <FormControlLabel
             control={<Checkbox />}
             checked={props.fields.isCurrency}
-            onChange={(e) => props.onFieldsChange({...props.fields, isCurrency: e.target.value})}
+            onChange={(e) => props.onFieldsChange({...props.fields, isCurrency: e.target.checked})}
             label="Currency"
             labelPlacement="end"
           />
