@@ -10,43 +10,42 @@ import AddEditDialog from '../../components/AddEditDialog';
  * 
  * Props:
  * - open: Dialog shows if true.
- * - onDialogClose - Function called when the dialog requests to be closed.
+ * - onDialogClose: Function called when the dialog requests to be closed.
  * - edit: Asset object to edit, null if add new asset.
- * - onSubmit - Function called when the add/edit button is pressed.
+ * - fields: Value of the fields in this dialog: name, ticker, precision, pricePrecision, isCurrency, symbol.
+ *           Received an object with members: {name, ticker, precision, pricePrecision, isCurrency, symbol}.
+ * - onFieldsChange: Callback when the value of the fields change, use this to change the state of the parent component.
+ *                  Function receives the new fields object.
+ * - onSubmit: Function called when the add/edit button is pressed.
  */
 function AddEditAssetDialog(props) {
-  const [fields, setFields] = useState({
-    name: '',
-    ticker: '',
-    precision: '',
-    pricePrecision: '',
-    isCurrency: '',
-    symbol: '',
-  });
-
-  const resetForm = () => {
-    setFields({
-      name: '',
-      ticker: '',
-      precision: 2,
-      pricePrecision: 2,
-      isCurrency: false,
-      symbol: '',
-    });
+  const handleReset = () => {
+    if (props.onFieldsChange) {
+      props.onFieldsChange({
+        name: '',
+        ticker: '',
+        precision: 2,
+        pricePrecision: 2,
+        isCurrency: false,
+        symbol: '',
+      });
+    }
   };
 
   const handleDialogOpen = () => {
     if (props.edit) {
-      setFields({
-        name: props.edit.name,
-        ticker: props.edit.ticker,
-        precision: props.edit.precision,
-        pricePrecision: props.edit.pricePrecision,
-        isCurrency: props.edit.isCurrency,
-        symbol: props.edit.symbol,
-      });
+      if (props.onFieldsChange) {
+        props.onFieldsChange({
+          name: props.edit.name,
+          ticker: props.edit.ticker,
+          precision: props.edit.precision,
+          pricePrecision: props.edit.pricePrecision,
+          isCurrency: props.edit.isCurrency,
+          symbol: props.edit.symbol,
+        });
+      }
     } else {
-      resetForm();
+      handleReset();
     }
   };
 
@@ -57,7 +56,7 @@ function AddEditAssetDialog(props) {
       open={props.open}
       onClose={props.onDialogClose}
       onEnter={handleDialogOpen}
-      onReset={resetForm}
+      onReset={handleReset}
       onSubmit={props.onSubmit}
     >
       <Grid container spacing={2}>
@@ -69,8 +68,8 @@ function AddEditAssetDialog(props) {
             variant="outlined"
             size="small"
             required
-            value={fields.name}
-            onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
+            value={props.fields.name}
+            onChange={(e) => props.onFieldsChange({...props.fields, name: e.target.value})}
           />
         </Grid>
         <Grid item xs={5}>
@@ -81,8 +80,8 @@ function AddEditAssetDialog(props) {
             variant="outlined"
             size="small"
             required
-            value={fields.ticker}
-            onChange={(e) => setFields(s => ({...s, ticker: e.target.value}))}
+            value={props.fields.ticker}
+            onChange={(e) => props.onFieldsChange({...props.fields, ticker: e.target.value})}
           />
         </Grid>
         <Grid item xs={3}>
@@ -92,15 +91,15 @@ function AddEditAssetDialog(props) {
             fullWidth
             variant="outlined"
             size="small"
-            value={fields.symbol}
-            onChange={(e) => setFields(s => ({...s, symbol: e.target.value}))}
+            value={props.fields.symbol}
+            onChange={(e) => props.onFieldsChange({...props.fields, symbol: e.target.value})}
           />
         </Grid>
         <Grid item xs={4}>
           <FormControlLabel
             control={<Checkbox />}
-            checked={fields.isCurrency}
-            onChange={(e) => setFields(s => ({...s, isCurrency: e.target.checked}))}
+            checked={props.fields.isCurrency}
+            onChange={(e) => props.onFieldsChange({...props.fields, isCurrency: e.target.value})}
             label="Currency"
             labelPlacement="end"
           />
@@ -113,8 +112,8 @@ function AddEditAssetDialog(props) {
             variant="outlined"
             size="small"
             required
-            value={fields.precision}
-            onChange={(e) => setFields(s => ({...s, precision: e.target.value}))}
+            value={props.fields.precision}
+            onChange={(e) => props.onFieldsChange({...props.fields, precision: e.target.value})}
           />
         </Grid>
         <Grid item xs={6}>
@@ -125,8 +124,8 @@ function AddEditAssetDialog(props) {
             variant="outlined"
             size="small"
             required
-            value={fields.pricePrecision}
-            onChange={(e) => setFields(s => ({...s, pricePrecision: e.target.value}))}
+            value={props.fields.pricePrecision}
+            onChange={(e) => props.onFieldsChange({...props.fields, pricePrecision: e.target.value})}
           />
         </Grid>
       </Grid>

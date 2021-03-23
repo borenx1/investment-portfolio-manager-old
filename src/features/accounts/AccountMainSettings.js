@@ -16,6 +16,14 @@ import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
 
 function AccountMainSettings(props) {
   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
+  const [accountingCurrencyfields, setAccountingCurrencyFields] = useState({
+    name: '',
+    ticker: '',
+    precision: '',
+    pricePrecision: '',
+    isCurrency: '',
+    symbol: '',
+  });
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
   const accountingCurrency = account.settings.accountingCurrency;
@@ -23,7 +31,7 @@ function AccountMainSettings(props) {
   const handleChangeAccountingCurrency = () => {
     // Access fields in "AddEditAssetDialog". Might need to lift state up.
     // console.log(this.fields);
-    changeAccountingCurrency({currency: {}});
+    // changeAccountingCurrency({currency: {}});
     setAccountingCurrencyDialogOpen(false);
   };
 
@@ -66,6 +74,8 @@ function AccountMainSettings(props) {
         open={accountingCurrencyDialogOpen}
         onDialogClose={() => setAccountingCurrencyDialogOpen(false)}
         edit={accountingCurrency}
+        fields={accountingCurrencyfields}
+        onFieldsChange={fields => setAccountingCurrencyFields(fields)}
         onSubmit={handleChangeAccountingCurrency}
       />
     </React.Fragment>
