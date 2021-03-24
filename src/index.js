@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
 import App from './App';
@@ -12,6 +12,8 @@ ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
     <Provider store={store}>
+      {/* Use HashRouter only for GitHub Pages */}
+      {/* <Router basename={process.env.PUBLIC_URL}> */}
       <Router>
         <App />
       </Router>
