@@ -4,7 +4,7 @@ export const navigationSlice = createSlice({
   name: 'navigation',
   initialState: {
     user: 'New User',       // String or null
-    page: 'transactions',   // String or null
+    page: 'journals',   // String or null
   },
   reducers: {
     changePage: (state, action) => {

@@ -74,7 +74,7 @@ function AccountAssetsSettings(props) {
             </TableHead>
             <TableBody>
               {assets.map((a, i) =>
-                <TableRow>
+                <TableRow key={i}>
                   <TableCell>{ a.name }</TableCell>
                   <TableCell align="center">{ a.ticker }</TableCell>
                   <TableCell align="center">{ a.precision }</TableCell>

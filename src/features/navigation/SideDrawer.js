@@ -89,13 +89,13 @@ function SideDrawer(props) {
       <List component="nav" aria-label="// TODO">
         <ListItem
           button
-          selected={activePage === 'transactions'}
-          onClick={() => dispatch(changePage('transactions'))}
+          selected={activePage === 'journals'}
+          onClick={() => dispatch(changePage('journals'))}
         >
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
-          <ListItemText primary="Transactions" />
+          <ListItemText primary="Journals" />
         </ListItem>
         <ListItem
           button
@@ -109,13 +109,13 @@ function SideDrawer(props) {
         </ListItem>
         <ListItem
           button
-          selected={activePage === 'journals'}
-          onClick={() => dispatch(changePage('journals'))}
+          selected={activePage === 'asset-statements'}
+          onClick={() => dispatch(changePage('asset-statements'))}
         >
           <ListItemIcon>
             <BookIcon />
           </ListItemIcon>
-          <ListItemText primary="Journals" />
+          <ListItemText primary="Asset Statements" />
         </ListItem>
       </List>
       <Divider />
