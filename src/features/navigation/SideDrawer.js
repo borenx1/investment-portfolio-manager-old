@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { Link, useLocation } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
@@ -14,7 +14,6 @@ import CreateIcon from '@material-ui/icons/Create';
 import BookIcon from '@material-ui/icons/Book';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { changePage, selectPage } from './navigationSlice';
 import { drawerWidth } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
@@ -63,8 +62,9 @@ const useStyles = makeStyles(theme => ({
  */
 function SideDrawer(props) {
   const classes = useStyles();
-  const activePage = useSelector(selectPage);
-  const dispatch = useDispatch();
+  const location = useLocation();
+  const path = location.pathname;
+
   return (
     <Drawer
       variant="permanent"
@@ -86,11 +86,12 @@ function SideDrawer(props) {
         </IconButton>
       </div>
       <Divider />
-      <List component="nav" aria-label="// TODO">
+      <List component="nav" aria-label="Journals">
         <ListItem
           button
-          selected={activePage === 'journals'}
-          onClick={() => dispatch(changePage('journals'))}
+          component={Link}
+          to={'/journals'}
+          selected={path === '/journals' || path === '/'}
         >
           <ListItemIcon>
             <CreateIcon />
@@ -99,8 +100,9 @@ function SideDrawer(props) {
         </ListItem>
         <ListItem
           button
-          selected={activePage === 'capital-changes'}
-          onClick={() => dispatch(changePage('capital-changes'))}
+          component={Link}
+          to={'/capital-changes'}
+          selected={path === '/capital-changes'}
         >
           <ListItemIcon>
             <CreateIcon />
@@ -109,8 +111,9 @@ function SideDrawer(props) {
         </ListItem>
         <ListItem
           button
-          selected={activePage === 'asset-statements'}
-          onClick={() => dispatch(changePage('asset-statements'))}
+          component={Link}
+          to={'/asset-statements'}
+          selected={path === '/asset-statements'}
         >
           <ListItemIcon>
             <BookIcon />
@@ -119,7 +122,7 @@ function SideDrawer(props) {
         </ListItem>
       </List>
       <Divider />
-      <List component="nav" aria-label="// TODO">
+      <List component="nav" aria-label="Financials">
         <ListSubheader inset disableSticky={true}>Financials</ListSubheader>
         <ListItem button>
           <ListItemIcon>
@@ -150,8 +153,10 @@ function SideDrawer(props) {
       <List component="nav" aria-label="Account settings">
         <ListItem
           button
-          selected={activePage === 'account-settings'}
-          onClick={() => dispatch(changePage('account-settings'))}>
+          component={Link}
+          to={'/account-settings'}
+          selected={path === '/account-settings'}
+        >
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

@@ -4,19 +4,18 @@ export const navigationSlice = createSlice({
   name: 'navigation',
   initialState: {
     user: 'New User',       // String or null
-    page: 'journals',   // String or null
   },
   reducers: {
-    changePage: (state, action) => {
+    changeUser: (state, action) => {
       state.page = action.payload ? String(action.payload) : null;
     },
   }
 });
 
 // Actions
-export const { changePage } = navigationSlice.actions;
+export const { changeUser } = navigationSlice.actions;
 
 // Selectors
-export const selectPage = state => state.navigation.page;
+export const selectUser = state => state.navigation.user;
 
 export default navigationSlice.reducer;
