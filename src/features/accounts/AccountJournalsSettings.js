@@ -73,7 +73,11 @@ function JournalRow(props) {
         <TableCell colSpan={3} className={classes.collapsibleCell}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <Typography variant="h6" gutterBottom>Columns</Typography>
+              <IconButtonHeading
+                variant="h6"
+                title={'Columns'}
+                icon={<AddIcon fontSize="small" />}
+              />
               <Table size="small" aria-label="Journal columns">
                 <TableHead>
                   <TableRow>
@@ -95,7 +99,11 @@ function JournalRow(props) {
                 </TableBody>
               </Table>
               <Box mt={1}>
-                <IconButtonHeading variant="h6" gutterBottom title={'Column Order'} icon={<EditIcon fontSize="small" />} />
+                <IconButtonHeading
+                  variant="h6"
+                  title={'Column Order'}
+                  icon={<EditIcon fontSize="small" />}
+                />
                 <Box display="flex" flexWrap="wrap">
                   {journal.columnOrder.map(c =>
                     <Chip label={c} className={classes.columnOrderChip} />
