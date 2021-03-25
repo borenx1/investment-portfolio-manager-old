@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 // TODO: change to Browser router, deploy on another site.
+// import { BrowserRouter as Router } from "react-router-dom";
 import { HashRouter as Router } from "react-router-dom";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
