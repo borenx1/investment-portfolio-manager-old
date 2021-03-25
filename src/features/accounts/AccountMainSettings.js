@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -14,14 +13,7 @@ import AddEditAssetDialog from './AddEditAssetDialog';
 import SettingsSection from '../../components/SettingsSection';
 import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-
-  },
-}));
-
 function AccountMainSettings(props) {
-  const classes = useStyles();
   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
   const [accountingCurrencyFields, setaccountingCurrencyFields] = useState({
     name: '',

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -10,21 +9,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import AddIcon from '@material-ui/icons/Add';
-import SettingsSection from '../../components/SettingsSection';
 import AddEditAssetDialog from './AddEditAssetDialog';
+import SettingsSection from '../../components/SettingsSection';
 import { addAsset, editAsset, selectActiveAccount } from './accountsSlice';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-
-  },
-  tableRow: {
-    cursor: 'pointer',
-  },
-}));
-
-function AccountAssetsSettings(props) {
-  const classes = useStyles();
+function AccountJournalsSettings(props) {
   const [addEditAssetDialogOpen, setAddEditAssetDialogOpen] = useState(false);
   // Index of the Asset to edit when the edit asset button is clicked, set to -1 to add new asset
   const [selectedAsset, setSelectedAsset] = useState(-1);
@@ -44,11 +33,6 @@ function AccountAssetsSettings(props) {
     setSelectedAsset(-1);
     setAddEditAssetDialogOpen(true);
   };
-
-  const openEditAssetDialog = (index) => () => {
-    setSelectedAsset(index);
-    setAddEditAssetDialogOpen(true);
-  }
 
   const handleAddEditAsset = () => {
     if (selectedAsset < 0) {
@@ -79,7 +63,7 @@ function AccountAssetsSettings(props) {
             </TableHead>
             <TableBody>
               {assets.map((a, i) =>
-                <TableRow key={i} hover className={classes.tableRow} onClick={openEditAssetDialog(i)}>
+                <TableRow key={i}>
                   <TableCell>{ a.name }</TableCell>
                   <TableCell align="center">{ a.ticker }</TableCell>
                   <TableCell align="center">{ a.precision }</TableCell>
@@ -112,4 +96,4 @@ function AccountAssetsSettings(props) {
   );
 }
 
-export default AccountAssetsSettings;
+export default AccountJournalsSettings;

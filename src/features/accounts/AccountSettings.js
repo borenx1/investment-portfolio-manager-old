@@ -5,6 +5,7 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import AccountMainSettings from './AccountMainSettings';
 import AccountAssetsSettings from './AccountAssetsSettings';
+import AccountJournalsSettings from './AccountJournalsSettings';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,6 +27,9 @@ function AccountSettings(props) {
         </Box>
         <Box my={2}>
           <AccountAssetsSettings />
+        </Box>
+        <Box my={2}>
+          <AccountJournalsSettings />
         </Box>
       </Container>
     </Fragment>
