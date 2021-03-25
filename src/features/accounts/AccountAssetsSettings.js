@@ -64,7 +64,7 @@ function AccountAssetsSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6">Assets</Typography>
+        <Typography variant="h6" gutterBottom>Assets</Typography>
         <TableContainer>
           <Table>
             <TableHead>

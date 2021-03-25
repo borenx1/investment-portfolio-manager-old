@@ -35,7 +35,7 @@ function AccountMainSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6">Accounting Currency</Typography>
+        <Typography variant="h6" gutterBottom>Accounting Currency</Typography>
         <TableContainer>
           <Table>
             <TableHead>

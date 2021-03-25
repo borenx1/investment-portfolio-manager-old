@@ -140,7 +140,7 @@ function AccountJournalsSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6">Journals</Typography>
+        <Typography variant="h6" gutterBottom>Journals</Typography>
         <TableContainer>
           <Table>
             <TableHead>
