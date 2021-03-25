@@ -96,10 +96,6 @@ function JournalRow(props) {
               </Table>
               <Box mt={1}>
                 <IconButtonHeading variant="h6" gutterBottom title={'Column Order'} icon={<EditIcon fontSize="small" />} />
-                {/* <Typography variant="h6" gutterBottom>
-                  Column Order
-                  <IconButton><EditIcon fontSize="small" /></IconButton>
-                </Typography> */}
                 <Box display="flex" flexWrap="wrap">
                   {journal.columnOrder.map(c =>
                     <Chip label={c} className={classes.columnOrderChip} />

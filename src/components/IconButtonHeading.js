@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
  * - variant: The variant for the Typography component. Default "h6".
  * - gutterBottom: Add margin to the Typography component.
  * - icon: The icon component.
+ * - buttonColor: The color of the IconButton component.
  * - onClick: Callback when the icon button is clicked.
  */
 function IconButtonHeading(props) {
@@ -25,7 +26,7 @@ function IconButtonHeading(props) {
   return (
     <Typography variant={props.variant || 'h6'} gutterBottom={Boolean(props.gutterBottom)}>
       { props.title }
-      <IconButton size="small" onClick={props.onClick} className={classes.button}>
+      <IconButton size="small" onClick={props.onClick} color={props.buttonColor} className={classes.button}>
         { props.icon }
       </IconButton>
     </Typography>

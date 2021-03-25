@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import AddIcon from '@material-ui/icons/Add';
 import SettingsSection from '../../components/SettingsSection';
+import IconButtonHeading from '../../components/IconButtonHeading';
 import AddEditAssetDialog from './AddEditAssetDialog';
 import { addAsset, editAsset, selectActiveAccount } from './accountsSlice';
 
@@ -64,7 +63,13 @@ function AccountAssetsSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6" gutterBottom>Assets</Typography>
+        <IconButtonHeading
+          variant="h6"
+          gutterBottom
+          title={'Assets'}
+          icon={<AddIcon fontSize="small" />}
+          onClick={openAddAssetDialog}
+        />
         <TableContainer>
           <Table>
             <TableHead>
@@ -91,14 +96,6 @@ function AccountAssetsSettings(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={openAddAssetDialog}
-        >
-            Add New Asset
-        </Button>
       </SettingsSection>
       <AddEditAssetDialog
         open={addEditAssetDialogOpen}

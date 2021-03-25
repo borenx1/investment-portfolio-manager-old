@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
 import AddEditAssetDialog from './AddEditAssetDialog';
 import SettingsSection from '../../components/SettingsSection';
+import IconButtonHeading from '../../components/IconButtonHeading';
 import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
 
 function AccountMainSettings(props) {
@@ -35,7 +34,13 @@ function AccountMainSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6" gutterBottom>Accounting Currency</Typography>
+        <IconButtonHeading
+          variant="h6"
+          gutterBottom
+          title={'Accounting Currency'}
+          icon={<EditIcon fontSize="small" />}
+          onClick={() => setAccountingCurrencyDialogOpen(true)}
+        />
         <TableContainer>
           <Table>
             <TableHead>
@@ -60,12 +65,6 @@ function AccountMainSettings(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={() => setAccountingCurrencyDialogOpen(true)}
-        >Change Accounting Currency</Button>
       </SettingsSection>
       <AddEditAssetDialog
         open={accountingCurrencyDialogOpen}
