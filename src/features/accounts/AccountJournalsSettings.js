@@ -12,7 +12,11 @@ import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddEditAssetDialog from './AddEditAssetDialog';
@@ -43,6 +47,10 @@ const useJournalRowStyles = makeStyles(theme => ({
   collapsibleCell: {
     paddingTop: 0,
     paddingBottom: 0,
+  },
+  columnOrderChip: {
+    marginRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
   },
 }));
 
@@ -87,6 +95,14 @@ function JournalRow(props) {
                   )}
                 </TableBody>
               </Table>
+              <Box mt={1}>
+                <Typography variant="h6" gutterBottom>Column Order</Typography>
+                <Box display="flex" flexWrap="wrap">
+                  {journal.columnOrder.map(c =>
+                    <Chip label={c} className={classes.columnOrderChip} />
+                  )}
+                </Box>
+              </Box>
             </Box>
           </Collapse>
         </TableCell>
