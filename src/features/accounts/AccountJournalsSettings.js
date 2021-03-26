@@ -36,7 +36,7 @@ function JournalColumnRow(props) {
       <TableCell>{ role }</TableCell>
       <TableCell>{ journalColumn.name }</TableCell>
       <TableCell>{ journalColumn.type }</TableCell>
-      <TableCell>{ journalColumn.type === 'number' && journalColumn.precision }</TableCell>
+      <TableCell>{ journalColumn.type === 'decimal' && journalColumn.precision }</TableCell>
       <TableCell>{ journalColumn.type === 'date' && journalColumn.dateTimeFormat }</TableCell>
       <TableCell>{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
     </TableRow>
@@ -68,7 +68,7 @@ const useJournalRowStyles = makeStyles(theme => ({
  * - index: The index of the journal in the account.
  * - onEditJournal: Callback when requested to edit the Journal.
  * - onAddColumn: Callback when requested to add a new column.
- * - onEditColumn: Callback when requested to edit a column.
+ * - onEditColumn: Callback when requested to edit a column. Signature is (role).
  * - onEditColumnOrder: Callback when requested to edit the column order.
  */
 function JournalRow(props) {
@@ -119,7 +119,12 @@ function JournalRow(props) {
                     />
                   )}
                   {journal.columns.extra.map((col, i) =>
-                    <JournalColumnRow role={`extra-${i}`} journalColumn={col} key={i} />
+                    <JournalColumnRow
+                      role={`extra-${i}`}
+                      journalColumn={col}
+                      onClick={() => onEditColumn(`extra-${i}`)}
+                      key={i}
+                    />
                   )}
                 </TableBody>
               </Table>
@@ -159,37 +164,28 @@ function AccountJournalsSettings(props) {
   const [editJournalColumnOrderDialogOpen, setEditJournalColumnOrderDialogOpen] = useState(false);
   // Index of the Journal to edit when editing a journal setting. Set to -1 to add new journal.
   const [selectedJournal, setSelectedJournal] = useState(-1);
-  // The "role" of the Journal Column to edit. Set to -1 to add new journal column.
-  const [selectedJournalColumn, setSelectedJournalColumn] = useState(-1);
-  // const dispatch = useDispatch();
+  // The "role" of the Journal Column to edit. Set to null to add new journal column.
+  const [selectedJournalColumn, setSelectedJournalColumn] = useState(null);
+  const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
   const journals = account.journals;
 
-  const openAddColumnDialog = (index) => () => {
+  const openAddColumnDialog = (index) => {
     setSelectedJournal(index);
+    setSelectedJournalColumn(null);
     setAddEditJournalColumnDialogOpen(true);
   };
 
-  const openEditColumnDialog = (index) => () => {
+  const openEditColumnDialog = (index, role) => {
     setSelectedJournal(index);
+    setSelectedJournalColumn(role);
     setAddEditJournalColumnDialogOpen(true);
   };
 
-  const openEditColumnOrderDialog = (index) => (role) => {
+  const openEditColumnOrderDialog = (index) => {
     setSelectedJournal(index);
     setEditJournalColumnOrderDialogOpen(true);
   };
-
-  // const handleAddEditAsset = () => {
-  //   if (selectedAsset < 0) {
-  //     // Add
-  //     dispatch(addAsset({asset: {...addEditAssetFields}}));
-  //   } else {
-  //     // Edit
-  //     dispatch(editAsset({asset: {...addEditAssetFields}, index: selectedAsset}));
-  //   }
-  //   setAddEditAssetDialogOpen(false);
-  // };
 
   return (
     <React.Fragment>
@@ -209,28 +205,21 @@ function AccountJournalsSettings(props) {
                 <JournalRow
                   journal={j}
                   index={i}
-                  onAddColumn={openAddColumnDialog(i)}
-                  onEditColumn={openEditColumnDialog(i)}
-                  onEditColumnOrder={openEditColumnOrderDialog(i)}
+                  onAddColumn={() => openAddColumnDialog(i)}
+                  onEditColumn={role => openEditColumnDialog(i, role)}
+                  onEditColumnOrder={() => openEditColumnOrderDialog(i)}
                   key={i}
                 />
               )}
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={openAddAssetDialog}
-        >
-            Add New Asset
-        </Button> */}
       </SettingsSection>
       <AddEditJournalColumnDialog
         open={addEditJournalColumnDialogOpen}
         onDialogClose={() => setAddEditJournalColumnDialogOpen(false)}
         journalIndex={selectedJournal}
+        columnRole={selectedJournalColumn}
       />
       <EditJournalColumnOrderDialog
         open={editJournalColumnOrderDialogOpen}

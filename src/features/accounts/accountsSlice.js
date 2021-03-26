@@ -69,6 +69,25 @@ export const accountsSlice = createSlice({
         console.warn(`editAsset: 'asset' or 'index' not in payload`);
       }
     },
+    addJournalColumn: (state, action) => {
+      // Payload: {account: int?, journalIndex: int, column: Column}
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      account.journals[action.payload.journalIndex].columns.extra.push(action.payload.column);
+    },
+    editJournalColumn: (state, action) => {
+      // Payload: {account: int?, journalIndex: int, columnRole: String, column: Column}
+      // Updates the active account if no account provided
+      const { journalIndex, columnRole, column } = action.payload;
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      if (columnRole.slice(0, 5) === 'extra') {
+        // It is an extra column
+        account.journals[journalIndex].columns.extra[parseInt(columnRole.split('-')[1])] = column;
+      } else {
+        // Core column
+        account.journals[journalIndex].columns[columnRole] = column;
+      }
+    },
     editJournalColumnOrder: (state, action) => {
       // Payload: {account: int?, journalIndex: int, columnOrder: String[]}
       if (action.payload && 'journalIndex' in action.payload && 'columnOrder' in action.payload) {
@@ -91,6 +110,8 @@ export const {
   changeAccountingCurrency,
   addAsset,
   editAsset,
+  addJournalColumn,
+  editJournalColumn,
   editJournalColumnOrder,
 } = accountsSlice.actions;
 

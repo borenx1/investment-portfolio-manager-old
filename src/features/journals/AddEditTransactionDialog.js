@@ -9,7 +9,7 @@ import { addTransaction, selectActiveAccount } from '../accounts/accountsSlice';
 import { transaction } from '../../models/Account';
 
 /**
- * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss:SSS" format.
+ * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss" format.
  */
 function getCurrentLocalDateTime() {
   const currentDateTime = new Date();

@@ -1,133 +1,171 @@
-import Grid from "@material-ui/core/Grid";
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
 import AddEditDialog from '../../components/AddEditDialog';
+import { addJournalColumn, editJournalColumn, selectActiveAccountJournals } from './accountsSlice';
 
 /**
- * Add or change asset dialog React function component.
+ * React component. Add or change journal column dialog.
  * 
  * Props:
  * - open: Dialog shows if true.
  * - onDialogClose: Function called when the dialog requests to be closed.
- * - edit: Asset object to edit, null if add new asset.
- * - fields: Value of the fields in this dialog: name, ticker, precision, pricePrecision, isCurrency, symbol.
- *           Received an object with members: {name, ticker, precision, pricePrecision, isCurrency, symbol}.
- * - onFieldsChange: Callback when the value of the fields change, use this to change the state of the parent component.
- *                  Function receives the new fields object.
- * - onSubmit: Function called when the add/edit button is pressed.
+ * - journalIndex: The index of the journal selected.
+ * - columnRole: The role column of the selected journal to edit. Set to falsy value to add a new column.
  */
 function AddEditJournalColumnDialog(props) {
-  // const handleReset = () => {
-  //   if (props.onFieldsChange) {
-  //     props.onFieldsChange({
-  //       name: '',
-  //       ticker: '',
-  //       precision: 2,
-  //       pricePrecision: 2,
-  //       isCurrency: false,
-  //       symbol: '',
-  //     });
-  //   }
-  // };
+  const { open, onDialogClose, journalIndex, columnRole } = props;
+  const [fields, setFields] = useState({
+    role: '',
+    name: '',
+    type: '',
+    hide: false,
+    precision: '',
+    dateTimeFormat: '',
+  });
+  const dispatch = useDispatch();
+  const journals = useSelector(selectActiveAccountJournals);
+  // journalIndex is set to -1 initially
+  const journal = journalIndex >= 0 ? journals[journalIndex] : null;
 
-  // const handleDialogOpen = () => {
-  //   if (props.edit) {
-  //     if (props.onFieldsChange) {
-  //       props.onFieldsChange({
-  //         name: props.edit.name,
-  //         ticker: props.edit.ticker,
-  //         precision: props.edit.precision,
-  //         pricePrecision: props.edit.pricePrecision,
-  //         isCurrency: props.edit.isCurrency,
-  //         symbol: props.edit.symbol,
-  //       });
-  //     }
-  //   } else {
-  //     handleReset();
-  //   }
-  // };
+  const handleReset = () => {
+    setFields({
+      role: columnRole || `extra-${journal.columns.extra.length}`,
+      name: '',
+      type: 'text',
+      hide: false,
+      precision: '',
+      dateTimeFormat: 'date',
+    });
+  };
+
+  const handleDialogOpen = () => {
+    if (columnRole) {
+      // Get the column with the given role. If it is an extra column, the column exists in journal.columns.extra[index].
+      const column = columnRole.slice(0, 5) === 'extra' ?
+                     journal.columns.extra[parseInt(columnRole.split('-')[1])] :
+                     journal.columns[columnRole];
+      setFields({
+        role: columnRole,
+        name: column.name,
+        type: column.type,
+        hide: column.hide,
+        precision: column.precision,
+        dateTimeFormat: column.dateTimeFormat,
+      });
+    } else {
+      handleReset();
+    }
+  };
+
+  const handleSubmit = () => {
+    const  {role, ...column } = fields;
+    if (columnRole) {
+      dispatch(editJournalColumn({journalIndex: journalIndex, columnRole: columnRole, column: column}));
+    } else {
+      dispatch(addJournalColumn({journalIndex: journalIndex, column: column}));
+    }
+    onDialogClose();
+  };
 
   return (
     <AddEditDialog
       objectName={'Journal Column'}
-      edit={Boolean(props.edit)}
-      open={props.open}
-      onClose={props.onDialogClose}
-      // onEnter={handleDialogOpen}
-      // onReset={handleReset}
-      // onSubmit={props.onSubmit}
+      edit={Boolean(columnRole)}
+      open={open}
+      onClose={onDialogClose}
+      onEnter={handleDialogOpen}
+      onReset={handleReset}
+      onSubmit={handleSubmit}
     >
-      <Grid container spacing={2}>
-        {/* <Grid item xs={12}>
-          <TextField
-            type="text"
-            label="Asset Name"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required
-            value={props.fields.name}
-            onChange={(e) => props.onFieldsChange({...props.fields, name: e.target.value})}
-          />
+      <Box>
+        <TextField
+          type="text"
+          label="Role"
+          fullWidth
+          variant="outlined"
+          size="small"
+          required
+          value={fields.role}
+          disabled
+        />
+      </Box>
+      <Box mt={2}>
+        <TextField
+          type="text"
+          label="Column Name"
+          fullWidth
+          variant="outlined"
+          size="small"
+          required
+          value={fields.name}
+          onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
+        />
+      </Box>
+      <Box mt={2}>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <TextField
+              select
+              label="Type"
+              fullWidth
+              variant="outlined"
+              size="small"
+              required
+              value={fields.type}
+              onChange={(e) => setFields(s => ({...s, type: e.target.value}))}
+            >
+              <MenuItem value="text">Text</MenuItem>
+              <MenuItem value="decimal">Decimal</MenuItem>
+              <MenuItem value="integer">Integer</MenuItem>
+              <MenuItem value="date">Date</MenuItem>
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <FormControlLabel
+              control={<Checkbox />}
+              checked={fields.hide}
+              onChange={(e) => setFields(s => ({...s, hide: e.target.checked}))}
+              label="Hide"
+              labelPlacement="end"
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              type="number"
+              label="Precision"
+              fullWidth
+              variant="outlined"
+              size="small"
+              required={fields.type === 'decimal'}
+              disabled={fields.type !== 'decimal'}
+              value={fields.precision}
+              onChange={(e) => setFields(s => ({...s, precision: e.target.value}))}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              select
+              label="Date Time Format"
+              fullWidth
+              variant="outlined"
+              size="small"
+              required={fields.type === 'date'}
+              disabled={fields.type !== 'date'}
+              value={fields.dateTimeFormat}
+              onChange={(e) => setFields(s => ({...s, dateTimeFormat: e.target.value}))}
+            >
+              <MenuItem value="date">Date</MenuItem>
+              <MenuItem value="datetime">Date & Time</MenuItem>
+            </TextField>
+          </Grid>
         </Grid>
-        <Grid item xs={5}>
-          <TextField
-            type="text"
-            label="Ticker"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required
-            value={props.fields.ticker}
-            onChange={(e) => props.onFieldsChange({...props.fields, ticker: e.target.value})}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            type="text"
-            label="Symbol"
-            fullWidth
-            variant="outlined"
-            size="small"
-            value={props.fields.symbol}
-            onChange={(e) => props.onFieldsChange({...props.fields, symbol: e.target.value})}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <FormControlLabel
-            control={<Checkbox />}
-            checked={props.fields.isCurrency}
-            onChange={(e) => props.onFieldsChange({...props.fields, isCurrency: e.target.checked})}
-            label="Currency"
-            labelPlacement="end"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            type="number"
-            label="Precision"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required
-            value={props.fields.precision}
-            onChange={(e) => props.onFieldsChange({...props.fields, precision: e.target.value})}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            type="number"
-            label="Price Precision"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required
-            value={props.fields.pricePrecision}
-            onChange={(e) => props.onFieldsChange({...props.fields, pricePrecision: e.target.value})}
-          />
-        </Grid> */}
-      </Grid>
+      </Box>
     </AddEditDialog>
   );
 }

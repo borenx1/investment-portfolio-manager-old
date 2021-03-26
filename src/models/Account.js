@@ -103,52 +103,52 @@ export function journalColumnSet(date, base, baseAmount, quote, quoteAmount, pri
 export function tradingColumns(dateTimeFormat = 'date') {
   return journalColumnSet(
     journalColumn('Date', 'date', false, undefined, dateTimeFormat),
-    journalColumn('Asset', 'string', false),
-    journalColumn('Amount', 'number', false, 8),
-    journalColumn('Quote', 'string', true),
-    journalColumn('Total', 'number', false, 2),
-    journalColumn('Price', 'number', false, 2),
-    journalColumn('Fee (Base)', 'number', true, 8),
-    journalColumn('Fee', 'number', false, 2),
-    journalColumn('Notes', 'string', false),
+    journalColumn('Asset', 'text', false),
+    journalColumn('Amount', 'decimal', false, 8),
+    journalColumn('Quote', 'text', true),
+    journalColumn('Total', 'decimal', false, 2),
+    journalColumn('Price', 'decimal', false, 2),
+    journalColumn('Fee (Base)', 'decimal', true, 8),
+    journalColumn('Fee', 'decimal', false, 2),
+    journalColumn('Notes', 'text', false),
   );
 }
 
 export function incomeColumns(dateTimeFormat = 'date') {
   return journalColumnSet(
     journalColumn('Date', 'date', false, undefined, dateTimeFormat),
-    journalColumn('Asset', 'string', false),
-    journalColumn('Amount', 'number', false, 2),
-    journalColumn('Quote', 'string', true),
-    journalColumn('Total', 'number', true, 2),
-    journalColumn('Price', 'number', true, 2),
-    journalColumn('Fee (Base)', 'number', true, 8),
-    journalColumn('Fee', 'number', true, 2),
-    journalColumn('Notes', 'string', false),
+    journalColumn('Asset', 'text', false),
+    journalColumn('Amount', 'decimal', false, 2),
+    journalColumn('Quote', 'text', true),
+    journalColumn('Total', 'decimal', true, 2),
+    journalColumn('Price', 'decimal', true, 2),
+    journalColumn('Fee (Base)', 'decimal', true, 8),
+    journalColumn('Fee', 'decimal', true, 2),
+    journalColumn('Notes', 'text', false),
   );
 }
 
 export function expenseColumns(dateTimeFormat = 'date') {
   return journalColumnSet(
     journalColumn('Date', 'date', false, undefined, dateTimeFormat),
-    journalColumn('Asset', 'string', false),
-    journalColumn('Amount', 'number', false, 2),
-    journalColumn('Quote', 'string', true),
-    journalColumn('Total', 'number', true, 2),
-    journalColumn('Price', 'number', true, 2),
-    journalColumn('Fee (Base)', 'number', true, 8),
-    journalColumn('Fee', 'number', true, 2),
-    journalColumn('Notes', 'string', false),
+    journalColumn('Asset', 'text', false),
+    journalColumn('Amount', 'decimal', false, 2),
+    journalColumn('Quote', 'text', true),
+    journalColumn('Total', 'decimal', true, 2),
+    journalColumn('Price', 'decimal', true, 2),
+    journalColumn('Fee (Base)', 'decimal', true, 8),
+    journalColumn('Fee', 'decimal', true, 2),
+    journalColumn('Notes', 'text', false),
   );
 }
 
 /**
  * Journal column settings.
  * @param {String} name Name of the column.
- * @param {String} type Type of column, one of: 'date', 'string', 'number', 'integer'.
+ * @param {String} type Type of column, one of: 'date', 'text', 'decimal', 'integer'.
  * @param {Boolean} hide Hide the column if true.
- * @param {Number} precision Precision of the column if the type is 'number'.
- * @param {String} dateTimeFormat Date time format if the type is 'date', one of: 'date', 'time', 'datetime'.
+ * @param {Number} precision Precision of the column if the type is 'decimal'.
+ * @param {String} dateTimeFormat Date time format if the type is 'date', one of: 'date', 'datetime'.
  * @returns An object with the given members.
  */
 export function journalColumn(name, type, hide = false, precision = 2, dateTimeFormat = 'date') {
