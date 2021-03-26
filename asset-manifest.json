@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/investment-portfolio-mananger/static/css/main.afd7172b.chunk.css",
-    "main.js": "/investment-portfolio-mananger/static/js/main.70606764.chunk.js",
-    "main.js.map": "/investment-portfolio-mananger/static/js/main.70606764.chunk.js.map",
-    "runtime-main.js": "/investment-portfolio-mananger/static/js/runtime-main.b6945b18.js",
-    "runtime-main.js.map": "/investment-portfolio-mananger/static/js/runtime-main.b6945b18.js.map",
-    "static/js/2.969670a9.chunk.js": "/investment-portfolio-mananger/static/js/2.969670a9.chunk.js",
-    "static/js/2.969670a9.chunk.js.map": "/investment-portfolio-mananger/static/js/2.969670a9.chunk.js.map",
-    "static/js/3.d30de196.chunk.js": "/investment-portfolio-mananger/static/js/3.d30de196.chunk.js",
-    "static/js/3.d30de196.chunk.js.map": "/investment-portfolio-mananger/static/js/3.d30de196.chunk.js.map",
+    "main.js": "/investment-portfolio-mananger/static/js/main.2a7d5c4c.chunk.js",
+    "main.js.map": "/investment-portfolio-mananger/static/js/main.2a7d5c4c.chunk.js.map",
+    "runtime-main.js": "/investment-portfolio-mananger/static/js/runtime-main.3b61ca34.js",
+    "runtime-main.js.map": "/investment-portfolio-mananger/static/js/runtime-main.3b61ca34.js.map",
+    "static/js/2.a4480f68.chunk.js": "/investment-portfolio-mananger/static/js/2.a4480f68.chunk.js",
+    "static/js/2.a4480f68.chunk.js.map": "/investment-portfolio-mananger/static/js/2.a4480f68.chunk.js.map",
+    "static/js/3.a38e7645.chunk.js": "/investment-portfolio-mananger/static/js/3.a38e7645.chunk.js",
+    "static/js/3.a38e7645.chunk.js.map": "/investment-portfolio-mananger/static/js/3.a38e7645.chunk.js.map",
     "index.html": "/investment-portfolio-mananger/index.html",
     "static/css/main.afd7172b.chunk.css.map": "/investment-portfolio-mananger/static/css/main.afd7172b.chunk.css.map",
-    "static/js/2.969670a9.chunk.js.LICENSE.txt": "/investment-portfolio-mananger/static/js/2.969670a9.chunk.js.LICENSE.txt"
+    "static/js/2.a4480f68.chunk.js.LICENSE.txt": "/investment-portfolio-mananger/static/js/2.a4480f68.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.b6945b18.js",
-    "static/js/2.969670a9.chunk.js",
+    "static/js/runtime-main.3b61ca34.js",
+    "static/js/2.a4480f68.chunk.js",
     "static/css/main.afd7172b.chunk.css",
-    "static/js/main.70606764.chunk.js"
+    "static/js/main.2a7d5c4c.chunk.js"
   ]
 }
