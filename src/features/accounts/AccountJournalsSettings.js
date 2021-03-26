@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,10 +16,10 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import AddEditAssetDialog from './AddEditAssetDialog';
+import EditJournalColumnOrderDialog from './EditJournalColumnOrderDialog';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
-import { addAsset, editAsset, selectActiveAccount } from './accountsSlice';
+import { selectActiveAccount } from './accountsSlice';
 
 function JournalColumnRow(props) {
   const { role, journalColumn } = props;
@@ -53,9 +52,20 @@ const useJournalRowStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * React component.
+ * 
+ * Props:
+ * - journal: The journal object of the row.
+ * - index: The index of the journal in the account.
+ * - onEditJournal: Callback when requested to edit the Journal.
+ * - onAddColumn: Callback when requested to add a new column
+ * - onEditColumn: Callback when requested to edit a column.
+ * - onEditColumnOrder: Callback when requested to edit the column order.
+ */
 function JournalRow(props) {
   const classes = useJournalRowStyles();
-  const { journal } = props;
+  const { journal, index, onEditJournal, onAddColumn, onEditColumn, onEditColumnOrder } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -103,6 +113,7 @@ function JournalRow(props) {
                   variant="h6"
                   title={'Column Order'}
                   icon={<EditIcon fontSize="small" />}
+                  onClick={onEditColumnOrder}
                 />
                 <Box display="flex" flexWrap="wrap">
                   {journal.columnOrder.map(c =>
@@ -129,25 +140,17 @@ const useStyles = makeStyles(theme => ({
  */
 function AccountJournalsSettings(props) {
   const classes = useStyles();
-  // const [addEditAssetDialogOpen, setAddEditAssetDialogOpen] = useState(false);
-  // // Index of the Asset to edit when the edit asset button is clicked, set to -1 to add new asset
-  // const [selectedAsset, setSelectedAsset] = useState(-1);
-  // const [addEditAssetFields, setAddEditAssetFields] = useState({
-  //   name: '',
-  //   ticker: '',
-  //   precision: '',
-  //   pricePrecision: '',
-  //   isCurrency: false,
-  //   symbol: '',
-  // });
+  const [editJournalColumnOrderDialogOpen, setEditJournalColumnOrderDialogOpen] = useState(false);
+  // Index of the Journal to edit when editing a journal setting. Set to -1 to add new journal.
+  const [selectedJournal, setSelectedJournal] = useState(-1);
   // const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
   const journals = account.journals;
 
-  // const openAddAssetDialog = () => {
-  //   setSelectedAsset(-1);
-  //   setAddEditAssetDialogOpen(true);
-  // };
+  const openEditColumnOrderDialog = (index) => () => {
+    setSelectedJournal(index);
+    setEditJournalColumnOrderDialogOpen(true);
+  };
 
   // const handleAddEditAsset = () => {
   //   if (selectedAsset < 0) {
@@ -175,7 +178,12 @@ function AccountJournalsSettings(props) {
             </TableHead>
             <TableBody>
               {journals.map((j, i) =>
-                <JournalRow journal={j} key={i} />
+                <JournalRow
+                  journal={j}
+                  index={i}
+                  onEditColumnOrder={openEditColumnOrderDialog(i)}
+                  key={i}
+                />
               )}
             </TableBody>
           </Table>
@@ -189,14 +197,11 @@ function AccountJournalsSettings(props) {
             Add New Asset
         </Button> */}
       </SettingsSection>
-      {/* <AddEditAssetDialog
-        open={addEditAssetDialogOpen}
-        onDialogClose={() => setAddEditAssetDialogOpen(false)}
-        edit={selectedAsset === -1 ? null : assets[selectedAsset]}
-        fields={addEditAssetFields}
-        onFieldsChange={fields => setAddEditAssetFields(fields)}
-        onSubmit={handleAddEditAsset}
-      /> */}
+      <EditJournalColumnOrderDialog
+        open={editJournalColumnOrderDialogOpen}
+        onDialogClose={() => setEditJournalColumnOrderDialogOpen(false)}
+        journalIndex={selectedJournal}
+      />
     </React.Fragment>
   );
 }

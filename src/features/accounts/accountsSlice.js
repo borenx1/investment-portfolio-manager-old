@@ -56,7 +56,7 @@ export const accountsSlice = createSlice({
         // TODO: input validation
         account.assets.push(action.payload.asset);
       } else {
-        console.warn(`changeAccountingCurrency: 'asset' not in payload`);
+        console.warn(`addAsset: 'asset' not in payload`);
       }
     },
     editAsset: (state, action) => {
@@ -66,7 +66,17 @@ export const accountsSlice = createSlice({
         // TODO: input validation
         account.assets[action.payload.index] = action.payload.asset;
       } else {
-        console.warn(`changeAccountingCurrency: 'currency' not in payload`);
+        console.warn(`editAsset: 'asset' or 'index' not in payload`);
+      }
+    },
+    editJournalColumnOrder: (state, action) => {
+      // Payload: {account: int?, journalIndex: int, columnOrder: String[]}
+      if (action.payload && 'journalIndex' in action.payload && 'columnOrder' in action.payload) {
+        // Updates the active account if no account provided
+        const account = state.accounts[action.payload.account || state.activeAccount];
+        account.journals[action.payload.journalIndex].columnOrder = action.payload.columnOrder;
+      } else {
+        console.warn(`editJournalColumnOrder: 'journalIndex' or 'columnOrder' not in payload`);
       }
     },
   }
@@ -81,6 +91,7 @@ export const {
   changeAccountingCurrency,
   addAsset,
   editAsset,
+  editJournalColumnOrder,
 } = accountsSlice.actions;
 
 // Selectors
@@ -103,6 +114,10 @@ export const selectActiveAccountAccountingCurrency = state => {
 export const selectActiveAccountAssets = state => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.assets : [];
+}
+export const selectActiveAccountJournals = state => {
+  const activeAccount = selectActiveAccount(state);
+  return activeAccount ? activeAccount.journals : [];
 }
 
 export default accountsSlice.reducer;
