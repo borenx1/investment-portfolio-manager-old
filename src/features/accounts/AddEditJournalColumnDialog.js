@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
@@ -82,90 +81,89 @@ function AddEditJournalColumnDialog(props) {
       onEnter={handleDialogOpen}
       onReset={handleReset}
       onSubmit={handleSubmit}
+      contentMaxWidth="30rem"
     >
-      <Box>
-        <TextField
-          type="text"
-          label="Role"
-          fullWidth
-          variant="outlined"
-          size="small"
-          required
-          value={fields.role}
-          disabled
-        />
-      </Box>
-      <Box mt={2}>
-        <TextField
-          type="text"
-          label="Column Name"
-          fullWidth
-          variant="outlined"
-          size="small"
-          required
-          value={fields.name}
-          onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
-        />
-      </Box>
-      <Box mt={2}>
-        <Grid container spacing={2}>
-          <Grid item xs={8}>
-            <TextField
-              select
-              label="Type"
-              fullWidth
-              variant="outlined"
-              size="small"
-              required
-              value={fields.type}
-              onChange={(e) => setFields(s => ({...s, type: e.target.value}))}
-            >
-              <MenuItem value="text">Text</MenuItem>
-              <MenuItem value="decimal">Decimal</MenuItem>
-              <MenuItem value="integer">Integer</MenuItem>
-              <MenuItem value="date">Date</MenuItem>
-            </TextField>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControlLabel
-              control={<Checkbox />}
-              checked={fields.hide}
-              onChange={(e) => setFields(s => ({...s, hide: e.target.checked}))}
-              label="Hide"
-              labelPlacement="end"
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              type="number"
-              label="Precision"
-              fullWidth
-              variant="outlined"
-              size="small"
-              required={fields.type === 'decimal'}
-              disabled={fields.type !== 'decimal'}
-              value={fields.precision}
-              onChange={(e) => setFields(s => ({...s, precision: e.target.value}))}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              select
-              label="Date Time Format"
-              fullWidth
-              variant="outlined"
-              size="small"
-              required={fields.type === 'date'}
-              disabled={fields.type !== 'date'}
-              value={fields.dateTimeFormat}
-              onChange={(e) => setFields(s => ({...s, dateTimeFormat: e.target.value}))}
-            >
-              <MenuItem value="date">Date</MenuItem>
-              <MenuItem value="datetime">Date & Time</MenuItem>
-            </TextField>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            type="text"
+            label="Role"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            value={fields.role}
+            disabled
+          />
         </Grid>
-      </Box>
+        <Grid item xs={12}>
+          <TextField
+            type="text"
+            label="Column Name"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            value={fields.name}
+            onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <TextField
+            select
+            label="Type"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            value={fields.type}
+            onChange={(e) => setFields(s => ({...s, type: e.target.value}))}
+          >
+            <MenuItem value="text">Text</MenuItem>
+            <MenuItem value="decimal">Decimal</MenuItem>
+            <MenuItem value="integer">Integer</MenuItem>
+            <MenuItem value="date">Date</MenuItem>
+          </TextField>
+        </Grid>
+        <Grid item xs={4}>
+          <FormControlLabel
+            control={<Checkbox />}
+            checked={fields.hide}
+            onChange={(e) => setFields(s => ({...s, hide: e.target.checked}))}
+            label="Hide"
+            labelPlacement="end"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            type="number"
+            label="Precision"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required={fields.type === 'decimal'}
+            disabled={fields.type !== 'decimal'}
+            value={fields.precision}
+            onChange={(e) => setFields(s => ({...s, precision: e.target.value}))}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            select
+            label="Date Time Format"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required={fields.type === 'date'}
+            disabled={fields.type !== 'date'}
+            value={fields.dateTimeFormat}
+            onChange={(e) => setFields(s => ({...s, dateTimeFormat: e.target.value}))}
+          >
+            <MenuItem value="date">Date</MenuItem>
+            <MenuItem value="datetime">Date & Time</MenuItem>
+          </TextField>
+        </Grid>
+      </Grid>
     </AddEditDialog>
   );
 }

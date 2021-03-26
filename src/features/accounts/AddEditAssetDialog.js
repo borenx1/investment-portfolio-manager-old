@@ -57,6 +57,7 @@ function AddEditAssetDialog(props) {
       onEnter={handleDialogOpen}
       onReset={handleReset}
       onSubmit={props.onSubmit}
+      contentMaxWidth="30rem"
     >
       <Grid container spacing={2}>
         <Grid item xs={12}>
