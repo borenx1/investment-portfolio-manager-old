@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { account } from '../../models/Account';
+import { account, tradingJournal, incomeJournal, expenseJournal } from '../../models/Account';
 
 export const accountsSlice = createSlice({
   name: 'transactions',
@@ -69,6 +69,34 @@ export const accountsSlice = createSlice({
         console.warn(`editAsset: 'asset' or 'index' not in payload`);
       }
     },
+    addJournal: (state, action) => {
+      // Payload: {account: int?, journal: Journal (except column settings)}
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      let newJournal;
+      switch (action.payload.journal.type) {
+        case 'trading':
+          newJournal = {...tradingJournal(), ...action.payload.journal};
+          break;
+        case 'income':
+          newJournal = {...incomeJournal(), ...action.payload.journal};
+          break;
+        case 'expense':
+          newJournal = {...expenseJournal(), ...action.payload.journal};
+          break;
+        default:
+          console.warn(`addJournal: Invalid journal type: ${action.payload.journal.type}`);
+          newJournal = {...tradingJournal(), ...action.payload.journal};
+      }
+      account.journals.push(newJournal);
+    },
+    editJournal: (state, action) => {
+      // Payload: {account: int?, journalIndex: int, journal: Journal (except column settings)}
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      let journal = account.journals[action.payload.journalIndex];
+      account.journals[action.payload.journalIndex] = {...journal, ...action.payload.journal};
+    },
     addJournalColumn: (state, action) => {
       // Payload: {account: int?, journalIndex: int, column: Column}
       // Updates the active account if no account provided
@@ -110,6 +138,8 @@ export const {
   changeAccountingCurrency,
   addAsset,
   editAsset,
+  addJournal,
+  editJournal,
   addJournalColumn,
   editJournalColumn,
   editJournalColumnOrder,

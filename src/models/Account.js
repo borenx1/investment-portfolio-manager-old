@@ -1,6 +1,4 @@
-const defaultColumnOrder = [
-  'date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'
-];
+const defaultColumnOrder = ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'];
 const defaultAccountSettings = accountSettings(
   asset('United States Dollar', 'USD', 2, 4, true, '$'),
 );
@@ -120,8 +118,8 @@ export function incomeColumns(dateTimeFormat = 'date') {
     journalColumn('Asset', 'text', false),
     journalColumn('Amount', 'decimal', false, 2),
     journalColumn('Quote', 'text', true),
-    journalColumn('Total', 'decimal', true, 2),
-    journalColumn('Price', 'decimal', true, 2),
+    journalColumn('Total', 'decimal', false, 2),
+    journalColumn('Price', 'decimal', false, 2),
     journalColumn('Fee (Base)', 'decimal', true, 8),
     journalColumn('Fee', 'decimal', true, 2),
     journalColumn('Notes', 'text', false),
@@ -134,8 +132,8 @@ export function expenseColumns(dateTimeFormat = 'date') {
     journalColumn('Asset', 'text', false),
     journalColumn('Amount', 'decimal', false, 2),
     journalColumn('Quote', 'text', true),
-    journalColumn('Total', 'decimal', true, 2),
-    journalColumn('Price', 'decimal', true, 2),
+    journalColumn('Total', 'decimal', false, 2),
+    journalColumn('Price', 'decimal', false, 2),
     journalColumn('Fee (Base)', 'decimal', true, 8),
     journalColumn('Fee', 'decimal', true, 2),
     journalColumn('Notes', 'text', false),
@@ -164,8 +162,20 @@ export function journalColumn(name, type, hide = false, precision = 2, dateTimeF
  * @param {String[]} columnOrder The shown order of the columns.
  * @returns An object with the given members.
  */
-export function journal(name, type = 'trading', transactions = [], columns = {}, columnOrder = []) {
+export function journal(name, type = 'trading', transactions = [], columns = {}, columnOrder = defaultColumnOrder) {
   return {name, type, transactions, columns, columnOrder};
+}
+
+export function tradingJournal(name, transactions = [], columnOrder = defaultColumnOrder) {
+  return journal(name, 'trading', transactions, tradingColumns(), columnOrder);
+}
+
+export function incomeJournal(name, transactions = [], columnOrder = defaultColumnOrder) {
+  return journal(name, 'income', transactions, incomeColumns(), columnOrder);
+}
+
+export function expenseJournal(name, transactions = [], columnOrder = defaultColumnOrder) {
+  return journal(name, 'expense', transactions, expenseColumns(), columnOrder);
 }
 
 /**

@@ -16,6 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import AddEditJournalDialog from './AddEditJournalDialog';
 import AddEditJournalColumnDialog from './AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from './EditJournalColumnOrderDialog';
 import SettingsSection from '../../components/SettingsSection';
@@ -66,23 +67,28 @@ const useJournalRowStyles = makeStyles(theme => ({
  * Props:
  * - journal: The journal object of the row.
  * - index: The index of the journal in the account.
- * - onEditJournal: Callback when requested to edit the Journal.
  * - onAddColumn: Callback when requested to add a new column.
  * - onEditColumn: Callback when requested to edit a column. Signature is (role).
  * - onEditColumnOrder: Callback when requested to edit the column order.
+ * - onClick: Callback when the row is clicked.
  */
 function JournalRow(props) {
   const classes = useJournalRowStyles();
-  const { journal, index, onEditJournal, onAddColumn, onEditColumn, onEditColumnOrder } = props;
+  const { journal, index, onAddColumn, onEditColumn, onEditColumnOrder, onClick } = props;
   const [open, setOpen] = useState(false);
+
+  const expandRow = (e) => {
+    setOpen(s => !s);
+    e.stopPropagation();
+  };
 
   return (
     <React.Fragment>
-      <TableRow hover className={classes.mainRow}>
+      <TableRow hover onClick={onClick} className={classes.mainRow}>
         <TableCell>{journal.name}</TableCell>
         <TableCell align="center">{journal.type}</TableCell>
         <TableCell align="center">
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+          <IconButton aria-label="expand row" size="small" onClick={expandRow}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
@@ -160,6 +166,7 @@ const useStyles = makeStyles(theme => ({
  */
 function AccountJournalsSettings(props) {
   const classes = useStyles();
+  const [addEditJournalDialogOpen, setAddEditJournalDialogOpen] = useState(false);
   const [addEditJournalColumnDialogOpen, setAddEditJournalColumnDialogOpen] = useState(false);
   const [editJournalColumnOrderDialogOpen, setEditJournalColumnOrderDialogOpen] = useState(false);
   // Index of the Journal to edit when editing a journal setting. Set to -1 to add new journal.
@@ -169,6 +176,16 @@ function AccountJournalsSettings(props) {
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
   const journals = account.journals;
+
+  const openAddJournalDialog = () => {
+    setSelectedJournal(-1);
+    setAddEditJournalDialogOpen(true);
+  };
+
+  const openEditJournalDialog = (index) => {
+    setSelectedJournal(index);
+    setAddEditJournalDialogOpen(true);
+  };
 
   const openAddColumnDialog = (index) => {
     setSelectedJournal(index);
@@ -190,7 +207,12 @@ function AccountJournalsSettings(props) {
   return (
     <React.Fragment>
       <SettingsSection>
-        <Typography variant="h6" gutterBottom>Journals</Typography>
+        <IconButtonHeading
+          variant="h6"
+          title={'Journals'}
+          icon={<AddIcon fontSize="small" />}
+          onClick={openAddJournalDialog}
+        />
         <TableContainer>
           <Table>
             <TableHead>
@@ -205,6 +227,7 @@ function AccountJournalsSettings(props) {
                 <JournalRow
                   journal={j}
                   index={i}
+                  onClick={() => openEditJournalDialog(i)}
                   onAddColumn={() => openAddColumnDialog(i)}
                   onEditColumn={role => openEditColumnDialog(i, role)}
                   onEditColumnOrder={() => openEditColumnOrderDialog(i)}
@@ -215,6 +238,11 @@ function AccountJournalsSettings(props) {
           </Table>
         </TableContainer>
       </SettingsSection>
+      <AddEditJournalDialog
+        open={addEditJournalDialogOpen}
+        onDialogClose={() => setAddEditJournalDialogOpen(false)}
+        journalIndex={selectedJournal}
+      />
       <AddEditJournalColumnDialog
         open={addEditJournalColumnDialogOpen}
         onDialogClose={() => setAddEditJournalColumnDialogOpen(false)}
