@@ -1,3 +1,6 @@
+const defaultColumnOrder = [
+  'date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'
+];
 const defaultAccountSettings = accountSettings(
   asset('United States Dollar', 'USD', 2, 4, true, '$'),
 );
@@ -13,14 +16,14 @@ const defaultJournals = [
       transaction('02/01/2021', 'BTC', 0.5, 'USD', 25000, 0, 10, 'Second transaction'),
     ],
     tradingColumns(),
-    ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'],
+    defaultColumnOrder,
   ),
   journal(
     'Misc fees',
     'expense',
     [],
     expenseColumns(),
-    ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'],
+    defaultColumnOrder,
   ),
 ];
 
