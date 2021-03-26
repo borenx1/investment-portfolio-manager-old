@@ -1,9 +1,9 @@
 const defaultColumnOrder = ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'];
 const defaultAccountSettings = accountSettings(
-  asset('United States Dollar', 'USD', 2, 4, true, '$'),
+  asset('USD', 'United States Dollar', 2, 4, true, '$'),
 );
 const defaultAssets = [
-  asset('Bitcoin', 'BTC', 8, 2, true, '₿'),
+  asset('BTC', 'Bitcoin', 8, 2, true, '₿'),
 ];
 const defaultJournals = [
   journal(
@@ -30,22 +30,22 @@ const defaultJournals = [
  * @param {Object} accountingCurrency The accounting currency of the account.
  * @returns An object with the given members.
  */
-export function accountSettings(accountingCurrency = asset('United States Dollar', 'USD', '$', 2, 4)) {
+export function accountSettings(accountingCurrency = asset('USD', 'United States Dollar', '$', 2, 4)) {
   return {accountingCurrency};
 }
 
 /**
  * Asset settings.
+ * @param {String} ticker Ticker of the asset, e.g. BTC. This is the unique identifier of an asset.
  * @param {String} name Name of the asset, e.g. Bitcoin.
- * @param {String} ticker Ticker of the asset, e.g. BTC.
  * @param {Number} precision The precision used to record amounts.
  * @param {Number} pricePrecision The default precision used to show prices.
  * @param {Boolean} isCurrency true if the asset is a currency.
  * @param {String} symbol Symbol of the asset, e.g. ₿.
  * @returns An object with the given members.
  */
-export function asset(name, ticker, precision = 2, pricePrecision = 2, isCurrency = false, symbol = '') {
-  return {name, ticker, precision, pricePrecision, isCurrency, symbol};
+export function asset(ticker, name, precision = 2, pricePrecision = 2, isCurrency = false, symbol = '') {
+  return {ticker, name, precision, pricePrecision, isCurrency, symbol};
 }
 
 /**
