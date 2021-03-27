@@ -1,11 +1,24 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-const useStyles = makeStyles(theme => ({
+interface Props {
+  objectName?: string;
+  edit?: boolean;
+  open: boolean;
+  onClose?: React.MouseEventHandler<HTMLButtonElement>;
+  onReset?: React.MouseEventHandler<HTMLButtonElement>;
+  onSubmit?: React.MouseEventHandler<HTMLButtonElement>;
+  onEnter?: (node: HTMLElement, isAppearing: boolean) => void;
+  dividers?: boolean;
+  children?: React.ReactNode;
+  contentMaxWidth?: string;
+}
+
+const useStyles = makeStyles<Theme, Props>(theme => ({
   content: props => ({
     maxWidth: props.contentMaxWidth,
   }),
@@ -25,12 +38,12 @@ const useStyles = makeStyles(theme => ({
  * - dividers - Display the DialogContent dividers if true.
  * - contentMaxWidth - The maximum width of the dialog content.
  */
-function AddEditDialog(props) {
+function AddEditDialog({objectName = 'Item', ...props}: Props) {
   const classes = useStyles(props);
   return (
     <Dialog open={props.open} onClose={props.onClose} onEnter={props.onEnter}>
-      <DialogTitle>{ `${props.edit ? 'Edit' : 'Add'} ${props.objectName || 'Item'}` }</DialogTitle>
-      <DialogContent dividers={Boolean(props.dividers)} className={classes.content}>
+      <DialogTitle>{ `${props.edit ? 'Edit' : 'Add'} ${objectName}` }</DialogTitle>
+      <DialogContent dividers={props.dividers} className={classes.content}>
         { props.children }
       </DialogContent>
       <DialogActions>
