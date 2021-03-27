@@ -7,11 +7,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import AddEditAssetDialog from './AddEditAssetDialog';
-import { addAsset, editAsset, selectActiveAccount } from './accountsSlice';
+import { addAsset, editAsset, deleteAsset, selectActiveAccount } from './accountsSlice';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,6 +21,9 @@ const useStyles = makeStyles(theme => ({
   },
   tableRow: {
     cursor: 'pointer',
+  },
+  deleteButton: {
+    color: theme.palette.error.main,
   },
 }));
 
@@ -60,6 +65,11 @@ function AccountAssetsSettings(props) {
     setAddEditAssetDialogOpen(false);
   };
 
+  const handleDeleteAsset = (e, index) => {
+    dispatch(deleteAsset({index: index}));
+    e.stopPropagation();
+  };
+
   return (
     <React.Fragment>
       <SettingsSection>
@@ -80,6 +90,7 @@ function AccountAssetsSettings(props) {
                 <TableCell align="center">Price Precision</TableCell>
                 <TableCell align="center">Currency</TableCell>
                 <TableCell align="center">Symbol</TableCell>
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -91,6 +102,15 @@ function AccountAssetsSettings(props) {
                   <TableCell align="center">{ a.pricePrecision }</TableCell>
                   <TableCell align="center">{ a.isCurrency ? 'Yes' : 'No' }</TableCell>
                   <TableCell align="center">{ a.symbol }</TableCell>
+                  <TableCell align="center" size="small">
+                    <IconButton
+                      onClick={e => handleDeleteAsset(e, i)}
+                      className={classes.deleteButton}
+                      aria-label="Delete asset"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>

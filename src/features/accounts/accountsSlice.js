@@ -69,6 +69,11 @@ export const accountsSlice = createSlice({
         console.warn(`editAsset: 'asset' or 'index' not in payload`);
       }
     },
+    deleteAsset: (state, action) => {
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      account.assets.splice(action.payload.index, 1);
+    },
     addJournal: (state, action) => {
       // Payload: {account: int?, journal: Journal (except column settings)}
       // Updates the active account if no account provided
@@ -138,6 +143,7 @@ export const {
   changeAccountingCurrency,
   addAsset,
   editAsset,
+  deleteAsset,
   addJournal,
   editJournal,
   addJournalColumn,
