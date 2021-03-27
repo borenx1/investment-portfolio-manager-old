@@ -28,7 +28,8 @@ npm start
 - HTML 5
 - CSS 3
 - JavaScript ES6
-- Node.js
+- [Node.js](https://nodejs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
 - [React](https://reactjs.org/)
 - [Redux](https://redux.js.org/), [React-Redux](https://react-redux.js.org/)
 - [React Router](https://reactrouter.com/)
