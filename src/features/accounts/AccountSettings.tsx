@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
@@ -13,11 +13,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function AccountSettings(props) {
+function AccountSettings() {
   const classes = useStyles();
 
   return (
-    <Fragment>
+    <React.Fragment>
       <Container className={classes.root}>
         <Box my={2}>
           <Typography variant="h4">Account Settings</Typography>
@@ -32,7 +32,7 @@ function AccountSettings(props) {
           <AccountJournalsSettings />
         </Box>
       </Container>
-    </Fragment>
+    </React.Fragment>
   );
 }
 

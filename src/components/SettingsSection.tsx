@@ -2,6 +2,11 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
+interface Props {
+  className?: string;
+  children?: React.ReactNode;
+}
+
 const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(2),
@@ -14,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 /**
  * React component. A visual wrapper for a settings section, put contents as children.
  */
-function SettingsSection(props) {
+function SettingsSection(props: Props) {
   const classes = useStyles();
 
   return (
