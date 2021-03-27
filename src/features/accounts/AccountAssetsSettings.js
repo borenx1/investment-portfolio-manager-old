@@ -7,11 +7,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
+import DeleteButton from '../../components/DeleteButton';
 import AddEditAssetDialog from './AddEditAssetDialog';
 import { addAsset, editAsset, deleteAsset, selectActiveAccount } from './accountsSlice';
 
@@ -21,9 +20,6 @@ const useStyles = makeStyles(theme => ({
   },
   tableRow: {
     cursor: 'pointer',
-  },
-  deleteButton: {
-    color: theme.palette.error.main,
   },
 }));
 
@@ -103,13 +99,7 @@ function AccountAssetsSettings(props) {
                   <TableCell align="center">{ a.isCurrency ? 'Yes' : 'No' }</TableCell>
                   <TableCell align="center">{ a.symbol }</TableCell>
                   <TableCell align="center" size="small">
-                    <IconButton
-                      onClick={e => handleDeleteAsset(e, i)}
-                      className={classes.deleteButton}
-                      aria-label="Delete asset"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    <DeleteButton onClick={e => handleDeleteAsset(e, i)} />
                   </TableCell>
                 </TableRow>
               )}

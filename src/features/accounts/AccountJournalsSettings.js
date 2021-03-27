@@ -21,7 +21,8 @@ import AddEditJournalColumnDialog from './AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from './EditJournalColumnOrderDialog';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
-import { selectActiveAccount } from './accountsSlice';
+import DeleteButton from '../../components/DeleteButton';
+import { deleteJournal, deleteJournalColumn, selectActiveAccount } from './accountsSlice';
 
 const useJournalColumnRowStyles = makeStyles(theme => ({
   root: {
@@ -31,15 +32,30 @@ const useJournalColumnRowStyles = makeStyles(theme => ({
 
 function JournalColumnRow(props) {
   const classes = useJournalColumnRowStyles();
-  const { role, journalColumn, onClick } = props;
+  const { role, journalIndex, journalColumn, onClick } = props;
+  const dispatch = useDispatch();
+
+  const handleDeleteColumn = e => {
+    dispatch(deleteJournalColumn({journalIndex: journalIndex, role: role}));
+    e.stopPropagation();
+  };
+
   return (
     <TableRow hover onClick={onClick} className={classes.root}>
       <TableCell>{ role }</TableCell>
       <TableCell>{ journalColumn.name }</TableCell>
       <TableCell>{ journalColumn.type }</TableCell>
-      <TableCell>{ journalColumn.type === 'decimal' && journalColumn.precision }</TableCell>
-      <TableCell>{ journalColumn.type === 'date' && journalColumn.dateTimeFormat }</TableCell>
-      <TableCell>{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
+      <TableCell align="center">{ journalColumn.type === 'decimal' && journalColumn.precision }</TableCell>
+      <TableCell align="center">{ journalColumn.type === 'date' && journalColumn.dateTimeFormat }</TableCell>
+      <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
+      <TableCell align="center">
+        <DeleteButton
+          buttonSize="small"
+          iconSize="small"
+          disabled={role.slice(0, 5) !== 'extra'}
+          onClick={handleDeleteColumn}
+        />
+      </TableCell>
     </TableRow>
   );
 }
@@ -76,25 +92,34 @@ function JournalRow(props) {
   const classes = useJournalRowStyles();
   const { journal, index, onAddColumn, onEditColumn, onEditColumnOrder, onClick } = props;
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
-  const expandRow = (e) => {
+  const expandRow = e => {
     setOpen(s => !s);
     e.stopPropagation();
   };
+
+  const handleDeleteJournal = e => {
+    dispatch(deleteJournal({index: index}));
+    e.stopPropagation();
+  }
 
   return (
     <React.Fragment>
       <TableRow hover onClick={onClick} className={classes.mainRow}>
         <TableCell>{journal.name}</TableCell>
         <TableCell align="center">{journal.type}</TableCell>
-        <TableCell align="center">
-          <IconButton aria-label="expand row" size="small" onClick={expandRow}>
+        <TableCell align="center" size="small">
+          <IconButton aria-label="Expand row" onClick={expandRow}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
+        <TableCell align="center" size="small">
+          <DeleteButton onClick={handleDeleteJournal} />
+        </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={3} className={classes.collapsibleCell}>
+        <TableCell colSpan={4} className={classes.collapsibleCell}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <IconButtonHeading
@@ -109,9 +134,10 @@ function JournalRow(props) {
                     <TableCell>Role</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Type</TableCell>
-                    <TableCell>Precision</TableCell>
-                    <TableCell>Date Format</TableCell>
-                    <TableCell>Hide</TableCell>
+                    <TableCell align="center">Precision</TableCell>
+                    <TableCell align="center">Date Format</TableCell>
+                    <TableCell align="center">Hide</TableCell>
+                    <TableCell align="center"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -119,6 +145,7 @@ function JournalRow(props) {
                   {Object.entries(journal.columns).map(pair =>
                     pair[0] !== 'extra' && <JournalColumnRow
                       role={pair[0]}
+                      journalIndex={index}
                       journalColumn={pair[1]}
                       onClick={() => onEditColumn(pair[0])}
                       key={pair[0]}
@@ -127,6 +154,7 @@ function JournalRow(props) {
                   {journal.columns.extra.map((col, i) =>
                     <JournalColumnRow
                       role={`extra-${i}`}
+                      journalIndex={index}
                       journalColumn={col}
                       onClick={() => onEditColumn(`extra-${i}`)}
                       key={i}
@@ -220,6 +248,7 @@ function AccountJournalsSettings(props) {
                 <TableCell>Name</TableCell>
                 <TableCell align="center">Type</TableCell>
                 <TableCell align="center">Columns</TableCell>
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

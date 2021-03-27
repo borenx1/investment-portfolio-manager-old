@@ -102,6 +102,11 @@ export const accountsSlice = createSlice({
       let journal = account.journals[action.payload.journalIndex];
       account.journals[action.payload.journalIndex] = {...journal, ...action.payload.journal};
     },
+    deleteJournal: (state, action) => {
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      account.journals.splice(action.payload.index, 1);
+    },
     addJournalColumn: (state, action) => {
       // Payload: {account: int?, journalIndex: int, column: Column}
       // Updates the active account if no account provided
@@ -110,8 +115,8 @@ export const accountsSlice = createSlice({
     },
     editJournalColumn: (state, action) => {
       // Payload: {account: int?, journalIndex: int, columnRole: String, column: Column}
-      // Updates the active account if no account provided
       const { journalIndex, columnRole, column } = action.payload;
+      // Updates the active account if no account provided
       const account = state.accounts[action.payload.account || state.activeAccount];
       if (columnRole.slice(0, 5) === 'extra') {
         // It is an extra column
@@ -120,6 +125,26 @@ export const accountsSlice = createSlice({
         // Core column
         account.journals[journalIndex].columns[columnRole] = column;
       }
+    },
+    deleteJournalColumn: (state, action) => {
+      // Payload: {account: int?, journalIndex: int, role: string}
+      const { journalIndex, role } = action.payload;
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      // Determine if deleting a core or extra column
+      if (role.slice(0, 5) === 'extra') {
+        const columnIndex = parseInt(role.split('-')[1]);
+        account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
+      } else {
+        delete account.journals[journalIndex].columns[role];
+      }
+    },
+    // Deletes an extra journal column
+    deleteJournalExtraColumn: (state, action) => {
+      const { journalIndex, columnIndex } = action.payload;
+      // Updates the active account if no account provided
+      const account = state.accounts[action.payload.account || state.activeAccount];
+      account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
     },
     editJournalColumnOrder: (state, action) => {
       // Payload: {account: int?, journalIndex: int, columnOrder: String[]}
@@ -146,8 +171,11 @@ export const {
   deleteAsset,
   addJournal,
   editJournal,
+  deleteJournal,
   addJournalColumn,
   editJournalColumn,
+  deleteJournalColumn,
+  deleteJournalExtraColumn,
   editJournalColumnOrder,
 } = accountsSlice.actions;
 
