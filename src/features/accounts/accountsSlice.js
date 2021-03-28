@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { account, tradingJournal, incomeJournal, expenseJournal } from '../../models/Account';
+import { Account, createDefaultAccount, createTradingJournal, createIncomeJournal, createExpenseJournal } from '../../models/Account';
 
 export const accountsSlice = createSlice({
   name: 'transactions',
@@ -26,7 +26,7 @@ export const accountsSlice = createSlice({
     },
     addDefaultAccount: (state, action) => {
       const name = action.payload ? String(action.payload) : 'New Account';
-      state.accounts.push(account(name));
+      state.accounts.push(createDefaultAccount(name));
     },
     addTransaction: (state, action) => {
       // Takes payload: {account: activeAccountIndex, transaction: Tx, journal: journalIndex}
@@ -81,17 +81,17 @@ export const accountsSlice = createSlice({
       let newJournal;
       switch (action.payload.journal.type) {
         case 'trading':
-          newJournal = {...tradingJournal(), ...action.payload.journal};
+          newJournal = {...createTradingJournal(), ...action.payload.journal};
           break;
         case 'income':
-          newJournal = {...incomeJournal(), ...action.payload.journal};
+          newJournal = {...createIncomeJournal(), ...action.payload.journal};
           break;
         case 'expense':
-          newJournal = {...expenseJournal(), ...action.payload.journal};
+          newJournal = {...createExpenseJournal(), ...action.payload.journal};
           break;
         default:
           console.warn(`addJournal: Invalid journal type: ${action.payload.journal.type}`);
-          newJournal = {...tradingJournal(), ...action.payload.journal};
+          newJournal = {...createTradingJournal(), ...action.payload.journal};
       }
       account.journals.push(newJournal);
     },

@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, selectActiveAccount } from '../accounts/accountsSlice';
-import { transaction } from '../../models/Account';
+import { Transaction } from '../../models/Account';
 
 /**
  * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss" format.
@@ -59,16 +59,16 @@ function AddEditTransactionDialog(props) {
     // TODO input validation
     dispatch(addTransaction({
       journal: props.index,
-      transaction: transaction(
-        fields.date,
-        fields.base,
-        fields.baseAmount,
-        fields.quote,
-        fields.quoteAmount,
-        0,
-        fields.fee,
-        fields.notes,
-      ),
+      transaction: {
+        date: fields.date,
+        base: fields.base,
+        baseAmount: fields.baseAmount,
+        quote: fields.quote,
+        quoteAmount: fields.quoteAmount,
+        feeBase: 0,
+        feeQuote: fields.fee,
+        notes: fields.notes,
+      },
     }));
     props.onDialogClose();
   };
