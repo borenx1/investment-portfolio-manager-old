@@ -14,9 +14,78 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { Transaction } from '../../models/Account';
+import { Journal, Transaction } from '../../models/Account';
 
-interface JournalProps {
+interface JournalHeadersProps {
+  readonly journal: Journal,
+}
+
+const useJournalHeadersStyles = makeStyles((theme) => ({
+  tableCell: {
+    borderBottom: '1px solid rgba(224, 224, 224, 1)',
+    borderRight: '1px solid rgba(224, 224, 224, 1)',
+    '&:last-child': {
+      borderRight: 'none',
+    },
+  },
+}));
+
+function JournalHeaders(props: JournalHeadersProps) {
+  const classes = useJournalHeadersStyles();
+
+  return (
+    <TableRow>
+      {props.journal.columnOrder.map((role) => {
+        const column = typeof role === 'string' ? props.journal.columns[role] : props.journal.columns.extra[role];
+        return !column.hide && <TableCell className={classes.tableCell} key={role}>{column.name}</TableCell>;
+      })}
+    </TableRow>
+  );
+}
+
+interface JournalRowProps {
+  readonly journal: Journal,
+  readonly transaction: Transaction,
+}
+
+const useJournalRowStyles = makeStyles((theme) => ({
+  tableCell: {
+    borderBottom: '1px solid rgba(224, 224, 224, 1)',
+    borderRight: '1px solid rgba(224, 224, 224, 1)',
+    '&:last-child': {
+      borderRight: 'none',
+    },
+  },
+}));
+
+function JournalRow(props: JournalRowProps) {
+  const { journal, transaction } = props;
+  const classes = useJournalRowStyles();
+
+  return (
+    <TableRow hover>
+      {journal.columnOrder.map((role) => {
+        const column = typeof role === 'string' ? journal.columns[role] : journal.columns.extra[role];
+        let data;
+        if (role === 'price') {
+          data = transaction.quoteAmount / transaction.baseAmount;
+        } else if (typeof role === 'string') {
+          data = props.transaction[role];
+        } else {
+          data = props.transaction.extra[column.name];
+        }
+        return !column.hide && <TableCell
+          className={classes.tableCell}
+          key={role}
+        >
+          { data }
+        </TableCell>;
+      })}
+    </TableRow>
+  );
+}
+
+interface JournalSheetProps {
   readonly journal: number,
 }
 
@@ -30,16 +99,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
-  tableCell: {
-    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-    borderRight: '1px solid rgba(224, 224, 224, 1)',
-    '&:last-child': {
-      borderRight: 'none',
-    },
-  },
 }));
 
-function Journal(props: JournalProps) {
+function JournalSheet(props: JournalSheetProps) {
   const classes = useStyles();
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -64,27 +126,11 @@ function Journal(props: JournalProps) {
           stickyHeader
         >
           <TableHead>
-            <TableRow>
-              <TableCell className={classes.tableCell}>{ journal.columns.date.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.base.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.quote.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.baseAmount.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.quoteAmount.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.price.name }</TableCell>
-              <TableCell className={classes.tableCell}>{ journal.columns.notes.name }</TableCell>
-            </TableRow>
+            <JournalHeaders journal={journal} />
           </TableHead>
           <TableBody>
             {journal.transactions.map((tx, index) => (
-              <TableRow hover key={index}>
-                <TableCell align="right" className={classes.tableCell}>{tx.date}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>{tx.base}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>{tx.quote}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>{tx.baseAmount}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>{tx.quoteAmount}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>{tx.quoteAmount / tx.baseAmount}</TableCell>
-                <TableCell className={classes.tableCell}>{tx.notes}</TableCell>
-              </TableRow>
+              <JournalRow journal={journal} transaction={tx} key={index} />
             ))}
           </TableBody>
         </Table>
@@ -102,4 +148,4 @@ function Journal(props: JournalProps) {
   );
 }
   
-export default Journal;
+export default JournalSheet;

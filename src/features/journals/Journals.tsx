@@ -4,7 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import AddIcon from '@material-ui/icons/Add';
-import Journal from './Journal';
+import JournalSheet from './JournalSheet';
 import AddTransactionTypeForm from './AddTransactionTypeForm';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
 
@@ -24,7 +24,7 @@ function Journals() {
       </AppBar>
       {/* TODO update key */}
       {journals.map((journal, index) =>
-        (activeTab === index) && <Journal journal={index} key={index} />
+        (activeTab === index) && <JournalSheet journal={index} key={index} />
       )}
       <AddTransactionTypeForm
         index={journals.length}

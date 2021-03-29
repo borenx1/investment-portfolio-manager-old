@@ -49,7 +49,7 @@ export interface Journal {
   name: string;
   type: JournalType;
   columns: JournalColumnSet;
-  columnOrder: string[];
+  columnOrder: JournalColumnRole[];
   transactions: Transaction[];
 }
 /**
@@ -78,6 +78,11 @@ export interface JournalColumnSet {
   extra: ExtraColumn[];
 }
 /**
+ * Used to select Columns from JournalColumnSet. A string value is for the key of a core column,
+ * a number value is the index of an extra column.
+ */
+export type JournalColumnRole = Exclude<keyof JournalColumnSet, 'extra'> | number;
+/**
  * Journal column settings.
  * @param name Name of the column.
  * @param hide Hide the column if true.
@@ -100,6 +105,7 @@ export type DecimalColumnType = 'amount' | 'price';
  */
 export interface DecimalColumn extends JournalColumn {
   precision: {[key: string]: number};
+  // precision: Record<string, number>;
   type?: DecimalColumnType;
 }
 export interface AssetColumn extends JournalColumn {}
@@ -132,7 +138,7 @@ export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanCo
   extra: {[key: string]: (string | number | boolean)};
 }
 
-const defaultColumnOrder = ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'];
+const defaultColumnOrder: JournalColumnRole[] = ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'];
 const defaultAccountSettings: AccountSettings = {
   accountingCurrency: {
     ticker: 'USD',
@@ -230,7 +236,7 @@ export function createDefaultJournal(name: string, type: JournalType): Journal {
   }
 }
 
-export function createTradingJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createTradingJournal(name: string, columnOrder: JournalColumnRole[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'trading',
@@ -240,7 +246,7 @@ export function createTradingJournal(name: string, columnOrder: string[] = defau
   };
 }
 
-export function createIncomeJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createIncomeJournal(name: string, columnOrder: JournalColumnRole[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'income',
@@ -250,7 +256,7 @@ export function createIncomeJournal(name: string, columnOrder: string[] = defaul
   };
 }
 
-export function createExpenseJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createExpenseJournal(name: string, columnOrder: JournalColumnRole[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'expense',
