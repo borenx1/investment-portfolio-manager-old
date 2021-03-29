@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,8 +14,12 @@ import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle';
 import { selectAccounts, selectActiveAccountIndex, selectActiveAccountName, switchAccount } from '../accounts/accountsSlice';
 import { drawerWidth } from '../../constants';
 
+interface Props {
+  readonly drawerOpen: boolean;
+  readonly onMenuClick?: React.MouseEventHandler<HTMLButtonElement>;
+}
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme, Props>(theme => ({
   root: {
 
   },
@@ -40,19 +44,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function TopAppBar(props) {
+function TopAppBar(props: Props) {
   const classes = useStyles(props);
   // Controls the showing of the "change account" menu
-  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
   const dispatch = useDispatch();
   const accounts = useSelector(selectAccounts);
   const activeAccountIndex = useSelector(selectActiveAccountIndex);
   const activeAccountName = useSelector(selectActiveAccountName);
 
-  const handleSwitchAccount = (index) => (e) => {
+  const handleSwitchAccount = (index: number) => {
     dispatch(switchAccount(index));
     setMenuAnchor(null);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -88,7 +92,7 @@ function TopAppBar(props) {
         onClose={() => setMenuAnchor(null)}
       >
         {accounts.map((a, index) => (
-          <MenuItem onClick={handleSwitchAccount(index)} selected={activeAccountIndex} key={index}>
+          <MenuItem onClick={() => handleSwitchAccount(index)} selected={activeAccountIndex === index} key={index}>
             { a.name }
           </MenuItem>
         ))}
