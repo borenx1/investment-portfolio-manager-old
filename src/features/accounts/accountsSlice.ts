@@ -99,15 +99,14 @@ export const accountsSlice = createSlice({
       const account = state.accounts[accountIndex ?? state.activeAccount];
       account.journals.splice(index, 1);
     },
-    addJournalColumn: (state, action) => {
-      // Payload: {account: int?, journalIndex: int, column: Column}
-      const { journalIndex, column } = action.payload;
+    addJournalColumn: (state, action: PayloadAction<{account?: number, index: number, column: ExtraColumn}>) => {
+      const { account: accountIndex, index, column } = action.payload;
       // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      account.journals[journalIndex].columns.extra.push(column);
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.journals[index].columns.extra.push(column);
       // Add column to the end of column order
-      const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
-      account.journals[journalIndex].columnOrder.push(`extra-${extraColumnsLength - 1}`);
+      const extraColumnsLength = account.journals[index].columns.extra.length;
+      account.journals[index].columnOrder.push(`extra-${extraColumnsLength - 1}`);
     },
     editJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: keyof JournalColumnSet, column: JournalColumn}>) => {
       // Payload: {account: int?, journalIndex: int, columnRole: String, column: Column}
@@ -123,55 +122,28 @@ export const accountsSlice = createSlice({
         account.journals[index].columns[role] = column as any;
       }
     },
-    deleteJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: keyof JournalColumnSet}>) => {
-      // Payload: {account: int?, journalIndex: int, role: string}
-      const { account: accountIndex, index, role } = action.payload;
-      // Updates the active account if no account provided
+    deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {
+      const { account: accountIndex, journalIndex, columnIndex } = action.payload;
       const account = state.accounts[accountIndex ?? state.activeAccount];
-      // Determine if deleting a core or extra column
-      if (role.slice(0, 5) === 'extra') {
-        const columnIndex = parseInt(role.split('-')[1]);
-        account.journals[index].columns.extra.splice(columnIndex, 1);
-        // Delete column from column order
-        const extraColumnsLength = account.journals[index].columns.extra.length;
-        const columnOrderIndex = account.journals[index].columnOrder.indexOf(`extra-${extraColumnsLength}`);
-        if (columnOrderIndex !== -1) {
-          account.journals[index].columnOrder.splice(columnOrderIndex, 1);
-        }
-      } else {
-        // TODO: do better
-        delete account.journals[index].columns[role];
-        // Delete column from column order
-        const columnOrderIndex = account.journals[index].columnOrder.indexOf(role);
-        if (columnOrderIndex !== -1) {
-          account.journals[index].columnOrder.splice(columnOrderIndex, 1);
-        }
-      }
-    },
-    // Deletes an extra journal column
-    deleteJournalExtraColumn: (state, action) => {
-      const { journalIndex, columnIndex } = action.payload;
-      // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
       account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
       // Delete column from column order
+      // TODO: redo this so that order is retained after role renaming
       const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
       const columnOrderIndex = account.journals[journalIndex].columnOrder.indexOf(`extra-${extraColumnsLength}`);
       if (columnOrderIndex !== -1) {
         account.journals[journalIndex].columnOrder.splice(columnOrderIndex, 1);
       }
     },
-    editJournalColumnOrder: (state, action) => {
-      // Payload: {account: int?, journalIndex: int, columnOrder: String[]}
-      if (action.payload && 'journalIndex' in action.payload && 'columnOrder' in action.payload) {
-        // Updates the active account if no account provided
-        const account = state.accounts[action.payload.account || state.activeAccount];
-        account.journals[action.payload.journalIndex].columnOrder = action.payload.columnOrder;
+    editJournalColumnOrder: (state, action: PayloadAction<{account?: number, index: number, columnOrder: string[]}>) => {
+      const { account: accountIndex, index, columnOrder } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      if (account.journals[index] !== undefined) {
+        account.journals[index].columnOrder = columnOrder;
       } else {
-        console.warn(`editJournalColumnOrder: 'journalIndex' or 'columnOrder' not in payload`);
+        console.warn(`editJournalColumnOrder: Invalid index ${index} for column order of length: ${account.journals.length}.`);
       }
     },
-  }
+  },
 });
 
 // Actions
@@ -190,7 +162,6 @@ export const {
   addJournalColumn,
   editJournalColumn,
   deleteJournalColumn,
-  deleteJournalExtraColumn,
   editJournalColumnOrder,
 } = accountsSlice.actions;
 

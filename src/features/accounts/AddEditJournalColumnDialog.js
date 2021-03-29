@@ -67,7 +67,7 @@ function AddEditJournalColumnDialog(props) {
     if (columnRole) {
       dispatch(editJournalColumn({journalIndex: journalIndex, columnRole: columnRole, column: column}));
     } else {
-      dispatch(addJournalColumn({journalIndex: journalIndex, column: column}));
+      dispatch(addJournalColumn({index: journalIndex, column: column}));
     }
     onDialogClose();
   };

@@ -36,7 +36,9 @@ function JournalColumnRow(props) {
   const dispatch = useDispatch();
 
   const handleDeleteColumn = e => {
-    dispatch(deleteJournalColumn({journalIndex: journalIndex, role: role}));
+    if (role.split('-')[0] === 'extra') {
+      dispatch(deleteJournalColumn({journalIndex: journalIndex, columnIndex: parseInt(role.split('-')[1])}));
+    }
     e.stopPropagation();
   };
 
