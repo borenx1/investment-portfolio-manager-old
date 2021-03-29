@@ -171,7 +171,7 @@ function JournalRow(props) {
                 />
                 <Box display="flex" flexWrap="wrap">
                   {journal.columnOrder.map(c =>
-                    <Chip label={c} className={classes.columnOrderChip} />
+                    <Chip label={c} className={classes.columnOrderChip} key={c} />
                   )}
                 </Box>
               </Box>
