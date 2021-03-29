@@ -66,13 +66,15 @@ function JournalRow(props: JournalRowProps) {
     <TableRow hover>
       {journal.columnOrder.map((role) => {
         const column = typeof role === 'string' ? journal.columns[role] : journal.columns.extra[role];
-        let data;
+        let data: string | number | boolean;
         if (role === 'price') {
           data = transaction.quoteAmount / transaction.baseAmount;
         } else if (typeof role === 'string') {
           data = props.transaction[role];
         } else {
           data = props.transaction.extra[column.name];
+          // Convert boolean data to readable values
+          if (typeof data === 'boolean') data = data ? 'Yes' : 'No';
         }
         return !column.hide && <TableCell
           className={classes.tableCell}
