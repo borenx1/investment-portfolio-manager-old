@@ -1,0 +1,37 @@
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import AddIcon from '@material-ui/icons/Add';
+import Journal from './Journal';
+import AddTransactionTypeForm from './AddTransactionTypeForm';
+import { selectActiveAccountJournals } from '../accounts/accountsSlice';
+
+function Journals() {
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const journals = useSelector(selectActiveAccountJournals);
+
+  return (
+    <React.Fragment>
+      <AppBar position="static">
+        <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} aria-label="Journals tab">
+          {journals.map((journal, index) =>
+            <Tab label={journal.name} key={index} aria-label={`${journal.name} tab`} />
+          )}
+          <Tab icon={<AddIcon />} />
+        </Tabs>
+      </AppBar>
+      {/* TODO update key */}
+      {journals.map((journal, index) =>
+        (activeTab === index) && <Journal journal={index} key={index} />
+      )}
+      <AddTransactionTypeForm
+        index={journals.length}
+        active={activeTab === journals.length}
+      />
+    </React.Fragment>
+  );
+}
+
+export default Journals;
