@@ -64,6 +64,8 @@ export const accountsSlice = createSlice({
       // Only edit if the index is valid
       if (account.assets[index] !== undefined) {
         account.assets[index] = asset;
+      } else {
+        console.warn(`editAsset: Invalid index ${index} of assets array of length ${account.assets.length}.`);
       }
     },
     deleteAsset: (state, action: PayloadAction<{account?: number, index: number}>) => {
@@ -82,17 +84,20 @@ export const accountsSlice = createSlice({
       const account = state.accounts[accountIndex ?? state.activeAccount];
       account.journals.push(createDefaultJournal(name, type));
     },
-    editJournal: (state, action) => {
-      // Payload: {account: int?, journalIndex: int, journal: Journal (except column settings)}
-      // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      let journal = account.journals[action.payload.journalIndex];
-      account.journals[action.payload.journalIndex] = {...journal, ...action.payload.journal};
+    editJournalSettings: (state, action: PayloadAction<{account?: number, index: number, name: string, type: JournalType}>) => {
+      const { account: accountIndex, index, name, type } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      if (account.journals[index] !== undefined) {
+        const journal = account.journals[index];
+        account.journals[index] = {...journal, name: name, type: type};
+      } else {
+        console.warn(`editJournalSettings: Invalid index ${index} of journals array of length ${account.journals.length}.`);
+      }
     },
-    deleteJournal: (state, action) => {
-      // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      account.journals.splice(action.payload.index, 1);
+    deleteJournal: (state, action: PayloadAction<{account?: number, index: number}>) => {
+      const { account: accountIndex, index } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.journals.splice(index, 1);
     },
     addJournalColumn: (state, action) => {
       // Payload: {account: int?, journalIndex: int, column: Column}
@@ -180,7 +185,7 @@ export const {
   editAsset,
   deleteAsset,
   addJournal,
-  editJournal,
+  editJournalSettings,
   deleteJournal,
   addJournalColumn,
   editJournalColumn,

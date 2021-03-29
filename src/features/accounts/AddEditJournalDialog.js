@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addJournal, editJournal, selectActiveAccountJournals } from './accountsSlice';
+import { addJournal, editJournalSettings, selectActiveAccountJournals } from './accountsSlice';
 
 /**
  * React component. Add or change journal column dialog.
@@ -46,7 +46,7 @@ function AddEditJournalDialog(props) {
 
   const handleSubmit = () => {
     if (journalIndex >= 0) {
-      dispatch(editJournal({journalIndex: journalIndex, journal: {...fields}}));
+      dispatch(editJournalSettings({index: journalIndex, name: fields.name, type: fields.type}));
     } else {
       dispatch(addJournal({journal: {...fields}}));
     }
