@@ -119,7 +119,7 @@ export const accountsSlice = createSlice({
         account.journals[index].columns[role] = column as any;
       } else {
         // It is an extra column
-        account.journals[index].columns.extra[role] = column;
+        account.journals[index].columns.extra[role] = column as any;
       }
     },
     deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {

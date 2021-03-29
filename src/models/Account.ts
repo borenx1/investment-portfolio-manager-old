@@ -28,6 +28,7 @@ export interface AccountSettings {
  * @param symbol Optional. Symbol of the asset, e.g. '₿'.
  */
 export interface Asset {
+  // TODO: Ticker only letters, numbers and period (.)
   ticker: string;
   name: string;
   precision: number;
@@ -68,12 +69,12 @@ export interface Journal {
 export interface JournalColumnSet {
   date: DateColumn;
   base: AssetColumn;
-  baseAmount: DecimalColumn;
+  baseAmount: BaseColumn;
   quote: AssetColumn;
-  quoteAmount: DecimalColumn;
-  price: DecimalColumn;
-  feeBase: DecimalColumn;
-  feeQuote: DecimalColumn;
+  quoteAmount: QuoteColumn;
+  price: PriceColumn;
+  feeBase: BaseColumn;
+  feeQuote: QuoteColumn;
   notes: TextColumn;
   extra: ExtraColumn[];
 }
@@ -90,26 +91,47 @@ export type JournalColumnRole = Exclude<keyof JournalColumnSet, 'extra'> | numbe
 export interface JournalColumn {
   name: string;
   hide: boolean;
+  type?: string;
 }
 export type DateTimeFormat = 'date' | 'datetime';
 export interface DateColumn extends JournalColumn {
+  type: 'date';
   format: DateTimeFormat;
 }
-export interface TextColumn extends JournalColumn {}
-export interface IntegerColumn extends JournalColumn {}
-export type DecimalColumnType = 'amount' | 'price';
+export interface TextColumn extends JournalColumn {
+  type: 'text';
+}
+export interface IntegerColumn extends JournalColumn {
+  type: 'integer';
+}
+export type DecimalColumnType = 'base' | 'quote' | 'price';
 /**
- * @param precision Optional. The precision shown of the column. Shows the default asset precision if not set.
- * @param type Optional. Used to set the default precision depending on if its an asset amount or price. No
+ * @param precision The precision shown of the column. Shows the default asset precision if not set.
+ * @param description Used to set the default precision depending on if its an asset amount or price. No
  * default precision used if not set.
  */
 export interface DecimalColumn extends JournalColumn {
+  type: 'decimal';
+  // Key can be an asset ticker, e.g. USD, or an asset pair, e.g. BTC/USD.
   precision: {[key: string]: number};
   // precision: Record<string, number>;
-  type?: DecimalColumnType;
+  description: DecimalColumnType;
 }
-export interface AssetColumn extends JournalColumn {}
-export interface BooleanColumn extends JournalColumn {}
+interface BaseColumn extends DecimalColumn {
+  description: 'base';
+}
+interface QuoteColumn extends DecimalColumn {
+  description: 'quote';
+}
+interface PriceColumn extends DecimalColumn {
+  description: 'price';
+}
+export interface AssetColumn extends JournalColumn {
+  type: 'asset';
+}
+export interface BooleanColumn extends JournalColumn {
+  type: 'boolean';
+}
 export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanColumn;
 /**
  * A transaction (trade, income or expense).\
@@ -182,45 +204,45 @@ const defaultJournals: Journal[] = [
 
 export function createTradingColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, hide: false},
-    base: {name: 'Asset', hide: false},
-    baseAmount: {name: 'Amount', type: 'amount', precision: {}, hide: false},
-    quote: {name: 'Quote', hide: true},
-    quoteAmount: {name: 'Total', type: 'amount', precision: {}, hide: false},
-    price: {name: 'Price', type: 'price', precision: {}, hide: false},
-    feeBase: {name: 'Fee (Base)', type: 'amount', precision: {}, hide: true},
-    feeQuote: {name: 'Fee', type: 'amount', precision: {}, hide: false},
-    notes: {name: 'Notes', hide: false},
+    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    base: {name: 'Asset', type: 'asset', hide: false},
+    baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
+    quote: {name: 'Quote', type: 'asset', hide: true},
+    quoteAmount: {name: 'Total', type: 'decimal', description: 'quote', precision: {}, hide: false},
+    price: {name: 'Price', type: 'decimal', description: 'price', precision: {}, hide: false},
+    feeBase: {name: 'Fee (Base)', type: 'decimal', description: 'base', precision: {}, hide: true},
+    feeQuote: {name: 'Fee', type: 'decimal', description: 'quote', precision: {}, hide: false},
+    notes: {name: 'Notes', type: 'text', hide: false},
     extra: [],
   };
 }
 
 export function createIncomeColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, hide: false},
-    base: {name: 'Asset', hide: false},
-    baseAmount: {name: 'Amount', type: 'amount', precision: {}, hide: false},
-    quote: {name: 'Quote', hide: true},
-    quoteAmount: {name: 'Total', type: 'amount', precision: {}, hide: false},
-    price: {name: 'Price', type: 'price', precision: {}, hide: false},
-    feeBase: {name: 'Fee (Base)', type: 'amount', precision: {}, hide: true},
-    feeQuote: {name: 'Fee', type: 'amount', precision: {}, hide: true},
-    notes: {name: 'Notes', hide: false},
+    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    base: {name: 'Asset', type: 'asset', hide: false},
+    baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
+    quote: {name: 'Quote', type: 'asset', hide: true},
+    quoteAmount: {name: 'Total', type: 'decimal', description: 'quote', precision: {}, hide: false},
+    price: {name: 'Price', type: 'decimal', description: 'price', precision: {}, hide: false},
+    feeBase: {name: 'Fee (Base)', type: 'decimal', description: 'base', precision: {}, hide: true},
+    feeQuote: {name: 'Fee', type: 'decimal', description: 'quote', precision: {}, hide: true},
+    notes: {name: 'Notes', type: 'text', hide: false},
     extra: [],
   };
 }
 
 export function createExpenseColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, hide: false},
-    base: {name: 'Asset', hide: false},
-    baseAmount: {name: 'Amount', type: 'amount', precision: {}, hide: false},
-    quote: {name: 'Quote', hide: true},
-    quoteAmount: {name: 'Total', type: 'amount', precision: {}, hide: false},
-    price: {name: 'Price', type: 'price', precision: {}, hide: false},
-    feeBase: {name: 'Fee (Base)', type: 'amount', precision: {}, hide: true},
-    feeQuote: {name: 'Fee', type: 'amount', precision: {}, hide: true},
-    notes: {name: 'Notes', hide: false},
+    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    base: {name: 'Asset', type: 'asset', hide: false},
+    baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
+    quote: {name: 'Quote', type: 'asset', hide: true},
+    quoteAmount: {name: 'Total', type: 'decimal', description: 'quote', precision: {}, hide: false},
+    price: {name: 'Price', type: 'decimal', description: 'price', precision: {}, hide: false},
+    feeBase: {name: 'Fee (Base)', type: 'decimal', description: 'base', precision: {}, hide: true},
+    feeQuote: {name: 'Fee', type: 'decimal', description: 'quote', precision: {}, hide: true},
+    notes: {name: 'Notes', type: 'text', hide: false},
     extra: [],
   };
 }
