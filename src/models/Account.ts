@@ -75,7 +75,7 @@ export interface JournalColumnSet {
   feeBase: DecimalColumn;
   feeQuote: DecimalColumn;
   notes: TextColumn;
-  extra: (TextColumn | IntegerColumn | DecimalColumn | BooleanColumn)[];
+  extra: ExtraColumn[];
 }
 /**
  * Journal column settings.
@@ -104,6 +104,7 @@ export interface DecimalColumn extends JournalColumn {
 }
 export interface AssetColumn extends JournalColumn {}
 export interface BooleanColumn extends JournalColumn {}
+export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanColumn;
 /**
  * A transaction (trade, income or expense).\
  * An income transaction has positive base and quote amounts.\
@@ -218,7 +219,7 @@ export function createExpenseColumns(dateTimeFormat: DateTimeFormat = 'date'): J
   };
 }
 
-export function createTradingJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createTradingJournal(name: string = 'Trading', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'trading',
@@ -228,7 +229,7 @@ export function createTradingJournal(name: string, columnOrder: string[] = defau
   };
 }
 
-export function createIncomeJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createIncomeJournal(name: string = 'Income', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'income',
@@ -238,7 +239,7 @@ export function createIncomeJournal(name: string, columnOrder: string[] = defaul
   };
 }
 
-export function createExpenseJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createExpenseJournal(name: string = 'Expenses', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'expense',

@@ -1,31 +1,42 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { Account, createDefaultAccount, createTradingJournal, createIncomeJournal, createExpenseJournal } from '../../models/Account';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../../app/store';
+import {
+  Account,
+  JournalColumnSet,
+  JournalColumn,
+  ExtraColumn,
+  createDefaultAccount,
+  createTradingJournal,
+  createIncomeJournal,
+  createExpenseJournal,
+} from '../../models/Account';
+
+interface State {
+  readonly accounts: Account[],
+  readonly activeAccount: number,
+}
+
+const initialState: State = {
+  accounts: [],
+  activeAccount: 0,
+};
 
 export const accountsSlice = createSlice({
   name: 'transactions',
-  initialState: {
-    accounts: [],       // Array of accounts
-    activeAccount: 0,   // Integer
-  },
+  initialState: initialState,
   reducers: {
     /**
-     * Change the active account (-1 for all accounts). Receives an index from the payload. Invalid values
-     * are evaluated as 0. Negative numbers are evaluated as -1 (all accounts).
+     * Change the active account (-1 for all accounts). Negative numbers are evaluated as -1 (all accounts).
      */
-    // TODO rename to switchAccount
-    changeAccount: (state, action) => {
-      const accountIndex = parseInt(action.payload);
-      state.activeAccount = accountIndex ? Math.max(accountIndex, -1) : 0;
+    switchAccount: (state, action: PayloadAction<number>) => {
+      const accountIndex = action.payload;
+      state.activeAccount = Math.max(accountIndex, -1);
     },
-    addAccount: (state, action) => {
-      if (action.payload) {
-        state.accounts.push(action.payload);
-      } else {
-        console.warn(`Attempted to add invalid account: ${action.payload}`);
-      }
+    addAccount: (state, action: PayloadAction<Account>) => {
+      state.accounts.push(action.payload);
     },
-    addDefaultAccount: (state, action) => {
-      const name = action.payload ? String(action.payload) : 'New Account';
+    addDefaultAccount: (state, action: PayloadAction<string>) => {
+      const name = action.payload || 'New Account';
       state.accounts.push(createDefaultAccount(name));
     },
     addTransaction: (state, action) => {
@@ -117,40 +128,42 @@ export const accountsSlice = createSlice({
       const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
       account.journals[journalIndex].columnOrder.push(`extra-${extraColumnsLength - 1}`);
     },
-    editJournalColumn: (state, action) => {
+    editJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: keyof JournalColumnSet, column: JournalColumn}>) => {
       // Payload: {account: int?, journalIndex: int, columnRole: String, column: Column}
-      const { journalIndex, columnRole, column } = action.payload;
+      const { account: accountIndex, index, role, column } = action.payload;
       // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      if (columnRole.slice(0, 5) === 'extra') {
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      if (role.slice(0, 5) === 'extra') {
         // It is an extra column
-        account.journals[journalIndex].columns.extra[parseInt(columnRole.split('-')[1])] = column;
+        account.journals[index].columns.extra[parseInt(role.split('-')[1])] = column;
       } else {
         // Core column
-        account.journals[journalIndex].columns[columnRole] = column;
+        // TODO: add predicates for using right column type
+        account.journals[index].columns[role] = column as any;
       }
     },
-    deleteJournalColumn: (state, action) => {
+    deleteJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: keyof JournalColumnSet}>) => {
       // Payload: {account: int?, journalIndex: int, role: string}
-      const { journalIndex, role } = action.payload;
+      const { account: accountIndex, index, role } = action.payload;
       // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
+      const account = state.accounts[accountIndex ?? state.activeAccount];
       // Determine if deleting a core or extra column
       if (role.slice(0, 5) === 'extra') {
         const columnIndex = parseInt(role.split('-')[1]);
-        account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
+        account.journals[index].columns.extra.splice(columnIndex, 1);
         // Delete column from column order
-        const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
-        const columnOrderIndex = account.journals[journalIndex].columnOrder.indexOf(`extra-${extraColumnsLength}`);
+        const extraColumnsLength = account.journals[index].columns.extra.length;
+        const columnOrderIndex = account.journals[index].columnOrder.indexOf(`extra-${extraColumnsLength}`);
         if (columnOrderIndex !== -1) {
-          account.journals[journalIndex].columnOrder.splice(columnOrderIndex, 1);
+          account.journals[index].columnOrder.splice(columnOrderIndex, 1);
         }
       } else {
-        delete account.journals[journalIndex].columns[role];
+        // TODO: do better
+        delete account.journals[index].columns[role];
         // Delete column from column order
-        const columnOrderIndex = account.journals[journalIndex].columnOrder.indexOf(role);
+        const columnOrderIndex = account.journals[index].columnOrder.indexOf(role);
         if (columnOrderIndex !== -1) {
-          account.journals[journalIndex].columnOrder.splice(columnOrderIndex, 1);
+          account.journals[index].columnOrder.splice(columnOrderIndex, 1);
         }
       }
     },
@@ -182,7 +195,7 @@ export const accountsSlice = createSlice({
 
 // Actions
 export const {
-  changeAccount,
+  switchAccount,
   addAccount,
   addDefaultAccount,
   addTransaction,
@@ -202,26 +215,26 @@ export const {
 
 // Selectors
 // TODO consider selector errors
-export const selectAccounts = state => state.accounts.accounts;
-export const selectActiveAccountIndex = state => state.accounts.activeAccount;
-export const selectActiveAccount = state => {
+export const selectAccounts = (state: RootState) => state.accounts.accounts;
+export const selectActiveAccountIndex = (state: RootState) => state.accounts.activeAccount;
+export const selectActiveAccount = (state: RootState) => {
   const accounts = selectAccounts(state);
   const activeAccount = selectActiveAccountIndex(state);
   return activeAccount < accounts.length ? accounts[activeAccount] : null;
 }
-export const selectActiveAccountName = state => {
+export const selectActiveAccountName = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.name : 'No account selected';
 }
-export const selectActiveAccountAccountingCurrency = state => {
+export const selectActiveAccountAccountingCurrency = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.settings.accountingCurrency : null;
 }
-export const selectActiveAccountAssets = state => {
+export const selectActiveAccountAssets = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.assets : [];
 }
-export const selectActiveAccountJournals = state => {
+export const selectActiveAccountJournals = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.journals : [];
 }

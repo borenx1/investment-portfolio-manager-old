@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle';
-import { selectAccounts, selectActiveAccountIndex, selectActiveAccountName, changeAccount } from '../accounts/accountsSlice';
+import { selectAccounts, selectActiveAccountIndex, selectActiveAccountName, switchAccount } from '../accounts/accountsSlice';
 import { drawerWidth } from '../../constants';
 
 
@@ -49,8 +49,8 @@ function TopAppBar(props) {
   const activeAccountIndex = useSelector(selectActiveAccountIndex);
   const activeAccountName = useSelector(selectActiveAccountName);
 
-  const handleChangeAccount = (index) => (e) => {
-    dispatch(changeAccount(index));
+  const handleSwitchAccount = (index) => (e) => {
+    dispatch(switchAccount(index));
     setMenuAnchor(null);
   }
 
@@ -88,7 +88,7 @@ function TopAppBar(props) {
         onClose={() => setMenuAnchor(null)}
       >
         {accounts.map((a, index) => (
-          <MenuItem onClick={handleChangeAccount(index)} selected={activeAccountIndex} key={index}>
+          <MenuItem onClick={handleSwitchAccount(index)} selected={activeAccountIndex} key={index}>
             { a.name }
           </MenuItem>
         ))}
