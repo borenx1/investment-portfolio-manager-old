@@ -47,8 +47,9 @@ function JournalColumnRow(props) {
       <TableCell>{ role }</TableCell>
       <TableCell>{ journalColumn.name }</TableCell>
       <TableCell>{ journalColumn.type }</TableCell>
-      <TableCell align="center">{ journalColumn.type === 'decimal' && journalColumn.precision }</TableCell>
-      <TableCell align="center">{ journalColumn.type === 'date' && journalColumn.dateTimeFormat }</TableCell>
+      {/* TODO: display precision better */}
+      <TableCell align="center">{ journalColumn.type === 'decimal' && String(journalColumn.precision) }</TableCell>
+      <TableCell align="center">{ journalColumn.type === 'date' && String(journalColumn.format) }</TableCell>
       <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
       <TableCell align="center">
         <DeleteButton
