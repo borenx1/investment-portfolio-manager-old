@@ -219,7 +219,18 @@ export function createExpenseColumns(dateTimeFormat: DateTimeFormat = 'date'): J
   };
 }
 
-export function createTradingJournal(name: string = 'Trading', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createDefaultJournal(name: string, type: JournalType): Journal {
+  switch (type) {
+    case 'trading':
+      return createTradingJournal(name);
+    case 'income':
+      return createIncomeJournal(name);
+    case 'expense':
+      return createExpenseJournal(name);
+  }
+}
+
+export function createTradingJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'trading',
@@ -229,7 +240,7 @@ export function createTradingJournal(name: string = 'Trading', columnOrder: stri
   };
 }
 
-export function createIncomeJournal(name: string = 'Income', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createIncomeJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'income',
@@ -239,7 +250,7 @@ export function createIncomeJournal(name: string = 'Income', columnOrder: string
   };
 }
 
-export function createExpenseJournal(name: string = 'Expenses', columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
+export function createExpenseJournal(name: string, columnOrder: string[] = defaultColumnOrder, transactions: Transaction[] = []): Journal {
   return {
     name: name,
     type: 'expense',

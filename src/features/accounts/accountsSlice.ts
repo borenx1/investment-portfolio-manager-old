@@ -2,13 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../../app/store';
 import {
   Account,
+  Asset,
+  Journal,
+  JournalType,
   JournalColumnSet,
   JournalColumn,
   ExtraColumn,
   createDefaultAccount,
-  createTradingJournal,
-  createIncomeJournal,
-  createExpenseJournal,
+  createDefaultJournal,
 } from '../../models/Account';
 
 interface State {
@@ -46,65 +47,40 @@ export const accountsSlice = createSlice({
       const transaction = action.payload.transaction;
       account.journals[journal].transactions.push(transaction);
     },
-    /**
-     * Changes the accounting currency. Receives payload {account: activeAccountIndex, currency: asset}.
-     * Ignores invalid values for currency.
-     */
-    changeAccountingCurrency: (state, action) => {
-      if (action.payload && 'currency' in action.payload) {
-        // Updates the active account if no account provided
-        const account = state.accounts[action.payload.account || state.activeAccount];
-        // TODO: input validation
-        account.settings.accountingCurrency = action.payload.currency;
-      } else {
-        console.warn(`changeAccountingCurrency: 'currency' not in payload`);
-      }
-    },
-    addAsset: (state, action) => {
-      if (action.payload && 'asset' in action.payload) {
-        // Updates the active account if no account provided
-        const account = state.accounts[action.payload.account || state.activeAccount];
-        // TODO: input validation
-        account.assets.push(action.payload.asset);
-      } else {
-        console.warn(`addAsset: 'asset' not in payload`);
-      }
-    },
-    editAsset: (state, action) => {
-      if (action.payload && 'asset' in action.payload && 'index' in action.payload) {
-        // Updates the active account if no account provided
-        const account = state.accounts[action.payload.account || state.activeAccount];
-        // TODO: input validation
-        account.assets[action.payload.index] = action.payload.asset;
-      } else {
-        console.warn(`editAsset: 'asset' or 'index' not in payload`);
-      }
-    },
-    deleteAsset: (state, action) => {
+    changeAccountingCurrency: (state, action: PayloadAction<{account?: number, currency: Asset}>) => {
+      const { account: accountIndex, currency } = action.payload;
       // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      account.assets.splice(action.payload.index, 1);
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.settings.accountingCurrency = currency;
     },
-    addJournal: (state, action) => {
+    addAsset: (state, action: PayloadAction<{account?: number, asset: Asset}>) => {
+      const { account: accountIndex, asset } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.assets.push(asset);
+    },
+    editAsset: (state, action: PayloadAction<{account?: number, index: number, asset: Asset}>) => {
+      const { account: accountIndex, index, asset } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      // Only edit if the index is valid
+      if (account.assets[index] !== undefined) {
+        account.assets[index] = asset;
+      }
+    },
+    deleteAsset: (state, action: PayloadAction<{account?: number, index: number}>) => {
+      const { account: accountIndex, index } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.assets.splice(index, 1);
+    },
+    addJournal: (state, action: PayloadAction<{account?: number, journal: Journal}>) => {
       // Payload: {account: int?, journal: Journal (except column settings)}
-      // Updates the active account if no account provided
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      let newJournal;
-      switch (action.payload.journal.type) {
-        case 'trading':
-          newJournal = {...createTradingJournal(), ...action.payload.journal};
-          break;
-        case 'income':
-          newJournal = {...createIncomeJournal(), ...action.payload.journal};
-          break;
-        case 'expense':
-          newJournal = {...createExpenseJournal(), ...action.payload.journal};
-          break;
-        default:
-          console.warn(`addJournal: Invalid journal type: ${action.payload.journal.type}`);
-          newJournal = {...createTradingJournal(), ...action.payload.journal};
-      }
-      account.journals.push(newJournal);
+      const { account: accountIndex, journal } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.journals.push(journal);
+    },
+    addDefaultJournal: (state, action: PayloadAction<{account?: number, name: string, type: JournalType}>) => {
+      const { account: accountIndex, name, type } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      account.journals.push(createDefaultJournal(name, type));
     },
     editJournal: (state, action) => {
       // Payload: {account: int?, journalIndex: int, journal: Journal (except column settings)}
