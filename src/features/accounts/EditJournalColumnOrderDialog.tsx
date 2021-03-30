@@ -10,7 +10,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
 import { editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
-import { JournalColumnRole } from '../../models/Account';
+import { JournalColumnRole } from '../../models/account';
 
 interface Props {
   open: boolean;

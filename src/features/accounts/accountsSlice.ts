@@ -11,7 +11,7 @@ import {
   createDefaultAccount,
   createDefaultJournal,
   isExtraColumn,
-} from '../../models/Account';
+} from '../../models/account';
 
 interface State {
   readonly accounts: Account[],

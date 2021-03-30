@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import AddEditDialog from '../../components/AddEditDialog';
-import { Asset } from "../../models/Account";
+import { Asset } from "../../models/account";
 
 export interface FormFields {
   name: string,

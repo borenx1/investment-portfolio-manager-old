@@ -8,7 +8,7 @@ import {
   ExtraColumn,
   JournalColumn,
   isExtraColumn,
-} from './Account';
+} from './account';
 
 describe('journal columns', () => {
   test('isExtraColumn type predicate', () => {

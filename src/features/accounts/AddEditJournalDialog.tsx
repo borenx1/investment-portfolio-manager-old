@@ -5,7 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addDefaultJournal, editJournalSettings, selectActiveAccountJournals } from './accountsSlice';
-import { Journal, JournalType } from '../../models/Account';
+import { Journal, JournalType } from '../../models/account';
 
 interface FormFields {
   name: string,

@@ -21,7 +21,7 @@ import {
   DecimalColumnDescription,
   JournalColumnRole,
   JournalColumnType,
-} from '../../models/Account';
+} from '../../models/account';
 
 interface FormFields {
   name: string;

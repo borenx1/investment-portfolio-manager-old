@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, selectActiveAccount } from '../accounts/accountsSlice';
-import { Transaction } from '../../models/Account';
+import { Transaction } from '../../models/account';
 
 /**
  * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss" format.

@@ -14,7 +14,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { Journal, Transaction } from '../../models/Account';
+import { Journal, Transaction } from '../../models/account';
 
 interface JournalHeadersProps {
   readonly journal: Journal,
