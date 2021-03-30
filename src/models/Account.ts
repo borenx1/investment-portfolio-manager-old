@@ -95,6 +95,9 @@ export interface DateColumn extends BaseJournalColumn {
   type: 'date';
   format: DateColumnFormat;
 }
+export function isDateColumn(column: JournalColumn | BaseJournalColumn): column is DateColumn {
+  return 'type' in column && column.type === 'date';
+}
 export interface AssetColumn extends BaseJournalColumn {
   type: 'asset';
 }
