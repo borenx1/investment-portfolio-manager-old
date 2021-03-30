@@ -19,7 +19,7 @@ const initialFormFields: FormFields = {
 
 interface Props {
   open: boolean;
-  onDialogClose?: React.MouseEventHandler<HTMLButtonElement>;
+  onDialogClose?: () => void;
   index: number;
 }
 
@@ -37,31 +37,26 @@ function AddEditJournalDialog(props: Readonly<Props>) {
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
   // journalIndex is set to -1 initially
-  const journal: Journal | undefined = journals[index];
+  const journal = journals[index] as Journal | undefined;
 
   const handleReset = () => {
-    setFields(initialFormFields);
-  };
-
-  const handleDialogOpen = () => {
     if (journal) {
-      // Edit mode
       setFields({
         name: journal.name,
         type: journal.type,
       });
     } else {
-      handleReset();
+      setFields(initialFormFields);
     }
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmit = () => {
     if (journal) {
       dispatch(editJournalSettings({index: index, name: fields.name, type: fields.type}));
     } else {
       dispatch(addDefaultJournal({name: fields.name, type: fields.type}));
     }
-    onDialogClose?.(e);
+    onDialogClose?.();
   };
 
   return (
@@ -70,9 +65,9 @@ function AddEditJournalDialog(props: Readonly<Props>) {
       edit={Boolean(journal)}
       open={open}
       onClose={onDialogClose}
-      onEnter={handleDialogOpen}
+      onEnter={handleReset}
       onReset={handleReset}
-      onSubmit={e => handleSubmit(e)}
+      onSubmit={handleSubmit}
     >
       <Box>
         <TextField
