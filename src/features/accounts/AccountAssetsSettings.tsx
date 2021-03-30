@@ -11,57 +11,43 @@ import AddIcon from '@material-ui/icons/Add';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import DeleteButton from '../../components/DeleteButton';
-import AddEditAssetDialog from './AddEditAssetDialog';
-import { addAsset, editAsset, deleteAsset, selectActiveAccount } from './accountsSlice';
+import AddEditAssetDialog, { FormFields } from './AddEditAssetDialog';
+import { addAsset, editAsset, deleteAsset, selectActiveAccountAssets } from './accountsSlice';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-
-  },
   tableRow: {
     cursor: 'pointer',
   },
 }));
 
-function AccountAssetsSettings(props) {
+function AccountAssetsSettings() {
   const classes = useStyles();
   const [addEditAssetDialogOpen, setAddEditAssetDialogOpen] = useState(false);
   // Index of the Asset to edit when the edit asset button is clicked, set to -1 to add new asset
   const [selectedAsset, setSelectedAsset] = useState(-1);
-  const [addEditAssetFields, setAddEditAssetFields] = useState({
-    name: '',
-    ticker: '',
-    precision: '',
-    pricePrecision: '',
-    isCurrency: false,
-    symbol: '',
-  });
   const dispatch = useDispatch();
-  const account = useSelector(selectActiveAccount);
-  const assets = account.assets;
+  const assets = useSelector(selectActiveAccountAssets);
 
   const openAddAssetDialog = () => {
     setSelectedAsset(-1);
     setAddEditAssetDialogOpen(true);
   };
 
-  const openEditAssetDialog = (index) => () => {
+  const openEditAssetDialog = (index: number) => {
     setSelectedAsset(index);
     setAddEditAssetDialogOpen(true);
   }
 
-  const handleAddEditAsset = () => {
+  const handleAddEditAsset = (fields: FormFields) => {
     if (selectedAsset < 0) {
-      // Add
-      dispatch(addAsset({asset: {...addEditAssetFields}}));
+      dispatch(addAsset({asset: fields}));
     } else {
-      // Edit
-      dispatch(editAsset({asset: {...addEditAssetFields}, index: selectedAsset}));
+      dispatch(editAsset({index: selectedAsset, asset: fields}));
     }
     setAddEditAssetDialogOpen(false);
   };
 
-  const handleDeleteAsset = (e, index) => {
+  const handleDeleteAsset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     dispatch(deleteAsset({index: index}));
     e.stopPropagation();
   };
@@ -91,7 +77,7 @@ function AccountAssetsSettings(props) {
             </TableHead>
             <TableBody>
               {assets.map((a, i) =>
-                <TableRow key={i} hover className={classes.tableRow} onClick={openEditAssetDialog(i)}>
+                <TableRow hover className={classes.tableRow} onClick={() => openEditAssetDialog(i)} key={i}>
                   <TableCell>{ a.name }</TableCell>
                   <TableCell align="center">{ a.ticker }</TableCell>
                   <TableCell align="center">{ a.precision }</TableCell>
@@ -110,9 +96,7 @@ function AccountAssetsSettings(props) {
       <AddEditAssetDialog
         open={addEditAssetDialogOpen}
         onDialogClose={() => setAddEditAssetDialogOpen(false)}
-        edit={selectedAsset === -1 ? null : assets[selectedAsset]}
-        fields={addEditAssetFields}
-        onFieldsChange={fields => setAddEditAssetFields(fields)}
+        asset={assets[selectedAsset]}
         onSubmit={handleAddEditAsset}
       />
     </React.Fragment>

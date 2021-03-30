@@ -7,27 +7,18 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
-import AddEditAssetDialog from './AddEditAssetDialog';
+import AddEditAssetDialog, { FormFields } from './AddEditAssetDialog';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
-import { changeAccountingCurrency, selectActiveAccount } from './accountsSlice';
+import { changeAccountingCurrency, selectActiveAccountAccountingCurrency } from './accountsSlice';
 
-function AccountMainSettings(props) {
+function AccountMainSettings() {
   const [accountingCurrencyDialogOpen, setAccountingCurrencyDialogOpen] = useState(false);
-  const [accountingCurrencyFields, setaccountingCurrencyFields] = useState({
-    name: '',
-    ticker: '',
-    precision: '',
-    pricePrecision: '',
-    isCurrency: false,
-    symbol: '',
-  });
   const dispatch = useDispatch();
-  const account = useSelector(selectActiveAccount);
-  const accountingCurrency = account.settings.accountingCurrency;
+  const accountingCurrency = useSelector(selectActiveAccountAccountingCurrency);
 
-  const handleChangeAccountingCurrency = () => {
-    dispatch(changeAccountingCurrency({currency: {...accountingCurrencyFields}}));
+  const handleChangeAccountingCurrency = (fields: FormFields) => {
+    dispatch(changeAccountingCurrency({currency: fields}));
     setAccountingCurrencyDialogOpen(false);
   };
 
@@ -55,12 +46,12 @@ function AccountMainSettings(props) {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>{ accountingCurrency.name }</TableCell>
-                <TableCell align="center">{ accountingCurrency.ticker }</TableCell>
-                <TableCell align="center">{ accountingCurrency.precision }</TableCell>
-                <TableCell align="center">{ accountingCurrency.pricePrecision }</TableCell>
-                <TableCell align="center">{ accountingCurrency.isCurrency ? 'Yes' : 'No' }</TableCell>
-                <TableCell align="center">{ accountingCurrency.symbol }</TableCell>
+                <TableCell>{ accountingCurrency?.name }</TableCell>
+                <TableCell align="center">{ accountingCurrency?.ticker }</TableCell>
+                <TableCell align="center">{ accountingCurrency?.precision }</TableCell>
+                <TableCell align="center">{ accountingCurrency?.pricePrecision }</TableCell>
+                <TableCell align="center">{ accountingCurrency?.isCurrency ? 'Yes' : 'No' }</TableCell>
+                <TableCell align="center">{ accountingCurrency?.symbol }</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -69,9 +60,7 @@ function AccountMainSettings(props) {
       <AddEditAssetDialog
         open={accountingCurrencyDialogOpen}
         onDialogClose={() => setAccountingCurrencyDialogOpen(false)}
-        edit={accountingCurrency}
-        fields={accountingCurrencyFields}
-        onFieldsChange={fields => setaccountingCurrencyFields(fields)}
+        asset={accountingCurrency}
         onSubmit={handleChangeAccountingCurrency}
       />
     </React.Fragment>
