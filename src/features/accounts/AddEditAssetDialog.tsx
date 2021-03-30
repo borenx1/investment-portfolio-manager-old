@@ -26,7 +26,7 @@ const initialFormFields: FormFields = {
 
 interface Props {
   open: boolean;
-  onDialogClose?: React.MouseEventHandler<HTMLButtonElement>;
+  onDialogClose?: () => void;
   asset?: Asset | null;
   onSubmit?: (fields: FormFields) => void;
 }
@@ -45,10 +45,6 @@ function AddEditAssetDialog(props: Readonly<Props>) {
   const [fields, setFields] = useState(initialFormFields);
 
   const handleReset = () => {
-    setFields(initialFormFields);
-  };
-
-  const handleDialogOpen = () => {
     if (asset) {
       setFields({
         name: asset.name,
@@ -59,7 +55,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
         symbol: asset.symbol ?? '',
       });
     } else {
-      handleReset();
+      setFields(initialFormFields);
     }
   };
 
@@ -69,7 +65,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
       edit={Boolean(asset)}
       open={open}
       onClose={onDialogClose}
-      onEnter={handleDialogOpen}
+      onEnter={handleReset}
       onReset={handleReset}
       onSubmit={() => onSubmit?.(fields)}
       contentMaxWidth="30rem"
@@ -84,7 +80,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
             size="small"
             required
             value={fields.name}
-            onChange={(e) => setFields({...fields, name: e.target.value})}
+            onChange={(e) => setFields(s => ({...s, name: e.target.value}))}
           />
         </Grid>
         <Grid item xs={5}>
@@ -96,7 +92,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
             size="small"
             required
             value={fields.ticker}
-            onChange={(e) => setFields({...fields, ticker: e.target.value})}
+            onChange={(e) => setFields(s => ({...s, ticker: e.target.value}))}
           />
         </Grid>
         <Grid item xs={3}>
@@ -107,14 +103,14 @@ function AddEditAssetDialog(props: Readonly<Props>) {
             variant="outlined"
             size="small"
             value={fields.symbol}
-            onChange={(e) => setFields({...fields, symbol: e.target.value})}
+            onChange={(e) => setFields(s => ({...s, symbol: e.target.value}))}
           />
         </Grid>
         <Grid item xs={4}>
           <FormControlLabel
             control={<Checkbox />}
             checked={fields.isCurrency}
-            onChange={(e, checked) => setFields({...fields, isCurrency: checked})}
+            onChange={(e, checked) => setFields(s => ({...s, isCurrency: checked}))}
             label="Currency"
             labelPlacement="end"
           />
@@ -128,7 +124,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
             size="small"
             required
             value={fields.precision}
-            onChange={(e) => setFields({...fields, precision: parseInt(e.target.value)})}
+            onChange={(e) => setFields(s => ({...s, precision: parseInt(e.target.value)}))}
           />
         </Grid>
         <Grid item xs={6}>
@@ -140,7 +136,7 @@ function AddEditAssetDialog(props: Readonly<Props>) {
             size="small"
             required
             value={fields.pricePrecision}
-            onChange={(e) => setFields({...fields, pricePrecision: parseInt(e.target.value)})}
+            onChange={(e) => setFields(s => ({...s, pricePrecision: parseInt(e.target.value)}))}
           />
         </Grid>
       </Grid>
