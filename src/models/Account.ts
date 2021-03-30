@@ -18,6 +18,7 @@ export interface Account {
 export interface AccountSettings {
   accountingCurrency: Asset;
 }
+
 /**
  * Asset settings.
  * @param ticker Ticker of the asset, e.g. BTC. This is the unique identifier of an asset.
@@ -36,6 +37,7 @@ export interface Asset {
   isCurrency: boolean;
   symbol?: string;
 }
+
 export type JournalType = 'trading' | 'income' | 'expense';
 /**
  * A journal for an account.
@@ -93,6 +95,9 @@ export interface DateColumn extends BaseJournalColumn {
   type: 'date';
   format: DateTimeFormat;
 }
+export interface AssetColumn extends BaseJournalColumn {
+  type: 'asset';
+}
 export interface TextColumn extends BaseJournalColumn {
   type: 'text';
 }
@@ -121,9 +126,6 @@ interface QuoteColumn extends DecimalColumn {
 interface PriceColumn extends DecimalColumn {
   description: 'price';
 }
-export interface AssetColumn extends BaseJournalColumn {
-  type: 'asset';
-}
 export interface BooleanColumn extends BaseJournalColumn {
   type: 'boolean';
 }
@@ -132,6 +134,18 @@ export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanCo
 /** All Journal Column types */
 export type JournalColumn = ExtraColumn | DateColumn | AssetColumn;
 export type JournalColumnType = JournalColumn['type'];
+export function isExtraColumn(column: JournalColumn | BaseJournalColumn): column is ExtraColumn {
+  if ('type' in column) {
+    switch (column.type) {
+      case 'text':
+      case 'integer':
+      case 'decimal':
+      case 'boolean':
+        return true;
+    }
+  }
+  return false;
+}
 /**
  * A transaction (trade, income or expense).\
  * An income transaction has positive base and quote amounts.\

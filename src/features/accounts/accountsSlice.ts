@@ -10,6 +10,7 @@ import {
   ExtraColumn,
   createDefaultAccount,
   createDefaultJournal,
+  isExtraColumn,
 } from '../../models/Account';
 
 interface State {
@@ -109,17 +110,24 @@ export const accountsSlice = createSlice({
       account.journals[index].columnOrder.push(extraColumnsLength - 1);
     },
     editJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: JournalColumnRole, column: JournalColumn}>) => {
-      // Payload: {account: int?, journalIndex: int, columnRole: String, column: Column}
       const { account: accountIndex, index, role, column } = action.payload;
       // Updates the active account if no account provided
       const account = state.accounts[accountIndex ?? state.activeAccount];
       if (typeof role === 'string') {
         // Core column
         // TODO: add predicates for using right column type
+        // if (role === 'date' && column.type === 'date') {
+        //   account.journals[index].columns[role] = column;
+        // } else if (role === 'base' && column.type === 'asset') {
+        //   account.journals[index].columns[role] = column;
+        // } else if (role === 'baseAmount' && column.type === 'decimal' && column.description === 'base') {
+        //   account.journals[index].columns[role] = column;
+        // }
         account.journals[index].columns[role] = column as any;
+      } else if (isExtraColumn(column)) {   // Implicit typeof column === 'number'
+        account.journals[index].columns.extra[role] = column;
       } else {
-        // It is an extra column
-        account.journals[index].columns.extra[role] = column as any;
+        console.warn(`editJournalColumn: column is not an ExtraColumn for role: ${role}.`);
       }
     },
     deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {
