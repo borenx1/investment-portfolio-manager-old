@@ -71,12 +71,12 @@ export interface Journal {
 export interface JournalColumnSet {
   date: DateColumn;
   base: AssetColumn;
-  baseAmount: BaseColumn;
+  baseAmount: BaseAmountColumn;
   quote: AssetColumn;
-  quoteAmount: QuoteColumn;
+  quoteAmount: QuoteAmountColumn;
   price: PriceColumn;
-  feeBase: BaseColumn;
-  feeQuote: QuoteColumn;
+  feeBase: BaseAmountColumn;
+  feeQuote: QuoteAmountColumn;
   notes: TextColumn;
   extra: ExtraColumn[];
 }
@@ -96,16 +96,25 @@ export interface DateColumn extends BaseJournalColumn {
   format: DateColumnFormat;
 }
 export function isDateColumn(column: JournalColumn | BaseJournalColumn): column is DateColumn {
-  return 'type' in column && column.type === 'date';
+  return 'type' in column && column.type === 'date' && column.format !== undefined;
 }
 export interface AssetColumn extends BaseJournalColumn {
   type: 'asset';
 }
+export function isAssetColumn(column: JournalColumn | BaseJournalColumn): column is AssetColumn {
+  return 'type' in column && column.type === 'asset';
+}
 export interface TextColumn extends BaseJournalColumn {
   type: 'text';
 }
+export function isTextColumn(column: JournalColumn | BaseJournalColumn): column is TextColumn {
+  return 'type' in column && column.type === 'text';
+}
 export interface IntegerColumn extends BaseJournalColumn {
   type: 'integer';
+}
+export function isIntegerColumn(column: JournalColumn | BaseJournalColumn): column is IntegerColumn {
+  return 'type' in column && column.type === 'integer';
 }
 export type DecimalColumnDescription = 'base' | 'quote' | 'price';
 /**
@@ -116,39 +125,45 @@ export type DecimalColumnDescription = 'base' | 'quote' | 'price';
 export interface DecimalColumn extends BaseJournalColumn {
   type: 'decimal';
   // Key can be an asset ticker, e.g. USD, or an asset pair, e.g. BTC/USD.
-  precision: {[key: string]: number};
+  precision: Record<string, number>;
   // precision: Record<string, number>;
   description: DecimalColumnDescription;
 }
-interface BaseColumn extends DecimalColumn {
+export function isDecimalColumn(column: JournalColumn | BaseJournalColumn): column is DecimalColumn {
+  return 'type' in column && column.type === 'decimal' && 'precision' in column && 'description' in column;
+}
+interface BaseAmountColumn extends DecimalColumn {
   description: 'base';
 }
-interface QuoteColumn extends DecimalColumn {
+export function isBaseAmountColumn(column: JournalColumn | BaseJournalColumn): column is BaseAmountColumn {
+  return isDecimalColumn(column) && column.description === 'base';
+}
+interface QuoteAmountColumn extends DecimalColumn {
   description: 'quote';
+}
+export function isQuoteAmountColumn(column: JournalColumn | BaseJournalColumn): column is QuoteAmountColumn {
+  return isDecimalColumn(column) && column.description === 'quote';
 }
 interface PriceColumn extends DecimalColumn {
   description: 'price';
 }
+export function isPriceColumn(column: JournalColumn | BaseJournalColumn): column is PriceColumn {
+  return isDecimalColumn(column) && column.description === 'price';
+}
 export interface BooleanColumn extends BaseJournalColumn {
   type: 'boolean';
 }
+export function isBooleanColumn(column: JournalColumn | BaseJournalColumn): column is BooleanColumn {
+  return 'type' in column && column.type === 'boolean';
+}
 /** Journal Columns that the user can create. */
 export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanColumn;
+export function isExtraColumn(column: JournalColumn | BaseJournalColumn): column is ExtraColumn {
+  return isTextColumn(column) || isIntegerColumn(column) || isDecimalColumn(column) || isBooleanColumn(column);
+}
 /** All Journal Column types */
 export type JournalColumn = ExtraColumn | DateColumn | AssetColumn;
 export type JournalColumnType = JournalColumn['type'];
-export function isExtraColumn(column: JournalColumn | BaseJournalColumn): column is ExtraColumn {
-  if ('type' in column) {
-    switch (column.type) {
-      case 'text':
-      case 'integer':
-      case 'decimal':
-      case 'boolean':
-        return true;
-    }
-  }
-  return false;
-}
 /**
  * A transaction (trade, income or expense).\
  * An income transaction has positive base and quote amounts.\
