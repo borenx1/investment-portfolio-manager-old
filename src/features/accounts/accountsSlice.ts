@@ -125,13 +125,22 @@ export const accountsSlice = createSlice({
     deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {
       const { account: accountIndex, journalIndex, columnIndex } = action.payload;
       const account = state.accounts[accountIndex ?? state.activeAccount];
-      account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
-      // Delete column from column order
-      // TODO: redo this so that order is retained after role renaming
-      const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
-      const columnOrderIndex = account.journals[journalIndex].columnOrder.indexOf(extraColumnsLength);
-      if (columnOrderIndex !== -1) {
-        account.journals[journalIndex].columnOrder.splice(columnOrderIndex, 1);
+      if (columnIndex >= 0 && columnIndex < account.journals[journalIndex]?.columns.extra.length) {
+        account.journals[journalIndex].columns.extra.splice(columnIndex, 1);
+        // Delete column from column order. The numberic JournalColumnRoles cascade down to preserve the column order after deletion.
+        const extraColumnsLength = account.journals[journalIndex].columns.extra.length;
+        const deletedColIndex = account.journals[journalIndex].columnOrder.indexOf(columnIndex);
+        if (deletedColIndex !== -1) {
+          account.journals[journalIndex].columnOrder.splice(deletedColIndex, 1);
+        }
+        for (let i = columnIndex + 1; i <= extraColumnsLength; i++) {
+          const colIndex = account.journals[journalIndex].columnOrder.indexOf(i);
+          if (colIndex !== -1) {
+            account.journals[journalIndex].columnOrder[colIndex] = i - 1;
+          }
+        }
+      } else {
+        console.warn(`deleteJournalColumn: Invalid column selectors journalIndex: ${journalIndex} and columnIndex: ${columnIndex}.`);
       }
     },
     editJournalColumnOrder: (state, action: PayloadAction<{account?: number, index: number, columnOrder: JournalColumnRole[]}>) => {
