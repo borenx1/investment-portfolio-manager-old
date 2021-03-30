@@ -17,7 +17,7 @@ import {
   BooleanColumn,
   ExtraColumn,
   JournalColumn,
-  DateTimeFormat,
+  DateColumnFormat,
   DecimalColumnDescription,
   JournalColumnRole,
   JournalColumnType,
@@ -29,7 +29,7 @@ interface FormFields {
   hide: boolean;
   precision: Record<string, number>;
   decimalColumnDescription: DecimalColumnDescription;
-  dateFormat: DateTimeFormat,
+  dateFormat: DateColumnFormat,
 }
 
 const initialFormFields: FormFields = {
@@ -259,7 +259,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             required={fields.type === 'date'}
             disabled={fields.type !== 'date'}
             value={fields.dateFormat}
-            onChange={(e) => setFields(s => ({...s, dateFormat: e.target.value as DateTimeFormat}))}
+            onChange={(e) => setFields(s => ({...s, dateFormat: e.target.value as DateColumnFormat}))}
           >
             <MenuItem value="date">Date</MenuItem>
             <MenuItem value="datetime">Date & Time</MenuItem>

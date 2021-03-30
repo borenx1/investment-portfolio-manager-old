@@ -90,10 +90,10 @@ interface BaseJournalColumn {
   name: string;
   hide: boolean;
 }
-export type DateTimeFormat = 'date' | 'datetime';
+export type DateColumnFormat = 'date' | 'datetime';
 export interface DateColumn extends BaseJournalColumn {
   type: 'date';
-  format: DateTimeFormat;
+  format: DateColumnFormat;
 }
 export interface AssetColumn extends BaseJournalColumn {
   type: 'asset';
@@ -215,9 +215,9 @@ const defaultJournals: Journal[] = [
   createExpenseJournal('Misc fees'),
 ];
 
-export function createTradingColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
+export function createTradingColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
@@ -230,9 +230,9 @@ export function createTradingColumns(dateTimeFormat: DateTimeFormat = 'date'): J
   };
 }
 
-export function createIncomeColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
+export function createIncomeColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
@@ -245,9 +245,9 @@ export function createIncomeColumns(dateTimeFormat: DateTimeFormat = 'date'): Jo
   };
 }
 
-export function createExpenseColumns(dateTimeFormat: DateTimeFormat = 'date'): JournalColumnSet {
+export function createExpenseColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateTimeFormat, type: 'date', hide: false},
+    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
