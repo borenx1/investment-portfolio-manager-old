@@ -4,7 +4,24 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addJournal, editJournalSettings, selectActiveAccountJournals } from './accountsSlice';
+import { addDefaultJournal, editJournalSettings, selectActiveAccountJournals } from './accountsSlice';
+import { Journal, JournalType } from '../../models/Account';
+
+interface FormFields {
+  name: string,
+  type: JournalType,
+}
+
+const initialFormFields: FormFields = {
+  name: '',
+  type: 'trading',
+};
+
+interface Props {
+  open: boolean;
+  onDialogClose?: React.MouseEventHandler<HTMLButtonElement>;
+  index: number;
+}
 
 /**
  * React component. Add or change journal column dialog.
@@ -12,28 +29,22 @@ import { addJournal, editJournalSettings, selectActiveAccountJournals } from './
  * Props:
  * - open: Dialog shows if true.
  * - onDialogClose: Function called when the dialog requests to be closed.
- * - journalIndex: The index of the journal selected.
+ * - index: The index of the journal selected to edit. Set to index out of range (use a negative number) to add new journal.
  */
-function AddEditJournalDialog(props) {
-  const { open, onDialogClose, journalIndex } = props;
-  const [fields, setFields] = useState({
-    name: '',
-    type: '',
-  });
+function AddEditJournalDialog(props: Readonly<Props>) {
+  const { open, onDialogClose, index } = props;
+  const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
   // journalIndex is set to -1 initially
-  const journal = journalIndex >= 0 ? journals[journalIndex] : null;
+  const journal: Journal | undefined = journals[index];
 
   const handleReset = () => {
-    setFields({
-      name: '',
-      type: 'trading',
-    });
+    setFields(initialFormFields);
   };
 
   const handleDialogOpen = () => {
-    if (journalIndex >= 0) {
+    if (journal) {
       // Edit mode
       setFields({
         name: journal.name,
@@ -44,24 +55,24 @@ function AddEditJournalDialog(props) {
     }
   };
 
-  const handleSubmit = () => {
-    if (journalIndex >= 0) {
-      dispatch(editJournalSettings({index: journalIndex, name: fields.name, type: fields.type}));
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (journal) {
+      dispatch(editJournalSettings({index: index, name: fields.name, type: fields.type}));
     } else {
-      dispatch(addJournal({journal: {...fields}}));
+      dispatch(addDefaultJournal({name: fields.name, type: fields.type}));
     }
-    onDialogClose();
+    onDialogClose?.(e);
   };
 
   return (
     <AddEditDialog
       objectName={'Journal'}
-      edit={journalIndex >= 0}
+      edit={Boolean(journal)}
       open={open}
       onClose={onDialogClose}
       onEnter={handleDialogOpen}
       onReset={handleReset}
-      onSubmit={handleSubmit}
+      onSubmit={e => handleSubmit(e)}
     >
       <Box>
         <TextField
@@ -84,7 +95,7 @@ function AddEditJournalDialog(props) {
           size="small"
           required
           value={fields.type}
-          onChange={(e) => setFields(s => ({...s, type: e.target.value}))}
+          onChange={(e) => setFields(s => ({...s, type: e.target.value as JournalType}))}
         >
           <MenuItem value="trading">Trading</MenuItem>
           <MenuItem value="income">Income</MenuItem>

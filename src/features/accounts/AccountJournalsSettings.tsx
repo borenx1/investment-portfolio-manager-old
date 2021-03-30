@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -22,7 +21,15 @@ import EditJournalColumnOrderDialog from './EditJournalColumnOrderDialog';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import DeleteButton from '../../components/DeleteButton';
-import { deleteJournal, deleteJournalColumn, selectActiveAccount } from './accountsSlice';
+import { deleteJournal, deleteJournalColumn, selectActiveAccountJournals } from './accountsSlice';
+import { Journal, JournalColumn, JournalColumnRole, JournalColumnSet } from '../../models/Account';
+
+interface JournalColumnRowProps {
+  role: JournalColumnRole;
+  journalIndex: number;
+  journalColumn: JournalColumn;
+  onClick?: React.MouseEventHandler<HTMLTableRowElement>;
+}
 
 const useJournalColumnRowStyles = makeStyles(theme => ({
   root: {
@@ -30,14 +37,14 @@ const useJournalColumnRowStyles = makeStyles(theme => ({
   },
 }));
 
-function JournalColumnRow(props) {
+function JournalColumnRow(props: JournalColumnRowProps) {
   const classes = useJournalColumnRowStyles();
   const { role, journalIndex, journalColumn, onClick } = props;
   const dispatch = useDispatch();
 
-  const handleDeleteColumn = e => {
-    if (role.split('-')[0] === 'extra') {
-      dispatch(deleteJournalColumn({journalIndex: journalIndex, columnIndex: parseInt(role.split('-')[1])}));
+  const handleDeleteColumn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (typeof role === 'number') {
+      dispatch(deleteJournalColumn({journalIndex: journalIndex, columnIndex: role}));
     }
     e.stopPropagation();
   };
@@ -49,13 +56,13 @@ function JournalColumnRow(props) {
       <TableCell>{ journalColumn.type }</TableCell>
       {/* TODO: display precision better */}
       <TableCell align="center">{ journalColumn.type === 'decimal' && String(journalColumn.precision) }</TableCell>
-      <TableCell align="center">{ journalColumn.type === 'date' && String(journalColumn.format) }</TableCell>
+      <TableCell align="center">{ journalColumn.type === 'date' && journalColumn.format }</TableCell>
       <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
       <TableCell align="center">
         <DeleteButton
           buttonSize="small"
           iconSize="small"
-          disabled={role.slice(0, 5) !== 'extra'}
+          disabled={typeof role !== 'number'}
           onClick={handleDeleteColumn}
         />
       </TableCell>
@@ -63,10 +70,19 @@ function JournalColumnRow(props) {
   );
 }
 
+interface JournalRowProps {
+  index: number;
+  journal: Journal;
+  onClick?: React.MouseEventHandler<HTMLTableRowElement>;
+  onAddColumn?: React.MouseEventHandler<HTMLButtonElement>;
+  onEditColumn?: (role: JournalColumnRole) => void;
+  onEditColumnOrder?: React.MouseEventHandler<HTMLButtonElement>;
+}
+
 const useJournalRowStyles = makeStyles(theme => ({
   mainRow: {
     cursor: 'pointer',
-    '& > *': {    // select all children
+    '& > *': {                // select all children
       borderBottom: 'none',   // remove the bottom border of the TableCell children
     },
   },
@@ -91,18 +107,18 @@ const useJournalRowStyles = makeStyles(theme => ({
  * - onEditColumnOrder: Callback when requested to edit the column order.
  * - onClick: Callback when the row is clicked.
  */
-function JournalRow(props) {
+function JournalRow(props: JournalRowProps) {
   const classes = useJournalRowStyles();
   const { journal, index, onAddColumn, onEditColumn, onEditColumnOrder, onClick } = props;
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const expandRow = e => {
+  const expandRow = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setOpen(s => !s);
     e.stopPropagation();
   };
 
-  const handleDeleteJournal = e => {
+  const handleDeleteJournal = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     dispatch(deleteJournal({index: index}));
     e.stopPropagation();
   }
@@ -144,23 +160,22 @@ function JournalRow(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* pair = [role, column] */}
-                  {Object.entries(journal.columns).map(pair =>
-                    pair[0] !== 'extra' && <JournalColumnRow
-                      role={pair[0]}
+                  {Object.entries(journal.columns).map(([role, column]: [string, JournalColumn]) =>
+                    role !== 'extra' && <JournalColumnRow
+                      role={role as JournalColumnRole}
                       journalIndex={index}
-                      journalColumn={pair[1]}
-                      onClick={() => onEditColumn(pair[0])}
-                      key={pair[0]}
+                      journalColumn={column}
+                      onClick={() => onEditColumn?.(role as JournalColumnRole)}
+                      key={role}
                     />
                   )}
-                  {journal.columns.extra.map((col, i) =>
+                  {journal.columns.extra.map((column, colIndex: number) =>
                     <JournalColumnRow
-                      role={`extra-${i}`}
+                      role={colIndex}
                       journalIndex={index}
-                      journalColumn={col}
-                      onClick={() => onEditColumn(`extra-${i}`)}
-                      key={i}
+                      journalColumn={column}
+                      onClick={() => onEditColumn?.(colIndex)}
+                      key={colIndex}
                     />
                   )}
                 </TableBody>
@@ -186,51 +201,42 @@ function JournalRow(props) {
   );
 }
 
-const useStyles = makeStyles(theme => ({
-  tableRow: {
-    cursor: 'pointer',
-  },
-}));
-
 /**
  * See https://material-ui.com/components/tables/#collapsible-table.
  */
-function AccountJournalsSettings(props) {
-  const classes = useStyles();
+function AccountJournalsSettings() {
   const [addEditJournalDialogOpen, setAddEditJournalDialogOpen] = useState(false);
   const [addEditJournalColumnDialogOpen, setAddEditJournalColumnDialogOpen] = useState(false);
   const [editJournalColumnOrderDialogOpen, setEditJournalColumnOrderDialogOpen] = useState(false);
   // Index of the Journal to edit when editing a journal setting. Set to -1 to add new journal.
   const [selectedJournal, setSelectedJournal] = useState(-1);
   // The "role" of the Journal Column to edit. Set to null to add new journal column.
-  const [selectedJournalColumn, setSelectedJournalColumn] = useState(null);
-  const dispatch = useDispatch();
-  const account = useSelector(selectActiveAccount);
-  const journals = account.journals;
+  const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
+  const journals = useSelector(selectActiveAccountJournals);
 
   const openAddJournalDialog = () => {
     setSelectedJournal(-1);
     setAddEditJournalDialogOpen(true);
   };
 
-  const openEditJournalDialog = (index) => {
+  const openEditJournalDialog = (index: number) => {
     setSelectedJournal(index);
     setAddEditJournalDialogOpen(true);
   };
 
-  const openAddColumnDialog = (index) => {
+  const openAddColumnDialog = (index: number) => {
     setSelectedJournal(index);
     setSelectedJournalColumn(null);
     setAddEditJournalColumnDialogOpen(true);
   };
 
-  const openEditColumnDialog = (index, role) => {
+  const openEditColumnDialog = (index: number, role: JournalColumnRole) => {
     setSelectedJournal(index);
     setSelectedJournalColumn(role);
     setAddEditJournalColumnDialogOpen(true);
   };
 
-  const openEditColumnOrderDialog = (index) => {
+  const openEditColumnOrderDialog = (index: number) => {
     setSelectedJournal(index);
     setEditJournalColumnOrderDialogOpen(true);
   };
@@ -273,18 +279,18 @@ function AccountJournalsSettings(props) {
       <AddEditJournalDialog
         open={addEditJournalDialogOpen}
         onDialogClose={() => setAddEditJournalDialogOpen(false)}
-        journalIndex={selectedJournal}
+        index={selectedJournal}
       />
       <AddEditJournalColumnDialog
         open={addEditJournalColumnDialogOpen}
         onDialogClose={() => setAddEditJournalColumnDialogOpen(false)}
-        journalIndex={selectedJournal}
-        columnRole={selectedJournalColumn}
+        index={selectedJournal}
+        role={selectedJournalColumn}
       />
       <EditJournalColumnOrderDialog
         open={editJournalColumnOrderDialogOpen}
         onDialogClose={() => setEditJournalColumnOrderDialogOpen(false)}
-        journalIndex={selectedJournal}
+        index={selectedJournal}
       />
     </React.Fragment>
   );

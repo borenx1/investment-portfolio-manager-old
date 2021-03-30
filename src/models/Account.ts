@@ -83,39 +83,34 @@ export interface JournalColumnSet {
  * a number value is the index of an extra column.
  */
 export type JournalColumnRole = Exclude<keyof JournalColumnSet, 'extra'> | number;
-/**
- * Journal column settings.
- * @param name Name of the column.
- * @param hide Hide the column if true.
- */
-export interface JournalColumn {
+/** Base Journal Column interface to extend from. */
+interface BaseJournalColumn {
   name: string;
   hide: boolean;
-  type?: string;
 }
 export type DateTimeFormat = 'date' | 'datetime';
-export interface DateColumn extends JournalColumn {
+export interface DateColumn extends BaseJournalColumn {
   type: 'date';
   format: DateTimeFormat;
 }
-export interface TextColumn extends JournalColumn {
+export interface TextColumn extends BaseJournalColumn {
   type: 'text';
 }
-export interface IntegerColumn extends JournalColumn {
+export interface IntegerColumn extends BaseJournalColumn {
   type: 'integer';
 }
-export type DecimalColumnType = 'base' | 'quote' | 'price';
+export type DecimalColumnDescription = 'base' | 'quote' | 'price';
 /**
  * @param precision The precision shown of the column. Shows the default asset precision if not set.
  * @param description Used to set the default precision depending on if its an asset amount or price. No
  * default precision used if not set.
  */
-export interface DecimalColumn extends JournalColumn {
+export interface DecimalColumn extends BaseJournalColumn {
   type: 'decimal';
   // Key can be an asset ticker, e.g. USD, or an asset pair, e.g. BTC/USD.
   precision: {[key: string]: number};
   // precision: Record<string, number>;
-  description: DecimalColumnType;
+  description: DecimalColumnDescription;
 }
 interface BaseColumn extends DecimalColumn {
   description: 'base';
@@ -126,13 +121,17 @@ interface QuoteColumn extends DecimalColumn {
 interface PriceColumn extends DecimalColumn {
   description: 'price';
 }
-export interface AssetColumn extends JournalColumn {
+export interface AssetColumn extends BaseJournalColumn {
   type: 'asset';
 }
-export interface BooleanColumn extends JournalColumn {
+export interface BooleanColumn extends BaseJournalColumn {
   type: 'boolean';
 }
+/** Journal Columns that the user can create. */
 export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanColumn;
+/** All Journal Column types */
+export type JournalColumn = ExtraColumn | DateColumn | AssetColumn;
+export type JournalColumnType = JournalColumn['type'];
 /**
  * A transaction (trade, income or expense).\
  * An income transaction has positive base and quote amounts.\

@@ -157,6 +157,7 @@ export const {
   editAsset,
   deleteAsset,
   addJournal,
+  addDefaultJournal,
   editJournalSettings,
   deleteJournal,
   addJournalColumn,
