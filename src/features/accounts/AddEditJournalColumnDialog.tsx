@@ -9,11 +9,14 @@ import AddEditDialog from '../../components/AddEditDialog';
 import { addJournalColumn, editJournalColumn, selectActiveAccountJournals } from './accountsSlice';
 import {
   Journal,
+  DateColumn,
+  AssetColumn,
   TextColumn,
   IntegerColumn,
   DecimalColumn,
   BooleanColumn,
   ExtraColumn,
+  JournalColumn,
   DateTimeFormat,
   DecimalColumnDescription,
   JournalColumnRole,
@@ -21,7 +24,6 @@ import {
 } from '../../models/Account';
 
 interface FormFields {
-  role: JournalColumnRole;
   name: string;
   type: JournalColumnType;
   hide: boolean;
@@ -31,7 +33,6 @@ interface FormFields {
 }
 
 const initialFormFields: FormFields = {
-  role: 0,
   name: '',
   type: 'text',
   hide: false,
@@ -66,14 +67,9 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
   // column is the selected column if the props index and role are valid, else undefined
   const column = typeof role === 'string' ? journal?.columns[role] : journal?.columns.extra[role ?? -1];
 
-  const handleReset = () => {
-    setFields({...initialFormFields, role: role ?? (journal ? journal.columns.extra.length : 0)});
-  };
-
-  const handleDialogOpen = () => {
+  const handleReset = () => { 
     if (column) {
       setFields({
-        role: role!,
         name: column.name,
         type: column.type,
         hide: column.hide,
@@ -82,50 +78,101 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
         dateFormat: column.type === 'date' ? column.format : initialFormFields.dateFormat,
       });
     } else {
-      handleReset();
+      setFields(initialFormFields);
     }
   };
 
   const handleSubmit = () => {
-    if (column) {
-      // TODO
-      // dispatch(editJournalColumn({journalIndex: journalIndex, columnRole: columnRole, column: column}));
-    } else {
-      let newColumn: ExtraColumn;
-      switch (fields.type) {
-        case 'integer':
-          newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as IntegerColumn;
-          break;
-        case 'boolean':
-          newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as BooleanColumn;
-          break;
-        case 'decimal':
-          newColumn = {
-            name: fields.name,
-            hide: fields.hide,
-            type: fields.type,
-            precision: fields.precision,
-            description: fields.decimalColumnDescription,
-          } as DecimalColumn;
-          break;
-        // Default column is text column
-        case 'text':
-        default:
-          if (fields.type !== 'text') console.warn(`AddEditJournalColumnDialog: Add journal column with type: ${fields.type}.`);
-          newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as TextColumn;
-      }
-      dispatch(addJournalColumn({index: index, column: newColumn}));
+    // TODO: do this better
+    const newType: JournalColumnType = column && typeof role === 'string' ? column.type : fields.type;
+    // Core columns cannot change type
+    // Add extra properties depending on the column type
+    let extraColumnProperties: Record<string, any>;
+    switch (newType) {
+      case 'text':
+      case 'integer':
+      case 'boolean':
+      case 'asset':
+        extraColumnProperties = {};
+        break;
+      case 'date':
+        extraColumnProperties = {format: fields.dateFormat};
+        break;
+      case 'decimal':
+        extraColumnProperties = {precision: fields.precision, description: fields.decimalColumnDescription};
+        break;
     }
+
+    const newColumn = {name: fields.name, hide: fields.hide, type: newType, ...extraColumnProperties} as JournalColumn;
+    // First create core Journal Column properties
+    if (column && role !== null && role !== undefined) {
+      dispatch(editJournalColumn({index: index, role: role, column: newColumn}));
+    } else {
+      dispatch(addJournalColumn({index: index, column: newColumn as ExtraColumn}));
+    }
+
+    // if (column && role) {
+    //   let newColumn: JournalColumn = {...column, name: fields.name, hide: fields.hide};
+    //   if (typeof role === 'string') {
+    //     // Cant change column type if it is a core column (typeof role === 'string')
+    //     switch (role) {
+    //       case 'date':
+    //         newColumn = {...newColumn, format: fields.dateFormat} as DateColumn;
+    //         break;
+    //       case 'base':
+    //       case 'quote':
+    //         newColumn = {...newColumn} as AssetColumn;
+    //         break;
+    //       case 'baseAmount':
+    //       case 'quoteAmount':
+    //       case 'price':
+    //       case 'feeBase':
+    //       case 'feeQuote':
+    //         newColumn = {...newColumn, precision: fields.precision, description: fields.decimalColumnDescription} as DecimalColumn;
+    //         break;
+    //       case 'notes':
+    //         newColumn = {...newColumn} as TextColumn;
+    //     }
+    //   } else {
+    //     newColumn = {...newColumn, type: fields.type} as JournalColumn;
+    //   }
+    //   dispatch(editJournalColumn({index: index, role: role, column: newColumn}));
+    // } else {
+    //   let newColumn: ExtraColumn;
+    //   switch (fields.type) {
+    //     case 'integer':
+    //       newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as IntegerColumn;
+    //       break;
+    //     case 'boolean':
+    //       newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as BooleanColumn;
+    //       break;
+    //     case 'decimal':
+    //       newColumn = {
+    //         name: fields.name,
+    //         hide: fields.hide,
+    //         type: fields.type,
+    //         precision: fields.precision,
+    //         description: fields.decimalColumnDescription,
+    //       } as DecimalColumn;
+    //       break;
+    //     // Default column is text column
+    //     case 'text':
+    //     default:
+    //       if (fields.type !== 'text') console.warn(`AddEditJournalColumnDialog: Add journal column with type: ${fields.type}.`);
+    //       newColumn = {name: fields.name, hide: fields.hide, type: fields.type} as TextColumn;
+    //   }
+    //   dispatch(addJournalColumn({index: index, column: newColumn}));
+    // }
     onDialogClose?.();
   };
-
+  // TODO: edit precision for decimal columns
   return (
     <AddEditDialog
       objectName={'Journal Column'}
       edit={Boolean(column)}
       open={open}
       onClose={onDialogClose}
-      onEnter={handleDialogOpen}
+      onEnter={handleReset}
       onReset={handleReset}
       onSubmit={handleSubmit}
       contentMaxWidth="30rem"
@@ -139,7 +186,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             variant="outlined"
             size="small"
             required
-            value={fields.role}
+            value={role ?? journal?.columns.extra.length ?? 0}
             disabled
           />
         </Grid>
@@ -170,12 +217,10 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             <MenuItem value="decimal">Decimal</MenuItem>
             <MenuItem value="integer">Integer</MenuItem>
             <MenuItem value="boolean">Boolean</MenuItem>
-            {typeof role === 'string' &&
-              <React.Fragment>
-                <MenuItem value="date">Date</MenuItem>
-                <MenuItem value="asset">Asset</MenuItem>
-              </React.Fragment>
-            }
+            {typeof role === 'string' && [
+              <MenuItem value="date">Date</MenuItem>,
+              <MenuItem value="asset">Asset</MenuItem>,
+            ]}
           </TextField>
         </Grid>
         <Grid item xs={4}>
@@ -188,18 +233,21 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
           />
         </Grid>
         <Grid item xs={6}>
-          {/* TODO: display precision better */}
           <TextField
-            type="number"
-            label="Precision"
+            select
+            label="Description (Decimal)"
             fullWidth
             variant="outlined"
             size="small"
             required={fields.type === 'decimal'}
             disabled={fields.type !== 'decimal'}
-            value={String(fields.precision)}
-            // onChange={(e) => setFields(s => ({...s, precision: e.target.value}))}
-          />
+            value={fields.decimalColumnDescription}
+            onChange={(e) => setFields(s => ({...s, decimalColumnDescription: e.target.value as DecimalColumnDescription}))}
+          >
+            <MenuItem value="base">Base</MenuItem>
+            <MenuItem value="quote">Quote</MenuItem>
+            <MenuItem value="price">Price</MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={6}>
           <TextField
