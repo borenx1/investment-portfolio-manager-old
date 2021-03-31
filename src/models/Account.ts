@@ -1,3 +1,5 @@
+export * from './accountFunctions';
+
 /**
  * A trading account.
  * @param name Name of the account.

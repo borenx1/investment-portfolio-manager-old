@@ -22,7 +22,7 @@ import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import DeleteButton from '../../components/DeleteButton';
 import { deleteJournal, deleteJournalColumn, selectActiveAccountJournals } from './accountsSlice';
-import { Journal, JournalColumn, JournalColumnRole, JournalColumnSet } from '../../models/account';
+import { Journal, JournalColumn, JournalColumnRole } from '../../models/account';
 
 interface JournalColumnRowProps {
   role: JournalColumnRole;
