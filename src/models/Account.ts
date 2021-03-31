@@ -39,6 +39,9 @@ export interface Asset {
 }
 
 export type JournalType = 'trading' | 'income' | 'expense';
+export function isJournalType(obj: any): obj is JournalType {
+  return typeof obj === 'string' && ['trading', 'income', 'expense'].indexOf(obj) !== -1;
+}
 /**
  * A journal for an account.
  * @param name Name of the journal.
@@ -85,12 +88,20 @@ export interface JournalColumnSet {
  * a number value is the index of an extra column.
  */
 export type JournalColumnRole = Exclude<keyof JournalColumnSet, 'extra'> | number;
+export function isJournalColumnRole(obj: any): obj is JournalColumnRole {
+  const type = typeof obj;
+  return type === 'number' || (type === 'string' &&
+    ['date', 'base', 'baseAmount', 'quote', 'quoteAmount', 'price', 'feeBase', 'feeQuote', 'notes'].indexOf(obj) !== -1);
+}
 /** Base Journal Column interface to extend from. */
 interface BaseJournalColumn {
   name: string;
   hide: boolean;
 }
 export type DateColumnFormat = 'date' | 'datetime';
+export function isDateColumnFormat(obj: any): obj is DateColumnFormat {
+  return typeof obj === 'string' && ['date', 'datetime'].indexOf(obj) !== -1;
+}
 export interface DateColumn extends BaseJournalColumn {
   type: 'date';
   format: DateColumnFormat;
@@ -117,6 +128,9 @@ export function isIntegerColumn(column: JournalColumn | BaseJournalColumn): colu
   return 'type' in column && column.type === 'integer';
 }
 export type DecimalColumnDescription = 'base' | 'quote' | 'price';
+export function isDecimalColumnDescription(obj: any): obj is DecimalColumnDescription {
+  return typeof obj === 'string' && ['base', 'quote', 'price'].indexOf(obj) !== -1;
+}
 /**
  * @param precision The precision shown of the column. Shows the default asset precision if not set.
  * @param description Used to set the default precision depending on if its an asset amount or price. No

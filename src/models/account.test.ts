@@ -15,6 +15,10 @@ import {
   isPriceColumn,
   isBooleanColumn,
   isExtraColumn,
+  isJournalType,
+  isJournalColumnRole,
+  isDateColumnFormat,
+  isDecimalColumnDescription,
 } from './account';
 
 const testDateColumn: DateColumn = {name: 'Date', hide: false, format: 'date', type: 'date'};
@@ -120,5 +124,58 @@ describe('journal column type predicates', () => {
     expect(isExtraColumn(testIntegerColumn)).toBe(true);
     expect(isExtraColumn(testDecimalColumn)).toBe(true);
     expect(isExtraColumn(testBooleanColumn)).toBe(true);
+  });
+  test('isJournalType type predicate', () => {
+    expect(isJournalType('trading')).toBe(true);
+    expect(isJournalType('income')).toBe(true);
+    expect(isJournalType('expense')).toBe(true);
+    expect(isJournalType(undefined)).toBe(false);
+    expect(isJournalType(null)).toBe(false);
+    expect(isJournalType(true)).toBe(false);
+    expect(isJournalType('')).toBe(false);
+    expect(isJournalType('expenses')).toBe(false);
+    expect(isJournalType('Trading')).toBe(false);
+  });
+  test('isJournalColumnRole type predicate', () => {
+    expect(isJournalColumnRole(0)).toBe(true);
+    expect(isJournalColumnRole(1)).toBe(true);
+    expect(isJournalColumnRole(-1)).toBe(true);
+    expect(isJournalColumnRole('date')).toBe(true);
+    expect(isJournalColumnRole('base')).toBe(true);
+    expect(isJournalColumnRole('baseAmount')).toBe(true);
+    expect(isJournalColumnRole('quote')).toBe(true);
+    expect(isJournalColumnRole('quoteAmount')).toBe(true);
+    expect(isJournalColumnRole('price')).toBe(true);
+    expect(isJournalColumnRole('feeBase')).toBe(true);
+    expect(isJournalColumnRole('feeQuote')).toBe(true);
+    expect(isJournalColumnRole('notes')).toBe(true);
+    expect(isJournalColumnRole(undefined)).toBe(false);
+    expect(isJournalColumnRole(null)).toBe(false);
+    expect(isJournalColumnRole(true)).toBe(false);
+    expect(isJournalColumnRole('')).toBe(false);
+    expect(isJournalColumnRole('extra')).toBe(false);
+    expect(isJournalColumnRole('Date')).toBe(false);
+    expect(isJournalColumnRole('1')).toBe(false);
+  });
+  test('isDateColumnFormat type predicate', () => {
+    expect(isDateColumnFormat('date')).toBe(true);
+    expect(isDateColumnFormat('datetime')).toBe(true);
+    expect(isDateColumnFormat(undefined)).toBe(false);
+    expect(isDateColumnFormat(null)).toBe(false);
+    expect(isDateColumnFormat(true)).toBe(false);
+    expect(isDateColumnFormat('')).toBe(false);
+    expect(isDateColumnFormat('time')).toBe(false);
+    expect(isDateColumnFormat('Date')).toBe(false);
+  });
+  test('isDecimalColumnDescription type predicate', () => {
+    expect(isDecimalColumnDescription('base')).toBe(true);
+    expect(isDecimalColumnDescription('quote')).toBe(true);
+    expect(isDecimalColumnDescription('price')).toBe(true);
+    expect(isDecimalColumnDescription(undefined)).toBe(false);
+    expect(isDecimalColumnDescription(null)).toBe(false);
+    expect(isDecimalColumnDescription(true)).toBe(false);
+    expect(isDecimalColumnDescription('')).toBe(false);
+    expect(isDecimalColumnDescription('Base')).toBe(false);
+    expect(isDecimalColumnDescription('baseAmount')).toBe(false);
   });
 });
