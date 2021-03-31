@@ -1,7 +1,10 @@
 import { JournalColumnRole } from "./account";
 
-export function journalColumnRoleDisplay(role: JournalColumnRole) {
+export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | null) {
   switch (role) {
+    case undefined:
+    case null:
+      return role;
     case 'date':
       return 'Date';
     case 'base':

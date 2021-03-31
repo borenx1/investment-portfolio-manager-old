@@ -16,5 +16,7 @@ describe('journalColumnRoleDisplay', () => {
     expect(journalColumnRoleDisplay(10)).toEqual('Extra (11)');
     expect(journalColumnRoleDisplay(1.26246)).toEqual('Extra (2)');
     expect(journalColumnRoleDisplay(-1)).toEqual('Extra (0)');
+    expect(journalColumnRoleDisplay(undefined)).toBeUndefined();
+    expect(journalColumnRoleDisplay(null)).toBeNull();
   });
 });
