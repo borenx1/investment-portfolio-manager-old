@@ -175,9 +175,16 @@ export type ExtraColumn = TextColumn | IntegerColumn | DecimalColumn | BooleanCo
 export function isExtraColumn(column: JournalColumn | BaseJournalColumn): column is ExtraColumn {
   return isTextColumn(column) || isIntegerColumn(column) || isDecimalColumn(column) || isBooleanColumn(column);
 }
+export type ExtraColumnType = ExtraColumn['type'];
+export function isExtraColumnType(obj: any): obj is ExtraColumnType {
+  return typeof obj === 'string' && ['text', 'integer', 'decimal', 'boolean'].indexOf(obj) !== -1;
+}
 /** All Journal Column types */
 export type JournalColumn = ExtraColumn | DateColumn | AssetColumn;
 export type JournalColumnType = JournalColumn['type'];
+export function isJournalColumnType(obj: any): obj is JournalColumnType {
+  return typeof obj === 'string' && ['date', 'asset', 'text', 'integer', 'decimal', 'boolean'].indexOf(obj) !== -1;
+}
 /**
  * A transaction (trade, income or expense).\
  * An income transaction has positive base and quote amounts.\

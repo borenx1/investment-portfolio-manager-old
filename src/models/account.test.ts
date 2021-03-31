@@ -19,6 +19,8 @@ import {
   isJournalColumnRole,
   isDateColumnFormat,
   isDecimalColumnDescription,
+  isExtraColumnType,
+  isJournalColumnType,
 } from './account';
 
 const testDateColumn: DateColumn = {name: 'Date', hide: false, format: 'date', type: 'date'};
@@ -177,5 +179,37 @@ describe('journal column type predicates', () => {
     expect(isDecimalColumnDescription('')).toBe(false);
     expect(isDecimalColumnDescription('Base')).toBe(false);
     expect(isDecimalColumnDescription('baseAmount')).toBe(false);
+  });
+  test('isExtraColumnType type predicate', () => {
+    expect(isExtraColumnType('text')).toBe(true);
+    expect(isExtraColumnType('integer')).toBe(true);
+    expect(isExtraColumnType('decimal')).toBe(true);
+    expect(isExtraColumnType('boolean')).toBe(true);
+    expect(isExtraColumnType(undefined)).toBe(false);
+    expect(isExtraColumnType(null)).toBe(false);
+    expect(isExtraColumnType(true)).toBe(false);
+    expect(isExtraColumnType('')).toBe(false);
+    expect(isExtraColumnType('Text')).toBe(false);
+    expect(isExtraColumnType('date')).toBe(false);
+    expect(isExtraColumnType('asset')).toBe(false);
+    expect(isExtraColumnType('symbol')).toBe(false);
+    expect(isExtraColumnType('object')).toBe(false);
+    expect(isExtraColumnType('info')).toBe(false);
+  });
+  test('isJournalColumnType type predicate', () => {
+    expect(isJournalColumnType('date')).toBe(true);
+    expect(isJournalColumnType('asset')).toBe(true);
+    expect(isJournalColumnType('text')).toBe(true);
+    expect(isJournalColumnType('integer')).toBe(true);
+    expect(isJournalColumnType('decimal')).toBe(true);
+    expect(isJournalColumnType('boolean')).toBe(true);
+    expect(isJournalColumnType(undefined)).toBe(false);
+    expect(isJournalColumnType(null)).toBe(false);
+    expect(isJournalColumnType(true)).toBe(false);
+    expect(isJournalColumnType('')).toBe(false);
+    expect(isJournalColumnType('Text')).toBe(false);
+    expect(isJournalColumnType('symbol')).toBe(false);
+    expect(isJournalColumnType('object')).toBe(false);
+    expect(isJournalColumnType('info')).toBe(false);
   });
 });
