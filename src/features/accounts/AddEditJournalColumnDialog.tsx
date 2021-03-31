@@ -17,6 +17,7 @@ import {
   isDecimalColumnDescription,
   isJournalColumnType,
 } from '../../models/account';
+import { journalColumnRoleDisplay } from '../../models/accountFunctions';
 
 interface FormFields {
   name: string;
@@ -148,7 +149,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             variant="outlined"
             size="small"
             required
-            value={role ?? journal?.columns.extra.length ?? 0}
+            value={journalColumnRoleDisplay(role ?? journal?.columns.extra.length ?? 0)}
             disabled
           />
         </Grid>
