@@ -172,6 +172,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             variant="outlined"
             size="small"
             required
+            disabled={typeof role === 'string'}
             value={fields.type}
             onChange={(e) => setFields(s => ({...s, type: e.target.value}))}
           >
