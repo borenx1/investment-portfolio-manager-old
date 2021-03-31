@@ -218,8 +218,8 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             <MenuItem value="integer">Integer</MenuItem>
             <MenuItem value="boolean">Boolean</MenuItem>
             {typeof role === 'string' && [
-              <MenuItem value="date">Date</MenuItem>,
-              <MenuItem value="asset">Asset</MenuItem>,
+              <MenuItem value="date" key="date">Date</MenuItem>,
+              <MenuItem value="asset" key="asset">Asset</MenuItem>,
             ]}
           </TextField>
         </Grid>
