@@ -10,6 +10,12 @@ import {
   ExtraColumn,
   createDefaultAccount,
   createDefaultJournal,
+  isDateColumn,
+  isAssetColumn,
+  isBaseAmountColumn,
+  isQuoteAmountColumn,
+  isPriceColumn,
+  isTextColumn,
   isExtraColumn,
 } from '../../models/account';
 
@@ -111,23 +117,36 @@ export const accountsSlice = createSlice({
     },
     editJournalColumn: (state, action: PayloadAction<{account?: number, index: number, role: JournalColumnRole, column: JournalColumn}>) => {
       const { account: accountIndex, index, role, column } = action.payload;
-      // Updates the active account if no account provided
       const account = state.accounts[accountIndex ?? state.activeAccount];
       if (typeof role === 'string') {
         // Core column
-        // TODO: add predicates for using right column type
-        // if (role === 'date' && column.type === 'date') {
-        //   account.journals[index].columns[role] = column;
-        // } else if (role === 'base' && column.type === 'asset') {
-        //   account.journals[index].columns[role] = column;
-        // } else if (role === 'baseAmount' && column.type === 'decimal' && column.description === 'base') {
-        //   account.journals[index].columns[role] = column;
-        // }
-        account.journals[index].columns[role] = column as any;
-      } else if (isExtraColumn(column)) {   // Implicit typeof column === 'number'
-        account.journals[index].columns.extra[role] = column;
-      } else {
-        console.warn(`editJournalColumn: column is not an ExtraColumn for role: ${role}.`);
+        if (role === 'date' && isDateColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'base' && isAssetColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'baseAmount' && isBaseAmountColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'quote' && isAssetColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'quoteAmount' && isQuoteAmountColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'price' && isPriceColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'feeBase' && isBaseAmountColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'feeQuote' && isQuoteAmountColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else if (role === 'notes' && isTextColumn(column)) {
+          account.journals[index].columns[role] = column;
+        } else {
+          console.warn(`editJournalColumn: Column does not match core column role: ${role}.`);
+        }
+      } else {    // Implicit typeof column === 'number'
+        if (isExtraColumn(column)) {
+          account.journals[index].columns.extra[role] = column;
+        } else {
+          console.warn(`editJournalColumn: Column is not an ExtraColumn for role: ${role}.`);
+        }
       }
     },
     deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {
