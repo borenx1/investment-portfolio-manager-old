@@ -10,7 +10,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
 import { editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
-import { JournalColumnRole } from '../../models/account';
+import { JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
 
 interface Props {
   open: boolean;
@@ -68,7 +68,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
                 <ArrowUpwardIcon />
               </IconButton>
             </ListItemIcon>
-            <ListItemText primary={role} />
+            <ListItemText primary={journalColumnRoleDisplay(role)} />
             <ListItemSecondaryAction>
               <IconButton edge="end" disabled={i === dialogColumnOrder.length - 1} onClick={() => handleReorderColumn(i, i + 1)}>
                 <ArrowDownwardIcon />

@@ -22,7 +22,7 @@ import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import DeleteButton from '../../components/DeleteButton';
 import { deleteJournal, deleteJournalColumn, selectActiveAccountJournals } from './accountsSlice';
-import { Journal, JournalColumn, JournalColumnRole } from '../../models/account';
+import { Journal, JournalColumn, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
 
 interface JournalColumnRowProps {
   role: JournalColumnRole;
@@ -51,7 +51,7 @@ function JournalColumnRow(props: JournalColumnRowProps) {
 
   return (
     <TableRow hover onClick={onClick} className={classes.root}>
-      <TableCell>{ role }</TableCell>
+      <TableCell>{ journalColumnRoleDisplay(role) }</TableCell>
       <TableCell>{ journalColumn.name }</TableCell>
       <TableCell>{ journalColumn.type }</TableCell>
       <TableCell align="center">
@@ -194,7 +194,7 @@ function JournalRow(props: JournalRowProps) {
                 />
                 <Box display="flex" flexWrap="wrap">
                   {journal.columnOrder.map(c =>
-                    <Chip label={c} className={classes.columnOrderChip} key={c} />
+                    <Chip label={journalColumnRoleDisplay(c)} className={classes.columnOrderChip} key={c} />
                   )}
                 </Box>
               </Box>
