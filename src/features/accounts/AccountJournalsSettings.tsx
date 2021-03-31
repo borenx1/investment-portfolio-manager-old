@@ -54,8 +54,13 @@ function JournalColumnRow(props: JournalColumnRowProps) {
       <TableCell>{ role }</TableCell>
       <TableCell>{ journalColumn.name }</TableCell>
       <TableCell>{ journalColumn.type }</TableCell>
-      {/* TODO: display precision better */}
-      <TableCell align="center">{ journalColumn.type === 'decimal' && String(journalColumn.precision) }</TableCell>
+      <TableCell align="center">
+        {journalColumn.type === 'decimal' && (
+          Object.keys(journalColumn.precision).length === 0 ?
+            'Default' :
+            `${Object.keys(journalColumn.precision).length} mappings`
+        )}
+      </TableCell>
       <TableCell align="center">{ journalColumn.type === 'date' && journalColumn.format }</TableCell>
       <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
       <TableCell align="center">
