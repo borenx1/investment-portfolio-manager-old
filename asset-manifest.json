@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/investment-portfolio-mananger/static/css/main.afd7172b.chunk.css",
-    "main.js": "/investment-portfolio-mananger/static/js/main.049ade33.chunk.js",
-    "main.js.map": "/investment-portfolio-mananger/static/js/main.049ade33.chunk.js.map",
+    "main.js": "/investment-portfolio-mananger/static/js/main.301534cd.chunk.js",
+    "main.js.map": "/investment-portfolio-mananger/static/js/main.301534cd.chunk.js.map",
     "runtime-main.js": "/investment-portfolio-mananger/static/js/runtime-main.b674f85c.js",
     "runtime-main.js.map": "/investment-portfolio-mananger/static/js/runtime-main.b674f85c.js.map",
-    "static/js/2.7dcf1585.chunk.js": "/investment-portfolio-mananger/static/js/2.7dcf1585.chunk.js",
-    "static/js/2.7dcf1585.chunk.js.map": "/investment-portfolio-mananger/static/js/2.7dcf1585.chunk.js.map",
+    "static/js/2.be7233fa.chunk.js": "/investment-portfolio-mananger/static/js/2.be7233fa.chunk.js",
+    "static/js/2.be7233fa.chunk.js.map": "/investment-portfolio-mananger/static/js/2.be7233fa.chunk.js.map",
     "static/js/3.7f7c46e9.chunk.js": "/investment-portfolio-mananger/static/js/3.7f7c46e9.chunk.js",
     "static/js/3.7f7c46e9.chunk.js.map": "/investment-portfolio-mananger/static/js/3.7f7c46e9.chunk.js.map",
     "index.html": "/investment-portfolio-mananger/index.html",
     "static/css/main.afd7172b.chunk.css.map": "/investment-portfolio-mananger/static/css/main.afd7172b.chunk.css.map",
-    "static/js/2.7dcf1585.chunk.js.LICENSE.txt": "/investment-portfolio-mananger/static/js/2.7dcf1585.chunk.js.LICENSE.txt"
+    "static/js/2.be7233fa.chunk.js.LICENSE.txt": "/investment-portfolio-mananger/static/js/2.be7233fa.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.b674f85c.js",
-    "static/js/2.7dcf1585.chunk.js",
+    "static/js/2.be7233fa.chunk.js",
     "static/css/main.afd7172b.chunk.css",
-    "static/js/main.049ade33.chunk.js"
+    "static/js/main.301534cd.chunk.js"
   ]
 }
