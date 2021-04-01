@@ -8,15 +8,20 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import SettingsIcon from '@material-ui/icons/Settings';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { Journal, Transaction } from '../../models/account';
+import { Journal, JournalColumnRole, Transaction } from '../../models/account';
+import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
 
 interface JournalHeadersProps {
   journal: Journal,
+  onSettingsClick?: (role: JournalColumnRole) => void,
 }
 
 const useJournalHeadersStyles = makeStyles((theme) => ({
@@ -29,6 +34,9 @@ const useJournalHeadersStyles = makeStyles((theme) => ({
       },
     },
   },
+  columnSettings: {
+    marginLeft: 'auto',
+  },
 }));
 
 function JournalHeaders(props: Readonly<JournalHeadersProps>) {
@@ -36,10 +44,22 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
 
   return (
     <TableRow className={classes.root}>
-      {props.journal.columnOrder.map((role) => {
-        const column = typeof role === 'string' ? props.journal.columns[role] : props.journal.columns.extra[role];
-        return !column.hide && <TableCell key={role}>{column.name}</TableCell>;
-      })}
+        {props.journal.columnOrder.map((role) => {
+          const column = typeof role === 'string' ? props.journal.columns[role] : props.journal.columns.extra[role];
+          return !column.hide && <TableCell key={role}>
+            <Box display="flex">
+              {column.name}
+              <IconButton
+                size="small"
+                edge="end"
+                onClick={() => props.onSettingsClick?.(role)}
+                className={classes.columnSettings}
+              >
+                <SettingsIcon fontSize="small" style={{fontSize:'1rem'}} />
+              </IconButton>
+            </Box>
+          </TableCell>;
+        })}
     </TableRow>
   );
 }
@@ -107,6 +127,8 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const classes = useStyles();
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
+  const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
   const journals = useSelector(selectActiveAccountJournals);
   const journal = journals[props.journal];
 
@@ -120,6 +142,11 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
     setTransactionDialogOpen(true);
   };
 
+  const openJournalColumnDialog = (role: JournalColumnRole) => {
+    setSelectedJournalColumn(role);
+    setJournalColumnDialogOpen(true);
+  };
+
   return (
     <div role="tabpanel">
       <TableContainer component={Paper} className={classes.root}>
@@ -128,7 +155,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
           stickyHeader
         >
           <TableHead>
-            <JournalHeaders journal={journal} />
+            <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} />
           </TableHead>
           <TableBody>
             {journal.transactions.map((tx, index) => (
@@ -145,6 +172,12 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
         open={transactionDialogOpen}
         edit={selectedTransaction}
         onDialogClose={() => setTransactionDialogOpen(false)}
+      />
+      <AddEditJournalColumnDialog
+        index={props.journal}
+        role={selectedJournalColumn}
+        open={journalColumnDialogOpen}
+        onDialogClose={() => setJournalColumnDialogOpen(false)}
       />
     </div>
   );
