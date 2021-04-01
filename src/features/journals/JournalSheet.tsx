@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,53 +16,57 @@ import { selectActiveAccountJournals } from '../accounts/accountsSlice';
 import { Journal, Transaction } from '../../models/account';
 
 interface JournalHeadersProps {
-  readonly journal: Journal,
+  journal: Journal,
 }
 
 const useJournalHeadersStyles = makeStyles((theme) => ({
-  tableCell: {
-    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-    borderRight: '1px solid rgba(224, 224, 224, 1)',
-    '&:last-child': {
-      borderRight: 'none',
+  root: {
+    '& > *': {
+      borderBottom: '1px solid rgba(224, 224, 224, 1)',
+      borderRight: '1px solid rgba(224, 224, 224, 1)',
+      '&:last-child': {
+        borderRight: 'none',
+      },
     },
   },
 }));
 
-function JournalHeaders(props: JournalHeadersProps) {
+function JournalHeaders(props: Readonly<JournalHeadersProps>) {
   const classes = useJournalHeadersStyles();
 
   return (
-    <TableRow>
+    <TableRow className={classes.root}>
       {props.journal.columnOrder.map((role) => {
         const column = typeof role === 'string' ? props.journal.columns[role] : props.journal.columns.extra[role];
-        return !column.hide && <TableCell className={classes.tableCell} key={role}>{column.name}</TableCell>;
+        return !column.hide && <TableCell key={role}>{column.name}</TableCell>;
       })}
     </TableRow>
   );
 }
 
 interface JournalRowProps {
-  readonly journal: Journal,
-  readonly transaction: Transaction,
+  journal: Journal,
+  transaction: Transaction,
 }
 
 const useJournalRowStyles = makeStyles((theme) => ({
-  tableCell: {
-    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-    borderRight: '1px solid rgba(224, 224, 224, 1)',
-    '&:last-child': {
-      borderRight: 'none',
+  root: {
+    '& > *': {
+      borderBottom: '1px solid rgba(224, 224, 224, 1)',
+      borderRight: '1px solid rgba(224, 224, 224, 1)',
+      '&:last-child': {
+        borderRight: 'none',
+      },
     },
   },
 }));
 
-function JournalRow(props: JournalRowProps) {
+function JournalRow(props: Readonly<JournalRowProps>) {
   const { journal, transaction } = props;
   const classes = useJournalRowStyles();
 
   return (
-    <TableRow hover>
+    <TableRow hover className={classes.root}>
       {journal.columnOrder.map((role) => {
         const column = typeof role === 'string' ? journal.columns[role] : journal.columns.extra[role];
         let data: string | number | boolean;
@@ -76,10 +79,7 @@ function JournalRow(props: JournalRowProps) {
           // Convert boolean data to readable values
           if (typeof data === 'boolean') data = data ? 'Yes' : 'No';
         }
-        return !column.hide && <TableCell
-          className={classes.tableCell}
-          key={role}
-        >
+        return !column.hide && <TableCell key={role}>
           { data }
         </TableCell>;
       })}
@@ -88,7 +88,7 @@ function JournalRow(props: JournalRowProps) {
 }
 
 interface JournalSheetProps {
-  readonly journal: number,
+  journal: number,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function JournalSheet(props: JournalSheetProps) {
+function JournalSheet(props: Readonly<JournalSheetProps>) {
   const classes = useStyles();
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
