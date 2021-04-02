@@ -13,8 +13,8 @@ import IconButton from "@material-ui/core/IconButton";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
-import { editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
-import { Journal, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
+import { editJournalColumn, editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
+import { getJournalColumn, Journal, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
 
 interface Props {
   open: boolean;
@@ -41,10 +41,10 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
  */
 function EditJournalColumnOrderDialog(props: Readonly<Props>) {
   const classes = useStyles(props);
-  const { journal: index, onDialogClose, open, displayRoleDefault } = props;
+  const { journal: journalIndex, onDialogClose, open, displayRoleDefault, editHide } = props;
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
-  const journal = journals[index] as Journal | undefined;
+  const journal = journals[journalIndex] as Journal | undefined;
   // The actual column order in the global state
   const columnOrder = journal?.columnOrder ?? [];
   // The edit column order in the dialog. Confirmed when the "edit" button is clicked.
@@ -54,13 +54,17 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
 
   const handleReset = () => {
     setDialogColumnOrder(columnOrder);
-    const newHiddenColumns: JournalColumnRole[] = [];
-    columnOrder.forEach((role) => {
-      if (typeof role === 'string' ? journal?.columns[role].hide : journal?.columns.extra[role].hide) {
-        newHiddenColumns.push(role);
-      }
-    });
-    setHiddenColumns(newHiddenColumns);
+    if (journal !== undefined) {
+      const newHiddenColumns: JournalColumnRole[] = [];
+      columnOrder.forEach((role) => {
+        if (getJournalColumn(journal, role).hide) {
+          newHiddenColumns.push(role);
+        }
+      });
+      setHiddenColumns(newHiddenColumns);
+    } else {
+      setHiddenColumns([]);
+    }
   };
 
   const handleReorderColumn = (index: number, newIndex: number) => {
@@ -81,8 +85,16 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
   }
 
   const handleSubmit = () => {
-    dispatch(editJournalColumnOrder({index: index, columnOrder: dialogColumnOrder}));
-    // TODO edit hidden status
+    if (journal !== undefined) {
+      dispatch(editJournalColumnOrder({index: journalIndex, columnOrder: dialogColumnOrder}));
+      if (editHide) {
+        dialogColumnOrder.forEach(role => {
+          const oldColumn = getJournalColumn(journal, role);
+          const newHide = hiddenColumns.indexOf(role) !== -1;
+          dispatch(editJournalColumn({index: journalIndex, role: role, column: {...oldColumn, hide: newHide}}));
+        });
+      }
+    }
     onDialogClose?.();
   };
 
@@ -117,7 +129,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
             </ListItemIcon>
             <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : (typeof role === 'string' ? journal!.columns[role].name : journal!.columns.extra[role].name)} />
             <ListItemSecondaryAction>
-              {props.editHide && <Checkbox
+              {editHide && <Checkbox
                 checked={hiddenColumns.indexOf(role) === -1}
                 onChange={() => handleToggleHide(role)}
               />}
