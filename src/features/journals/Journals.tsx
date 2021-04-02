@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import AddIcon from '@material-ui/icons/Add';
 import JournalSheet from './JournalSheet';
-import AddTransactionTypeForm from './AddTransactionTypeForm';
+import AddJournalTab from './AddJournalTab';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
 
 function Journals() {
@@ -23,15 +22,10 @@ function Journals() {
           <Tab icon={<AddIcon />} />
         </Tabs>
       </AppBar>
-      <Box flexGrow={1}>
-        {journals.map((journal, index) =>
-          (activeTab === index) && <JournalSheet journal={index} key={index} />
-        )}
-      </Box>
-      <AddTransactionTypeForm
-        index={journals.length}
-        active={activeTab === journals.length}
-      />
+      {journals.map((journal, index) =>
+        (activeTab === index) && <JournalSheet journal={index} key={index} />
+      )}
+      { activeTab === journals.length && <AddJournalTab /> }
     </React.Fragment>
   );
 }

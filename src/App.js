@@ -45,7 +45,7 @@ class App extends React.Component {
         <aside>
           <SideDrawer open={this.state.drawerOpen} onClose={this.closeDrawer} />
         </aside>
-        <Box flexGrow={1} display="flex" flexDirection="column" component="main">
+        <Box component="main" flexGrow={1}>
           {/* Spacing with (height = top app bar height) so content is not clipped by the fixed app bar */}
           <Toolbar />
           <Switch>
