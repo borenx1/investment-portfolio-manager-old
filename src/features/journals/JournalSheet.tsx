@@ -24,7 +24,7 @@ import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
 import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from '../accounts/EditJournalColumnOrderDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { Journal, JournalColumnRole, Transaction } from '../../models/account';
+import { getJournalColumn, Journal, JournalColumnRole, Transaction } from '../../models/account';
 
 interface JournalHeadersProps {
   journal: Journal,
@@ -52,7 +52,7 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
   return (
     <TableRow className={classes.root}>
         {props.journal.columnOrder.map((role) => {
-          const column = typeof role === 'string' ? props.journal.columns[role] : props.journal.columns.extra[role];
+          const column = getJournalColumn(props.journal, role);
           return !column.hide && <TableCell key={role}>
             <Box display="flex">
               {column.name}
@@ -95,7 +95,7 @@ function JournalRow(props: Readonly<JournalRowProps>) {
   return (
     <TableRow hover className={classes.root}>
       {journal.columnOrder.map((role) => {
-        const column = typeof role === 'string' ? journal.columns[role] : journal.columns.extra[role];
+        const column = getJournalColumn(journal, role);
         let data: string | number | boolean;
         if (role === 'price') {
           data = transaction.quoteAmount / transaction.baseAmount;

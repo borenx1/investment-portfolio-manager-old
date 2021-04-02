@@ -23,7 +23,7 @@ export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | n
       return 'Quote fee';
     case 'notes':
       return 'Notes';
-    default:
+    default:    // Implicit typeof role = number
       return `Extra (${(role + 1).toFixed()})`;
   }
 }
@@ -38,7 +38,9 @@ export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | n
 // }
 
 // TODO add tests
+// TODO note that this can sometimes return undefined (index out of range)
 export function getJournalColumn(journal: Journal, role: number): ExtraColumn;
+export function getJournalColumn(journal: Journal, role: Exclude<JournalColumnRole, number>): JournalColumn;
 export function getJournalColumn(journal: Journal, role: JournalColumnRole): JournalColumn;
 export function getJournalColumn(journal: Journal, role: JournalColumnRole) {
   if (typeof role === 'number') {

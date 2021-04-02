@@ -16,8 +16,9 @@ import {
   isExtraColumn,
   isDecimalColumnDescription,
   isJournalColumnType,
+  getJournalColumn,
+  journalColumnRoleDisplay,
 } from '../../models/account';
-import { journalColumnRoleDisplay } from '../../models/accountFunctions';
 
 interface FormFields {
   name: string;
@@ -61,7 +62,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
   // journalIndex is set to -1 initially
   const journal = journals[index] as Journal | undefined;
   // column is the selected column if the props index and role are valid, else undefined
-  const column = typeof role === 'string' ? journal?.columns[role] : journal?.columns.extra[role ?? -1];
+  const column = (journal !== undefined && role != null) ? getJournalColumn(journal, role) : undefined;
 
   const handleReset = () => { 
     if (column) {

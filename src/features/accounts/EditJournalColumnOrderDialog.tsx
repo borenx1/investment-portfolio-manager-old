@@ -127,7 +127,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
                 <ArrowUpwardIcon />
               </IconButton>
             </ListItemIcon>
-            <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : (typeof role === 'string' ? journal!.columns[role].name : journal!.columns.extra[role].name)} />
+            <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : getJournalColumn(journal!, role)} />
             <ListItemSecondaryAction>
               {editHide && <Checkbox
                 checked={hiddenColumns.indexOf(role) === -1}
