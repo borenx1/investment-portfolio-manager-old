@@ -20,7 +20,7 @@ const initialFormFields: FormFields = {
 interface Props {
   open: boolean;
   onDialogClose?: () => void;
-  index: number;
+  journal: number;
 }
 
 /**
@@ -29,10 +29,10 @@ interface Props {
  * Props:
  * - open: Dialog shows if true.
  * - onDialogClose: Function called when the dialog requests to be closed.
- * - index: The index of the journal selected to edit. Set to index out of range (use a negative number) to add new journal.
+ * - journal: The index of the journal selected to edit. Set to index out of range (use a negative number) to add new journal.
  */
 function AddEditJournalDialog(props: Readonly<Props>) {
-  const { open, onDialogClose, index } = props;
+  const { open, onDialogClose, journal: index } = props;
   const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
@@ -62,7 +62,7 @@ function AddEditJournalDialog(props: Readonly<Props>) {
   return (
     <AddEditDialog
       objectName={'Journal'}
-      edit={Boolean(journal)}
+      edit={journal !== undefined}
       open={open}
       onClose={onDialogClose}
       onEnter={handleReset}

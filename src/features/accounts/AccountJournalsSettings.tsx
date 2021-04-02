@@ -284,7 +284,7 @@ function AccountJournalsSettings() {
       <AddEditJournalDialog
         open={addEditJournalDialogOpen}
         onDialogClose={() => setAddEditJournalDialogOpen(false)}
-        index={selectedJournal}
+        journal={selectedJournal}
       />
       <AddEditJournalColumnDialog
         open={addEditJournalColumnDialogOpen}

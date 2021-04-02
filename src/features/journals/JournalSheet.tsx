@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,10 +20,11 @@ import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
+import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
+import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
+import EditJournalColumnOrderDialog from '../accounts/EditJournalColumnOrderDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
 import { Journal, JournalColumnRole, Transaction } from '../../models/account';
-import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
-import { Typography } from '@material-ui/core';
 
 interface JournalHeadersProps {
   journal: Journal,
@@ -134,8 +138,11 @@ const useStyles = makeStyles((theme) => ({
 
 function JournalSheet(props: Readonly<JournalSheetProps>) {
   const classes = useStyles();
+  const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [journalSettingsDialogOpen, setJournalSettingsDialogOpen] = useState(false);
+  const [journalColumnOrderDialogOpen, setJournalColumnOrderDialogOpen] = useState(false);
   const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
   const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
   const journals = useSelector(selectActiveAccountJournals);
@@ -151,52 +158,80 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
     setTransactionDialogOpen(true);
   };
 
+  const openJournalSettingsDialog = () => {
+    setJournalSettingsDialogOpen(true);
+    setMenuAnchor(null);
+  }
+
+  const openJournalColumnOrderDialog = () => {
+    setJournalColumnOrderDialogOpen(true);
+    setMenuAnchor(null);
+  };
+
   const openJournalColumnDialog = (role: JournalColumnRole) => {
     setSelectedJournalColumn(role);
     setJournalColumnDialogOpen(true);
   };
 
   return (
-    <Box role="tabpanel">
-      <Toolbar className={classes.toolbar}>
-        <Typography variant="h6" className={classes.title}>
-          { journal.name }
-        </Typography>
-        <IconButton>
-          <MoreVertIcon />
-        </IconButton>
-      </Toolbar>
-      <TableContainer component={Paper} className={classes.table}>
-        <Table
-          size="small"
-          stickyHeader
+      <Box role="tabpanel">
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" className={classes.title}>
+            { journal.name }
+          </Typography>
+          <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
+            <MoreVertIcon />
+          </IconButton>
+        </Toolbar>
+        <TableContainer component={Paper} className={classes.table}>
+          <Table
+            size="small"
+            stickyHeader
+          >
+            <TableHead>
+              <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} />
+            </TableHead>
+            <TableBody>
+              {journal.transactions.map((tx, index) => (
+                <JournalRow journal={journal} transaction={tx} key={index} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Fab color="secondary" className={classes.fab} onClick={openAddDialog}>
+          <AddIcon />
+        </Fab>
+        <AddEditTransactionDialog
+          journal={journal}
+          edit={selectedTransaction}
+          open={transactionDialogOpen}
+          onDialogClose={() => setTransactionDialogOpen(false)}
+        />
+        <AddEditJournalDialog
+          journal={props.journal}
+          open={journalSettingsDialogOpen}
+          onDialogClose={() => setJournalSettingsDialogOpen(false)}
+        />
+        <AddEditJournalColumnDialog
+          index={props.journal}
+          role={selectedJournalColumn}
+          open={journalColumnDialogOpen}
+          onDialogClose={() => setJournalColumnDialogOpen(false)}
+        />
+        <EditJournalColumnOrderDialog
+          index={props.journal}
+          open={journalColumnOrderDialogOpen}
+          onDialogClose={() => setJournalColumnOrderDialogOpen(false)}
+        />
+        <Menu
+          anchorEl={menuAnchor}
+          open={menuAnchor !== null}
+          onClose={() => setMenuAnchor(null)}
         >
-          <TableHead>
-            <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} />
-          </TableHead>
-          <TableBody>
-            {journal.transactions.map((tx, index) => (
-              <JournalRow journal={journal} transaction={tx} key={index} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Fab color="secondary" className={classes.fab} onClick={openAddDialog}>
-        <AddIcon />
-      </Fab>
-      <AddEditTransactionDialog
-        journal={journal}
-        edit={selectedTransaction}
-        open={transactionDialogOpen}
-        onDialogClose={() => setTransactionDialogOpen(false)}
-      />
-      <AddEditJournalColumnDialog
-        index={props.journal}
-        role={selectedJournalColumn}
-        open={journalColumnDialogOpen}
-        onDialogClose={() => setJournalColumnDialogOpen(false)}
-      />
-    </Box>
+          <MenuItem onClick={openJournalSettingsDialog}>Settings</MenuItem>
+          <MenuItem onClick={openJournalColumnOrderDialog}>Columns</MenuItem>
+        </Menu>
+      </Box>
   );
 }
   
