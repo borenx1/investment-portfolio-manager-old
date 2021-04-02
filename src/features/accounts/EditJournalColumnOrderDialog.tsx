@@ -15,7 +15,7 @@ import { JournalColumnRole, journalColumnRoleDisplay } from '../../models/accoun
 interface Props {
   open: boolean;
   onDialogClose?: () => void;
-  index: number;
+  journal: number;
 }
 
 /**
@@ -24,14 +24,14 @@ interface Props {
  * Props:
  * - open: Dialog shows if true.
  * - onDialogClose: Function called when the dialog requests to be closed.
- * - index: The index of the journal of the column order to edit.
+ * - journal: The index of the journal of the column order to edit.
  */
 function EditJournalColumnOrderDialog(props: Readonly<Props>) {
-  const { index, onDialogClose, open } = props;
+  const { journal, onDialogClose, open } = props;
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
   // The actual column order in the global state
-  const columnOrder = journals[index]?.columnOrder ?? [];
+  const columnOrder = journals[journal]?.columnOrder ?? [];
   // The edit column order in the dialog. Confirmed when the "edit" button is clicked.
   const [dialogColumnOrder, setDialogColumnOrder] = useState<JournalColumnRole[]>(columnOrder);
 
@@ -46,7 +46,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
   };
 
   const handleSubmit = () => {
-    dispatch(editJournalColumnOrder({index: index, columnOrder: dialogColumnOrder}));
+    dispatch(editJournalColumnOrder({index: journal, columnOrder: dialogColumnOrder}));
     onDialogClose?.();
   };
 

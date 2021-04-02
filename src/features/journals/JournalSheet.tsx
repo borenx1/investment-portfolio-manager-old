@@ -213,13 +213,13 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
           onDialogClose={() => setJournalSettingsDialogOpen(false)}
         />
         <AddEditJournalColumnDialog
-          index={props.journal}
+          journal={props.journal}
           role={selectedJournalColumn}
           open={journalColumnDialogOpen}
           onDialogClose={() => setJournalColumnDialogOpen(false)}
         />
         <EditJournalColumnOrderDialog
-          index={props.journal}
+          journal={props.journal}
           open={journalColumnOrderDialogOpen}
           onDialogClose={() => setJournalColumnOrderDialogOpen(false)}
         />

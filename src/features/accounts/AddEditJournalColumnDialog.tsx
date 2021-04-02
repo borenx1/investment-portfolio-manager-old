@@ -40,7 +40,7 @@ const initialFormFields: Readonly<FormFields> = {
 interface Props {
   open: boolean;
   onDialogClose?: () => void;
-  index: number;
+  journal: number;
   role?: JournalColumnRole | null;
 }
 
@@ -54,7 +54,7 @@ interface Props {
  * - role: The column role of the selected journal to edit. Set to nullish value to add a new column.
  */
 function AddEditJournalColumnDialog(props: Readonly<Props>) {
-  const { open, onDialogClose, index, role } = props;
+  const { open, onDialogClose, journal: index, role } = props;
   const [fields, setFields] = useState<Readonly<FormFields>>(initialFormFields);
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);

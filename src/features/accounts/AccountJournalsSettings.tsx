@@ -289,13 +289,13 @@ function AccountJournalsSettings() {
       <AddEditJournalColumnDialog
         open={addEditJournalColumnDialogOpen}
         onDialogClose={() => setAddEditJournalColumnDialogOpen(false)}
-        index={selectedJournal}
+        journal={selectedJournal}
         role={selectedJournalColumn}
       />
       <EditJournalColumnOrderDialog
         open={editJournalColumnOrderDialogOpen}
         onDialogClose={() => setEditJournalColumnOrderDialogOpen(false)}
-        index={selectedJournal}
+        journal={selectedJournal}
       />
     </React.Fragment>
   );
