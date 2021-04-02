@@ -296,6 +296,7 @@ function AccountJournalsSettings() {
         open={editJournalColumnOrderDialogOpen}
         onDialogClose={() => setEditJournalColumnOrderDialogOpen(false)}
         journal={selectedJournal}
+        displayRoleDefault
       />
     </React.Fragment>
   );
