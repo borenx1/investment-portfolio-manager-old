@@ -115,6 +115,12 @@ interface JournalSheetProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  toolbar: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  title: {
+    flexGrow: 1,
+  },
   table: {
     borderRadius: 0,
     boxShadow: 'none',
@@ -151,15 +157,15 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   };
 
   return (
-    <Box  role="tabpanel">
-      {/* <Toolbar>
-        <Typography variant="h6">
+    <Box role="tabpanel">
+      <Toolbar className={classes.toolbar}>
+        <Typography variant="h6" className={classes.title}>
           { journal.name }
         </Typography>
         <IconButton>
           <MoreVertIcon />
         </IconButton>
-      </Toolbar> */}
+      </Toolbar>
       <TableContainer component={Paper} className={classes.table}>
         <Table
           size="small"
