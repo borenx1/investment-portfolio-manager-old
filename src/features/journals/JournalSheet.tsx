@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,10 +15,12 @@ import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
 import { Journal, JournalColumnRole, Transaction } from '../../models/account';
 import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
+import { Typography } from '@material-ui/core';
 
 interface JournalHeadersProps {
   journal: Journal,
@@ -112,7 +115,7 @@ interface JournalSheetProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  table: {
     borderRadius: 0,
     boxShadow: 'none',
   },
@@ -148,8 +151,16 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   };
 
   return (
-    <div role="tabpanel">
-      <TableContainer component={Paper} className={classes.root}>
+    <Box  role="tabpanel">
+      {/* <Toolbar>
+        <Typography variant="h6">
+          { journal.name }
+        </Typography>
+        <IconButton>
+          <MoreVertIcon />
+        </IconButton>
+      </Toolbar> */}
+      <TableContainer component={Paper} className={classes.table}>
         <Table
           size="small"
           stickyHeader
@@ -169,8 +180,8 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
       </Fab>
       <AddEditTransactionDialog
         journal={journal}
-        open={transactionDialogOpen}
         edit={selectedTransaction}
+        open={transactionDialogOpen}
         onDialogClose={() => setTransactionDialogOpen(false)}
       />
       <AddEditJournalColumnDialog
@@ -179,7 +190,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
         open={journalColumnDialogOpen}
         onDialogClose={() => setJournalColumnDialogOpen(false)}
       />
-    </div>
+    </Box>
   );
 }
   

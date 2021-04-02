@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -22,10 +23,11 @@ function Journals() {
           <Tab icon={<AddIcon />} />
         </Tabs>
       </AppBar>
-      {/* TODO update key */}
-      {journals.map((journal, index) =>
-        (activeTab === index) && <JournalSheet journal={index} key={index} />
-      )}
+      <Box flexGrow={1}>
+        {journals.map((journal, index) =>
+          (activeTab === index) && <JournalSheet journal={index} key={index} />
+        )}
+      </Box>
       <AddTransactionTypeForm
         index={journals.length}
         active={activeTab === journals.length}
