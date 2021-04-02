@@ -222,6 +222,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
           journal={props.journal}
           open={journalColumnOrderDialogOpen}
           onDialogClose={() => setJournalColumnOrderDialogOpen(false)}
+          editHide
         />
         <Menu
           anchorEl={menuAnchor}
