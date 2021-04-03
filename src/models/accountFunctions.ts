@@ -15,6 +15,7 @@ import {
   JournalColumnType,
   isDecimalColumn,
   isBooleanColumn,
+  isDateColumn,
 } from "./account";
 
 /**
@@ -135,8 +136,9 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   }
   if (isDecimalColumn(column) && (typeof data === 'number' || typeof data === 'string')) {
     return formatTransactionDecimalColumn(data, column, transaction.base, transaction.quote, assets);
-  }
-  if (isBooleanColumn(column)) {
+  } else if (isDateColumn(column) && typeof data === 'string') {
+    return column.showTime ? new Date(data).toLocaleString() : new Date(data).toLocaleDateString();
+  } else if (isBooleanColumn(column)) {
     return data ? 'Yes' : 'No';
   }
   return String(data);

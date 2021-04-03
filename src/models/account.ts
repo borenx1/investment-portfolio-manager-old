@@ -226,7 +226,7 @@ const defaultAssets: Asset[] = [
 const defaultJournals: Journal[] = [
   createTradingJournal('Trading', undefined, [
     {
-      date: '01/01/2021',
+      date: '2021-01-01T00:00:00',
       base: 'BTC',
       baseAmount: 1,
       quote: 'USD',
@@ -237,7 +237,7 @@ const defaultJournals: Journal[] = [
       extra: {}
     },
     {
-      date: '02/01/2021',
+      date: '2021-01-02T00:00:00',
       base: 'BTC',
       baseAmount: 0.5,
       quote: 'USD',
