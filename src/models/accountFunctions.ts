@@ -1,4 +1,4 @@
-import { Journal, JournalColumn, ExtraColumn, JournalColumnRole } from "./account";
+import { Journal, JournalColumn, ExtraColumn, JournalColumnRole, JournalColumnType } from "./account";
 
 export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | null) {
   switch (role) {
@@ -48,4 +48,8 @@ export function getJournalColumn(journal: Journal, role: JournalColumnRole) {
   } else {
     return journal.columns[role];
   }
+}
+
+export function isRightAlignJournalColumnType(type: JournalColumnType): boolean {
+  return ['date', 'integer', 'decimal'].indexOf(type) !== -1;
 }

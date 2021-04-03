@@ -24,7 +24,7 @@ import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
 import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from '../accounts/EditJournalColumnOrderDialog';
 import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { getJournalColumn, Journal, JournalColumnRole, Transaction } from '../../models/account';
+import { getJournalColumn, isRightAlignJournalColumnType, Journal, JournalColumnRole, Transaction } from '../../models/account';
 
 interface JournalHeadersProps {
   journal: Journal,
@@ -106,7 +106,10 @@ function JournalRow(props: Readonly<JournalRowProps>) {
           // Convert boolean data to readable values
           if (typeof data === 'boolean') data = data ? 'Yes' : 'No';
         }
-        return !column.hide && <TableCell key={role}>
+        return !column.hide && <TableCell
+          align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
+          key={role}
+        >
           { data }
         </TableCell>;
       })}

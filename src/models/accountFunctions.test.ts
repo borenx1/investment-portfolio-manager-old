@@ -1,4 +1,4 @@
-import { journalColumnRoleDisplay } from "./accountFunctions";
+import { isRightAlignJournalColumnType, journalColumnRoleDisplay } from "./accountFunctions";
 
 describe('journalColumnRoleDisplay', () => {
   test('expected values', () => {
@@ -18,5 +18,16 @@ describe('journalColumnRoleDisplay', () => {
     expect(journalColumnRoleDisplay(-1)).toEqual('Extra (0)');
     expect(journalColumnRoleDisplay(undefined)).toBeUndefined();
     expect(journalColumnRoleDisplay(null)).toBeNull();
+  });
+});
+
+describe('isRightAlignJournalColumnType', () => {
+  test('expected values', () => {
+    expect(isRightAlignJournalColumnType('date')).toBe(true);
+    expect(isRightAlignJournalColumnType('decimal')).toBe(true);
+    expect(isRightAlignJournalColumnType('integer')).toBe(true);
+    expect(isRightAlignJournalColumnType('asset')).toBe(false);
+    expect(isRightAlignJournalColumnType('boolean')).toBe(false);
+    expect(isRightAlignJournalColumnType('text')).toBe(false);
   });
 });
