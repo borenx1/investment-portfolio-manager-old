@@ -126,7 +126,8 @@ function formatTransactionDecimalColumn(value: number | string, column: DecimalC
  */
 export function transactionDataDisplay(transaction: Transaction, role: JournalColumnRole, journal: Journal, assets: Asset[] = []): string {
   const column = getJournalColumn(journal, role);
-  let data: number | string | boolean;
+  // Could be undefined due to extra column does not exist
+  let data: number | string | boolean | undefined;
   if (role === 'price') {
     data = transaction.quoteAmount / transaction.baseAmount;
   } else if (typeof role === 'number') {
@@ -141,5 +142,5 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   } else if (isBooleanColumn(column)) {
     return data ? 'Yes' : 'No';
   }
-  return String(data);
+  return data !== undefined ? String(data) : '';
 }

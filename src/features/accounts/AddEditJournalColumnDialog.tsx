@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -38,7 +39,14 @@ interface DecimalColumnSettingsProps {
   assets?: Asset[];
 }
 
+const useStyles = makeStyles((theme) => ({
+  removeButton: {
+    color: theme.palette.error.main,
+  },
+}));
+
 function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
+  const classes = useStyles();
   const {
     disableDescription,
     description,
@@ -112,7 +120,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
           />
         </Grid>,
         <Grid item xs={2}>
-          <IconButton onClick={() => handleDeletePrecision(t)}>
+          <IconButton onClick={() => handleDeletePrecision(t)} className={classes.removeButton}>
             <RemoveIcon />
           </IconButton>
         </Grid>,
@@ -146,7 +154,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
         />
       </Grid>
       <Grid item xs={2}>
-        <IconButton onClick={handleAddPrecision}>
+        <IconButton color="secondary" onClick={handleAddPrecision}>
           <AddIcon />
         </IconButton>
       </Grid>
