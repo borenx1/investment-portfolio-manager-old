@@ -157,7 +157,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   };
 
   const openEditDialog = (tx: Transaction) => {
-    setSelectedTransaction(null);
+    setSelectedTransaction(tx);
     setTransactionDialogOpen(true);
   };
 
@@ -205,8 +205,8 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
           <AddIcon />
         </Fab>
         <AddEditTransactionDialog
-          journal={journal}
-          edit={selectedTransaction}
+          journal={props.journal}
+          transaction={selectedTransaction}
           open={transactionDialogOpen}
           onDialogClose={() => setTransactionDialogOpen(false)}
         />

@@ -17,6 +17,13 @@ import {
   isBooleanColumn,
 } from "./account";
 
+/**
+ * Convert a date to "yyyy-mm-ddThh:mm:ss" format in GMT. Compatible with DateColumn.
+ */
+export function dateToString(date: Date) {
+  return `${String(date.getFullYear()).padStart(4, '0')}-${String(date.getMonth()).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+}
+
 export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | null) {
   switch (role) {
     case undefined:

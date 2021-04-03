@@ -1,95 +1,103 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, selectActiveAccount } from '../accounts/accountsSlice';
-import { Transaction } from '../../models/account';
+import { Transaction, dateToString } from '../../models/account';
 
-/**
- * @returns The current local date and time in "yyyy-mm-ddThh:mm:ss" format.
- */
-function getCurrentLocalDateTime() {
-  const currentDateTime = new Date();
-  return new Date(currentDateTime - currentDateTime.getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 19);
+export interface FormFields {
+  date: string;
+  base: string;
+  quote: string;
+  baseAmount: number,
+  quoteAmount: number,
+  price: number,
+  fee: number,
+  feeCurrency: 'base' | 'quote',
+  notes: string,
 }
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
+const initialFormFields: FormFields = {
+  date: '',
+  base: '',
+  quote: '',
+  baseAmount: 0,
+  quoteAmount: 0,
+  price: 0,
+  fee: 0,
+  feeCurrency: 'quote',
+  notes: '',
+};
 
-//   },
-// }));
+interface Props {
+  journal: number;
+  transaction?: Transaction | null;
+  open: boolean;
+  onDialogClose?: () => void;
+}
 
-function AddEditTransactionDialog(props) {
-  // const classes = useStyles();
-  const [fields, setFields] = useState({
-    date: '',
-    base: '',
-    quote: '',
-    trade: '',
-    baseAmount: '',
-    quoteAmount: '',
-    price: '',
-    fee: '',
-    feeCurrency: '',
-    notes: '',
-  });
+function AddEditTransactionDialog(props: Props) {
+  const { journal, transaction, open, onDialogClose } = props;
+  const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
 
   const resetForm = () => {
-    setFields({
-      date: getCurrentLocalDateTime(),
-      base: '',
-      quote: account ? account.settings.accountingCurrency.ticker : '',
-      trade: 'buy',
-      baseAmount: '',
-      quoteAmount: '',
-      price: 0,
-      fee: 0,
-      feeCurrency: 'quote',
-      notes: '',
-    });
+    if (transaction === null || transaction === undefined) {
+      setFields({
+        ...initialFormFields,
+        date: dateToString(new Date()),
+        quote: account?.settings.accountingCurrency.ticker ?? '',
+      });
+    } else {
+      setFields({
+        date: transaction.date,
+        base: transaction.base,
+        baseAmount: transaction.baseAmount,
+        quote: transaction.quote,
+        quoteAmount: transaction.quoteAmount,
+        price: transaction.quoteAmount / transaction.baseAmount,
+        fee: transaction.feeBase !== 0 ? transaction.feeBase : transaction.feeQuote,
+        feeCurrency: transaction.feeBase !== 0 ? 'base' : 'quote',
+        notes: transaction.notes,
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     // TODO input validation
-    dispatch(addTransaction({
-      journal: props.index,
-      transaction: {
-        date: fields.date,
-        base: fields.base,
-        baseAmount: fields.baseAmount,
-        quote: fields.quote,
-        quoteAmount: fields.quoteAmount,
-        feeBase: 0,
-        feeQuote: fields.fee,
-        notes: fields.notes,
-      },
-    }));
-    props.onDialogClose();
-  };
-  const handleDialogOpen = () => {
-    // Init form fields according to add or edit mode
-    if (props.edit) {
-      
+    if (transaction === null || transaction === undefined) {
+      dispatch(addTransaction({
+        journal: journal,
+        transaction: {
+          date: fields.date,
+          base: fields.base,
+          baseAmount: fields.baseAmount,
+          quote: fields.quote,
+          quoteAmount: fields.quoteAmount,
+          feeBase: 0,
+          feeQuote: fields.fee,
+          notes: fields.notes,
+        },
+      }));
     } else {
-      resetForm();
+
     }
-  }
+    onDialogClose?.();
+  };
 
   return (
     <AddEditDialog
       objectName={'Transaction'}
-      edit={Boolean(props.edit)}
-      open={props.open}
-      onClose={props.onDialogClose}
-      onEnter={handleDialogOpen}
+      edit={Boolean(transaction)}
+      open={open}
+      onClose={onDialogClose}
+      onEnter={resetForm}
       onReset={resetForm}
       onSubmit={handleSubmit}
+      contentMaxWidth="30rem"
     >
       <Grid container spacing={1}>
         <Grid item xs={12}>
@@ -113,7 +121,7 @@ function AddEditTransactionDialog(props) {
             label="Amount"
             required
             value={fields.baseAmount}
-            onChange={(e) => setFields(s => ({...s, baseAmount: e.target.value}))}
+            onChange={(e) => setFields(s => ({...s, baseAmount: Number(e.target.value)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -138,7 +146,7 @@ function AddEditTransactionDialog(props) {
             label="Total"
             required
             value={fields.quoteAmount}
-            onChange={(e) => setFields(s => ({...s, quoteAmount: e.target.value}))}
+            onChange={(e) => setFields(s => ({...s, quoteAmount: Number(e.target.value)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -163,22 +171,11 @@ function AddEditTransactionDialog(props) {
             label="Price"
             required
             value={fields.price}
-            onChange={(e) => setFields(s => ({...s, price: e.target.value}))}
+            onChange={(e) => setFields(s => ({...s, price: Number(e.target.value)}))}
           />
         </Grid>
         <Grid item xs={4}>
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label="Trade Type"
-            required
-            value={fields.trade}
-            onChange={(e) => setFields(s => ({...s, trade: e.target.value}))}
-          >
-            <MenuItem value={'buy'}>{ 'Buy' }</MenuItem>
-            <MenuItem value={'sell'}>{ 'Sell' }</MenuItem>
-          </TextField>
+          
         </Grid>
         <Grid item xs={8}>
           <TextField
@@ -187,7 +184,7 @@ function AddEditTransactionDialog(props) {
             size="small"
             label="Fee"
             value={fields.fee}
-            onChange={(e) => setFields(s => ({...s, fee: e.target.value}))}
+            onChange={(e) => setFields(s => ({...s, fee: Number(e.target.value)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -197,10 +194,10 @@ function AddEditTransactionDialog(props) {
             size="small"
             label="Fee Currency"
             value={fields.feeCurrency}
-            onChange={(e) => setFields(s => ({...s, feeCurrency: e.target.value}))}
+            onChange={(e) => setFields(s => ({...s, feeCurrency: e.target.value as 'base' | 'quote'}))}
           >
-            <MenuItem value={'base'}>{ 'Base' }</MenuItem>
-            <MenuItem value={'quote'}>{ 'Quote' }</MenuItem>
+            <MenuItem value={'base'}>{ `Base (${fields.base})` }</MenuItem>
+            <MenuItem value={'quote'}>{ `Quote (${fields.quote})` }</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={12}>

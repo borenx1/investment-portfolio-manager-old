@@ -1,5 +1,13 @@
 import { createTradingJournal, Journal, Transaction, Asset } from "./account";
-import { isRightAlignJournalColumnType, journalColumnRoleDisplay, transactionDataDisplay } from "./accountFunctions";
+import { dateToString, isRightAlignJournalColumnType, journalColumnRoleDisplay, transactionDataDisplay } from "./accountFunctions";
+
+describe('dateToString', () => {
+  test('expected values', () => {
+    expect(dateToString(new Date(2020, 1, 1))).toEqual('2020-01-01T00:00:00');
+    expect(dateToString(new Date(2020, 6, 12, 20, 10))).toEqual('2020-06-12T20:10:00');
+    expect(dateToString(new Date(111, 1, 1, 20, 0))).toEqual('0111-01-01T20:00:00');
+  });
+});
 
 describe('journalColumnRoleDisplay', () => {
   test('expected values', () => {
