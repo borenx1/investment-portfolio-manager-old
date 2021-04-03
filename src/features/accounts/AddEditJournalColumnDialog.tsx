@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import RemoveIcon from '@material-ui/icons/Remove';
+import AddIcon from '@material-ui/icons/Add';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addJournalColumn, editJournalColumn, selectActiveAccountJournals } from './accountsSlice';
+import { addJournalColumn, editJournalColumn, selectActiveAccountAssetsAll, selectActiveAccountJournals } from './accountsSlice';
 import {
   Journal,
   JournalColumn,
@@ -17,7 +21,134 @@ import {
   isJournalColumnType,
   getJournalColumn,
   journalColumnRoleDisplay,
+  Asset,
 } from '../../models/account';
+import { Divider, Typography } from '@material-ui/core';
+
+interface DecimalColumnSettingsProps {
+  description: string;
+  onDescriptionChange?: (newValue: string) => void;
+  precision: Record<string, number>;
+  onPrecisionChange?: (newValue: Record<string, number>) => void;
+  newPrecisionFields: {ticker: string, precision: number};
+  onNewPrecisionFieldsChange?: (newValue: {ticker: string, precision: number}) => void;
+  onNewPrecisionFieldsReset?: () => void;
+  assets?: Asset[];
+}
+
+function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
+  const {
+    description,
+    onDescriptionChange,
+    precision,
+    onPrecisionChange,
+    newPrecisionFields,
+    onNewPrecisionFieldsChange,
+    onNewPrecisionFieldsReset,
+    assets,
+  } = props;
+
+  const handleAddPrecision = () => {
+    if (newPrecisionFields.ticker !== '' && !isNaN(newPrecisionFields.precision)) {
+      onPrecisionChange?.({...precision, [newPrecisionFields.ticker]: newPrecisionFields.precision});
+      onNewPrecisionFieldsReset?.();
+    }
+  };
+
+  const handleDeletePrecision = (ticker: string) => {
+    const { [ticker]: _, ...newPrecision } = precision;
+    onPrecisionChange?.(newPrecision);
+  };
+
+  return (
+    <React.Fragment>
+      <Grid item xs={12}>
+        <TextField
+          select
+          label="Description"
+          fullWidth
+          variant="outlined"
+          size="small"
+          required
+          value={description}
+          onChange={(e) => onDescriptionChange?.(e.target.value)}
+        >
+          <MenuItem value="base">Base</MenuItem>
+          <MenuItem value="quote">Quote</MenuItem>
+          <MenuItem value="price">Price</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1">Precision</Typography>
+        <Divider />
+      </Grid>
+      {Object.entries(precision).map(([t, p]) => [
+        <Grid item xs={6}>
+          <TextField
+            type="text"
+            label="Asset (Pair)"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            disabled
+            value={t}
+          />
+        </Grid>,
+        <Grid item xs={4}>
+          <TextField
+            type="number"
+            label="Precision"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            value={isNaN(p) ? '' : p}
+            onChange={(e) => onPrecisionChange?.({...precision, [t]: Math.max(parseInt(e.target.value), 0)})}
+          />
+        </Grid>,
+        <Grid item xs={2}>
+          <IconButton onClick={() => handleDeletePrecision(t)}>
+            <RemoveIcon />
+          </IconButton>
+        </Grid>,
+      ])}
+      <Grid item xs={6}>
+        <TextField
+          select
+          label="Asset (Pair)"
+          fullWidth
+          variant="outlined"
+          size="small"
+          required
+          value={newPrecisionFields.ticker}
+          onChange={(e) => onNewPrecisionFieldsChange?.({...newPrecisionFields, ticker: e.target.value})}
+        >
+          {assets?.map((a) => (
+            <MenuItem value={a.ticker} key={a.ticker}>{ a.ticker }</MenuItem>
+          ))}
+        </TextField>
+      </Grid>
+      <Grid item xs={4}>
+        <TextField
+          type="number"
+          label="Precision"
+          fullWidth
+          variant="outlined"
+          size="small"
+          required
+          value={isNaN(newPrecisionFields.precision) ? '' : newPrecisionFields.precision}
+          onChange={(e) => onNewPrecisionFieldsChange?.({...newPrecisionFields, precision: Math.max(parseInt(e.target.value), 0)})}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <IconButton onClick={handleAddPrecision}>
+          <AddIcon />
+        </IconButton>
+      </Grid>
+    </React.Fragment>
+  );
+}
 
 interface FormFields {
   name: string;
@@ -55,9 +186,11 @@ interface Props {
  */
 function AddEditJournalColumnDialog(props: Readonly<Props>) {
   const { open, onDialogClose, journal: index, role } = props;
-  const [fields, setFields] = useState<Readonly<FormFields>>(initialFormFields);
+  const [fields, setFields] = useState<FormFields>(initialFormFields);
+  const [newPrecisionFields, setNewPrecisionFields] = useState<{ticker: string, precision: number}>({ticker: '', precision: 2});
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
+  const allAssets = useSelector(selectActiveAccountAssetsAll);
   // journalIndex is set to -1 initially
   const journal = journals[index] as Journal | undefined;
   // column is the selected column if the props index and role are valid, else undefined
@@ -76,6 +209,11 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
     } else {
       setFields(initialFormFields);
     }
+    handleResetNewPrecisionFields();
+  };
+  
+  const handleResetNewPrecisionFields = () => {
+    setNewPrecisionFields({ticker: '', precision: NaN});
   };
 
   const handleSubmit = () => {
@@ -127,7 +265,6 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
     }
   };
 
-  // TODO: edit precision for decimal columns
   return (
     <AddEditDialog
       objectName={'Journal Column'}
@@ -137,7 +274,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
       onEnter={handleReset}
       onReset={handleReset}
       onSubmit={handleSubmit}
-      contentMaxWidth="30rem"
+      contentMaxWidth="32rem"
     >
       <Grid container spacing={2}>
         <Grid item xs={12}>
@@ -195,33 +332,31 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
             labelPlacement="end"
           />
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            select
-            label="Description (Decimal)"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required={fields.type === 'decimal'}
-            disabled={fields.type !== 'decimal'}
-            value={fields.decimalColumnDescription}
-            onChange={(e) => setFields(s => ({...s, decimalColumnDescription: e.target.value}))}
-          >
-            <MenuItem value="base">Base</MenuItem>
-            <MenuItem value="quote">Quote</MenuItem>
-            <MenuItem value="price">Price</MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={6}>
-          <FormControlLabel
-            control={<Checkbox />}
-            checked={fields.showTime}
-            onChange={(e, checked) => setFields(s => ({...s, showTime: checked}))}
-            disabled={fields.type !== 'date'}
-            label="Show Time"
-            labelPlacement="end"
+        {fields.type === 'date' && (
+          <Grid item xs={12}>
+            <Box marginLeft="auto" marginRight="auto" width="fit-content">
+              <FormControlLabel
+                control={<Checkbox />}
+                checked={fields.showTime}
+                onChange={(e, checked) => setFields(s => ({...s, showTime: checked}))}
+                label="Show Time"
+                labelPlacement="end"
+              />
+            </Box>
+          </Grid>
+        )}
+        {fields.type === 'decimal' && (
+          <DecimalColumnSettings
+            description={fields.decimalColumnDescription}
+            onDescriptionChange={newDescription => setFields(s => ({...s, decimalColumnDescription: newDescription}))}
+            precision={fields.precision}
+            onPrecisionChange={newPrecision => setFields(s => ({...s, precision: newPrecision}))}
+            newPrecisionFields={newPrecisionFields}
+            onNewPrecisionFieldsChange={newFields => setNewPrecisionFields(newFields)}
+            onNewPrecisionFieldsReset={handleResetNewPrecisionFields}
+            assets={allAssets}
           />
-        </Grid>
+        )}
       </Grid>
     </AddEditDialog>
   );

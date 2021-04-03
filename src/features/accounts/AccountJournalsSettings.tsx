@@ -58,7 +58,7 @@ function JournalColumnRow(props: JournalColumnRowProps) {
         {journalColumn.type === 'decimal' && (
           Object.keys(journalColumn.precision).length === 0 ?
             'Default' :
-            `${Object.keys(journalColumn.precision).length} mappings`
+            `${Object.keys(journalColumn.precision).length} mapping(s)`
         )}
       </TableCell>
       <TableCell align="center">{ journalColumn.type === 'date' && (journalColumn.showTime ? 'Yes' : 'No') }</TableCell>
