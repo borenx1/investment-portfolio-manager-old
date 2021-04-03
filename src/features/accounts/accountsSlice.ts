@@ -219,9 +219,19 @@ export const selectActiveAccountAccountingCurrency = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.settings.accountingCurrency : null;
 }
+/**
+ * Get the assets (excluding base currency) of the active account.
+ */
 export const selectActiveAccountAssets = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);
   return activeAccount ? activeAccount.assets : [];
+}
+/**
+ * Get the assets and accounting currency of the active account.
+ */
+export const selectActiveAccountAssetsAll = (state: RootState) => {
+  const activeAccount = selectActiveAccount(state);
+  return activeAccount ? [...activeAccount.assets, activeAccount.settings.accountingCurrency] : [];
 }
 export const selectActiveAccountJournals = (state: RootState) => {
   const activeAccount = selectActiveAccount(state);

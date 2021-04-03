@@ -140,27 +140,26 @@ export function isDecimalColumnDescription(obj: any): obj is DecimalColumnDescri
  */
 export interface DecimalColumn extends BaseJournalColumn {
   type: 'decimal';
-  // Key can be an asset ticker, e.g. USD, or an asset pair, e.g. BTC/USD.
+  /** Key can be an asset ticker, e.g. USD, or an asset pair, e.g. BTC/USD. */
   precision: Record<string, number>;
-  // precision: Record<string, number>;
   description: DecimalColumnDescription;
 }
 export function isDecimalColumn(column: JournalColumn | BaseJournalColumn): column is DecimalColumn {
   return 'type' in column && column.type === 'decimal' && 'precision' in column && 'description' in column;
 }
-interface BaseAmountColumn extends DecimalColumn {
+export interface BaseAmountColumn extends DecimalColumn {
   description: 'base';
 }
 export function isBaseAmountColumn(column: JournalColumn | BaseJournalColumn): column is BaseAmountColumn {
   return isDecimalColumn(column) && column.description === 'base';
 }
-interface QuoteAmountColumn extends DecimalColumn {
+export interface QuoteAmountColumn extends DecimalColumn {
   description: 'quote';
 }
 export function isQuoteAmountColumn(column: JournalColumn | BaseJournalColumn): column is QuoteAmountColumn {
   return isDecimalColumn(column) && column.description === 'quote';
 }
-interface PriceColumn extends DecimalColumn {
+export interface PriceColumn extends DecimalColumn {
   description: 'price';
 }
 export function isPriceColumn(column: JournalColumn | BaseJournalColumn): column is PriceColumn {

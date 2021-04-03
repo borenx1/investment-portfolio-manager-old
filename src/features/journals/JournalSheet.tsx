@@ -23,8 +23,16 @@ import AddEditTransactionDialog from './AddEditTransactionDialog';
 import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
 import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from '../accounts/EditJournalColumnOrderDialog';
-import { selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { getJournalColumn, isRightAlignJournalColumnType, Journal, JournalColumnRole, Transaction } from '../../models/account';
+import { selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
+import {
+  getJournalColumn,
+  isRightAlignJournalColumnType,
+  transactionDataDisplay,
+  Journal,
+  JournalColumnRole,
+  Transaction,
+  Asset,
+} from '../../models/account';
 
 interface JournalHeadersProps {
   journal: Journal,
@@ -74,6 +82,7 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
 interface JournalRowProps {
   journal: Journal,
   transaction: Transaction,
+  assets?: Asset[],
 }
 
 const useJournalRowStyles = makeStyles((theme) => ({
@@ -89,28 +98,18 @@ const useJournalRowStyles = makeStyles((theme) => ({
 }));
 
 function JournalRow(props: Readonly<JournalRowProps>) {
-  const { journal, transaction } = props;
+  const { journal, transaction, assets } = props;
   const classes = useJournalRowStyles();
 
   return (
     <TableRow hover className={classes.root}>
       {journal.columnOrder.map((role) => {
         const column = getJournalColumn(journal, role);
-        let data: string | number | boolean;
-        if (role === 'price') {
-          data = transaction.quoteAmount / transaction.baseAmount;
-        } else if (typeof role === 'string') {
-          data = props.transaction[role];
-        } else {
-          data = props.transaction.extra[column.name];
-          // Convert boolean data to readable values
-          if (typeof data === 'boolean') data = data ? 'Yes' : 'No';
-        }
         return !column.hide && <TableCell
           align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
           key={role}
         >
-          { data }
+          { transactionDataDisplay(transaction, role, journal, assets) }
         </TableCell>;
       })}
     </TableRow>
@@ -148,6 +147,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const [journalColumnOrderDialogOpen, setJournalColumnOrderDialogOpen] = useState(false);
   const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
   const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
+  const assets = useSelector(selectActiveAccountAssetsAll);
   const journals = useSelector(selectActiveAccountJournals);
   const journal = journals[props.journal];
 
@@ -196,7 +196,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
             </TableHead>
             <TableBody>
               {journal.transactions.map((tx, index) => (
-                <JournalRow journal={journal} transaction={tx} key={index} />
+                <JournalRow journal={journal} transaction={tx} assets={assets} key={index} />
               ))}
             </TableBody>
           </Table>
