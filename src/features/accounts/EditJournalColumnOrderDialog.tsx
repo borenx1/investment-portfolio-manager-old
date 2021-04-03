@@ -10,6 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from "@material-ui/core/IconButton";
+import Tooltip from '@material-ui/core/Tooltip';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
@@ -119,28 +120,36 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
         {dialogColumnOrder.map((role, i) =>
           <ListItem dense disableGutters divider classes={{secondaryAction: classes.listItem}} key={role}>
             <ListItemIcon>
-              <IconButton
-                disableRipple
-                disabled={i === 0}
-                onClick={() => handleReorderColumn(i, i - 1)}
-              >
-                <ArrowUpwardIcon />
-              </IconButton>
+              <Tooltip title="Reorder column up">
+                <IconButton
+                  disableRipple
+                  disabled={i === 0}
+                  onClick={() => handleReorderColumn(i, i - 1)}
+                  aria-label="Reorder column up"
+                >
+                  <ArrowUpwardIcon />
+                </IconButton>
+              </Tooltip>
             </ListItemIcon>
             <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : getJournalColumn(journal!, role).name} />
             <ListItemSecondaryAction>
-              {editHide && <Checkbox
-                checked={hiddenColumns.indexOf(role) === -1}
-                onChange={() => handleToggleHide(role)}
-              />}
-              <IconButton
-                edge="end"
-                disableRipple
-                disabled={i === dialogColumnOrder.length - 1}
-                onClick={() => handleReorderColumn(i, i + 1)}
-              >
-                <ArrowDownwardIcon />
-              </IconButton>
+              {editHide && <Tooltip title="Show column">
+                <Checkbox
+                  checked={hiddenColumns.indexOf(role) === -1}
+                  onChange={() => handleToggleHide(role)}
+                />
+              </Tooltip>}
+              <Tooltip title="Reorder column down">
+                <IconButton
+                  edge="end"
+                  disableRipple
+                  disabled={i === dialogColumnOrder.length - 1}
+                  onClick={() => handleReorderColumn(i, i + 1)}
+                  aria-label="Reorder column down"
+                >
+                  <ArrowDownwardIcon />
+                </IconButton>
+              </Tooltip>
             </ListItemSecondaryAction>
           </ListItem>
         )}
