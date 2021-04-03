@@ -3,6 +3,7 @@ import type { RootState } from '../../app/store';
 import {
   Account,
   Asset,
+  Transaction,
   Journal,
   JournalType,
   JournalColumnRole,
@@ -47,12 +48,21 @@ export const accountsSlice = createSlice({
       const name = action.payload || 'New Account';
       state.accounts.push(createDefaultAccount(name));
     },
-    addTransaction: (state, action) => {
-      // Takes payload: {account: activeAccountIndex, transaction: Tx, journal: journalIndex}
-      const account = state.accounts[action.payload.account || state.activeAccount];
-      const journal = action.payload.journal;
-      const transaction = action.payload.transaction;
-      account.journals[journal].transactions.push(transaction);
+    addTransaction: (state, action: PayloadAction<{account?: number, journal: number, transaction: Transaction}>) => {
+      const { account: accountIndex, journal: journalIndex, transaction } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      const journal = account.journals[journalIndex] as Journal | undefined;
+      if (journal !== undefined) {
+        // Insert transaction in the correct order
+        for (let i = journal.transactions.length; i >= 0; i--) {
+          if (i === 0 || new Date(transaction.date) >= new Date(journal.transactions[i-1].date)) {
+            journal.transactions.splice(i, 0, transaction);
+            break;
+          }
+        }
+      } else {
+        console.warn(`addTransaction: journal index ${journalIndex} is out of range for account: ${JSON.stringify(account)}.`);
+      }
     },
     changeAccountingCurrency: (state, action: PayloadAction<{account?: number, currency: Asset}>) => {
       const { account: accountIndex, currency } = action.payload;

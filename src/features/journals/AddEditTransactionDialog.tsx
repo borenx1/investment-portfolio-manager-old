@@ -80,10 +80,11 @@ function AddEditTransactionDialog(props: Props) {
           feeBase: 0,
           feeQuote: fields.fee,
           notes: fields.notes,
+          extra: {},
         },
       }));
     } else {
-
+      // TODO
     }
     onDialogClose?.();
   };
