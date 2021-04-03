@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addTransaction, selectActiveAccount } from '../accounts/accountsSlice';
+import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll } from '../accounts/accountsSlice';
 import { Transaction, dateToString } from '../../models/account';
 
 export interface FormFields {
@@ -23,10 +23,10 @@ const initialFormFields: FormFields = {
   date: '',
   base: '',
   quote: '',
-  baseAmount: 0,
-  quoteAmount: 0,
-  price: 0,
-  fee: 0,
+  baseAmount: NaN,
+  quoteAmount: NaN,
+  price: NaN,
+  fee: NaN,
   feeCurrency: 'quote',
   notes: '',
 };
@@ -43,12 +43,14 @@ function AddEditTransactionDialog(props: Props) {
   const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
+  const assets = useSelector(selectActiveAccountAssetsAll);
 
   const resetForm = () => {
     if (transaction === null || transaction === undefined) {
       setFields({
         ...initialFormFields,
         date: dateToString(new Date()),
+        base: account?.assets[0]?.ticker ?? '',
         quote: account?.settings.accountingCurrency.ticker ?? '',
       });
     } else {
@@ -91,7 +93,7 @@ function AddEditTransactionDialog(props: Props) {
 
   return (
     <AddEditDialog
-      objectName={'Transaction'}
+      objectName="Transaction"
       edit={Boolean(transaction)}
       open={open}
       onClose={onDialogClose}
@@ -106,12 +108,11 @@ function AddEditTransactionDialog(props: Props) {
             type="datetime-local"
             size="small"
             label="Date"
+            fullWidth
             required
             value={fields.date}
             onChange={(e) => setFields(s => ({...s, date: e.target.value}))}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            InputLabelProps={{shrink: true}}
           />
         </Grid>
         <Grid item xs={8}>
@@ -121,8 +122,8 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Amount"
             required
-            value={fields.baseAmount}
-            onChange={(e) => setFields(s => ({...s, baseAmount: Number(e.target.value)}))}
+            value={isNaN(fields.baseAmount) ? '' : fields.baseAmount}
+            onChange={(e) => setFields(s => ({...s, baseAmount: Math.max(parseFloat(e.target.value), 0)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -135,8 +136,9 @@ function AddEditTransactionDialog(props: Props) {
             value={fields.base}
             onChange={(e) => setFields(s => ({...s, base: e.target.value}))}
           >
-            <MenuItem value={'USD'}>{ 'USD' }</MenuItem>
-            <MenuItem value={'BTC'}>{ 'BTC' }</MenuItem>
+            {assets.map((a) => (
+              <MenuItem value={a.ticker} key={a.ticker}>{ a.ticker }</MenuItem>
+            ))}
           </TextField>
         </Grid>
         <Grid item xs={8}>
@@ -146,8 +148,8 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Total"
             required
-            value={fields.quoteAmount}
-            onChange={(e) => setFields(s => ({...s, quoteAmount: Number(e.target.value)}))}
+            value={isNaN(fields.quoteAmount) ? '' : fields.quoteAmount}
+            onChange={(e) => setFields(s => ({...s, quoteAmount: Math.max(parseFloat(e.target.value), 0)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -160,8 +162,9 @@ function AddEditTransactionDialog(props: Props) {
             value={fields.quote}
             onChange={(e) => setFields(s => ({...s, quote: e.target.value}))}
           >
-            <MenuItem value={'USD'}>{ 'USD' }</MenuItem>
-            <MenuItem value={'BTC'}>{ 'BTC' }</MenuItem>
+            {assets.map((a) => (
+              <MenuItem value={a.ticker} key={a.ticker}>{ a.ticker }</MenuItem>
+            ))}
           </TextField>
         </Grid>
         <Grid item xs={8}>
@@ -171,8 +174,8 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Price"
             required
-            value={fields.price}
-            onChange={(e) => setFields(s => ({...s, price: Number(e.target.value)}))}
+            value={isNaN(fields.price) ? '' : fields.price}
+            onChange={(e) => setFields(s => ({...s, price: Math.max(parseFloat(e.target.value), 0)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -184,8 +187,8 @@ function AddEditTransactionDialog(props: Props) {
             fullWidth
             size="small"
             label="Fee"
-            value={fields.fee}
-            onChange={(e) => setFields(s => ({...s, fee: Number(e.target.value)}))}
+            value={isNaN(fields.fee) ? '' : fields.fee}
+            onChange={(e) => setFields(s => ({...s, fee: Math.max(parseFloat(e.target.value), 0)}))}
           />
         </Grid>
         <Grid item xs={4}>
@@ -210,10 +213,7 @@ function AddEditTransactionDialog(props: Props) {
             label="Notes"
             value={fields.notes}
             onChange={(e) => setFields(s => ({...s, notes: e.target.value}))}
-          >
-            <MenuItem value={'base'}>{ 'Base' }</MenuItem>
-            <MenuItem value={'quote'}>{ 'Quote' }</MenuItem>
-          </TextField>
+          />
         </Grid>
       </Grid>
     </AddEditDialog>
