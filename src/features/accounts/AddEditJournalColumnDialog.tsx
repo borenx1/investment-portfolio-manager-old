@@ -28,13 +28,15 @@ import {
 import { Divider, Typography } from '@material-ui/core';
 
 interface DecimalColumnSettingsProps {
+  price?: boolean;
   disableDescription?: boolean;
   description: string;
   onDescriptionChange?: (newValue: string) => void;
   precision: Record<string, number>;
   onPrecisionChange?: (newValue: Record<string, number>) => void;
-  newPrecisionFields: {ticker: string, precision: number};
-  onNewPrecisionFieldsChange?: (newValue: {ticker: string, precision: number}) => void;
+  // ticker2 is the second ticker in the ticker pair (ticker/ticker2) for price columns
+  newPrecisionFields: {ticker: string, ticker2?: string, precision: number};
+  onNewPrecisionFieldsChange?: (newValue: {ticker: string, ticker2?: string, precision: number}) => void;
   onNewPrecisionFieldsReset?: () => void;
   assets?: Asset[];
 }
@@ -48,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
   const classes = useStyles();
   const {
+    price,
     disableDescription,
     description,
     onDescriptionChange,
@@ -60,10 +63,18 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
   } = props;
 
   const handleAddPrecision = () => {
-    if (newPrecisionFields.ticker !== '' && !isNaN(newPrecisionFields.precision)) {
-      onPrecisionChange?.({...precision, [newPrecisionFields.ticker]: newPrecisionFields.precision});
-      onNewPrecisionFieldsReset?.();
+    if (price) {
+      if (newPrecisionFields.ticker && newPrecisionFields.ticker2 && !isNaN(newPrecisionFields.precision)) {
+        onPrecisionChange?.({...precision, [`${newPrecisionFields.ticker}/${newPrecisionFields.ticker2}`]: newPrecisionFields.precision});
+        onNewPrecisionFieldsReset?.();
+      }
+    } else {
+      if (newPrecisionFields.ticker && !isNaN(newPrecisionFields.precision)) {
+        onPrecisionChange?.({...precision, [newPrecisionFields.ticker]: newPrecisionFields.precision});
+        onNewPrecisionFieldsReset?.();
+      }
     }
+    
   };
 
   const handleDeletePrecision = (ticker: string) => {
@@ -98,7 +109,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
         <Grid item xs={6}>
           <TextField
             type="text"
-            label="Asset (Pair)"
+            label={price ? 'Asset Pair' : 'Asset'}
             fullWidth
             variant="outlined"
             size="small"
@@ -125,10 +136,10 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
           </IconButton>
         </Grid>,
       ])}
-      <Grid item xs={6}>
+      <Grid item xs={price ? 3 : 6}>
         <TextField
           select
-          label="Asset (Pair)"
+          label={price ? 'Base' : 'Asset'}
           fullWidth
           variant="outlined"
           size="small"
@@ -141,6 +152,24 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
           ))}
         </TextField>
       </Grid>
+      {price && (
+        <Grid item xs={3}>
+          <TextField
+            select
+            label="Quote"
+            fullWidth
+            variant="outlined"
+            size="small"
+            required
+            value={newPrecisionFields.ticker2 ?? ''}
+            onChange={(e) => onNewPrecisionFieldsChange?.({...newPrecisionFields, ticker2: e.target.value})}
+          >
+            {assets?.map((a) => (
+              <MenuItem value={a.ticker} key={a.ticker}>{ a.ticker }</MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+      )}
       <Grid item xs={4}>
         <TextField
           type="number"
@@ -362,6 +391,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
         )}
         {fields.type === 'decimal' && (
           <DecimalColumnSettings
+            price={fields.decimalColumnDescription === 'price'}
             disableDescription={typeof role === 'string'}
             description={fields.decimalColumnDescription}
             onDescriptionChange={newDescription => setFields(s => ({...s, decimalColumnDescription: newDescription}))}
