@@ -16,6 +16,7 @@ import {
   JournalColumn,
   JournalColumnRole,
   JournalColumnType,
+  isDecimalColumn,
   isExtraColumn,
   isDecimalColumnDescription,
   isJournalColumnType,
@@ -26,6 +27,7 @@ import {
 import { Divider, Typography } from '@material-ui/core';
 
 interface DecimalColumnSettingsProps {
+  disableDescription?: boolean;
   description: string;
   onDescriptionChange?: (newValue: string) => void;
   precision: Record<string, number>;
@@ -38,6 +40,7 @@ interface DecimalColumnSettingsProps {
 
 function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
   const {
+    disableDescription,
     description,
     onDescriptionChange,
     precision,
@@ -70,6 +73,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
           variant="outlined"
           size="small"
           required
+          disabled={disableDescription}
           value={description}
           onChange={(e) => onDescriptionChange?.(e.target.value)}
         >
@@ -194,7 +198,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
   // journalIndex is set to -1 initially
   const journal = journals[index] as Journal | undefined;
   // column is the selected column if the props index and role are valid, else undefined
-  const column = (journal !== undefined && role != null) ? getJournalColumn(journal, role) : undefined;
+  const column = (journal !== undefined && role !== null && role !== undefined) ? getJournalColumn(journal, role) : undefined;
 
   const handleReset = () => { 
     if (column) {
@@ -222,7 +226,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
     const newType: JournalColumnType = (column && typeof role === 'string')
       ? column.type :
       (isJournalColumnType(fields.type) ? fields.type : 'text');
-      // Construct the new column piece by piece
+    // Construct the new column piece by piece
     const partialColumn = {name: fields.name, hide: fields.hide};
     switch (newType) {
       case 'text':
@@ -244,7 +248,10 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
           ...partialColumn,
           type: newType,
           precision: fields.precision,
-          description: isDecimalColumnDescription(fields.decimalColumnDescription) ? fields.decimalColumnDescription : 'base',
+          // Description cannot change if it is a core column
+          description: (column !== undefined && isDecimalColumn(column)) ?
+            column.description :
+            (isDecimalColumnDescription(fields.decimalColumnDescription) ? fields.decimalColumnDescription : 'base'),
         });
         break;
       default:
@@ -347,6 +354,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
         )}
         {fields.type === 'decimal' && (
           <DecimalColumnSettings
+            disableDescription={typeof role === 'string'}
             description={fields.decimalColumnDescription}
             onDescriptionChange={newDescription => setFields(s => ({...s, decimalColumnDescription: newDescription}))}
             precision={fields.precision}
