@@ -12,7 +12,6 @@ import {
   JournalColumn,
   JournalColumnRole,
   JournalColumnType,
-  isDateColumnFormat,
   isExtraColumn,
   isDecimalColumnDescription,
   isJournalColumnType,
@@ -26,7 +25,7 @@ interface FormFields {
   hide: boolean;
   precision: Record<string, number>;
   decimalColumnDescription: string;
-  dateFormat: string,
+  showTime: boolean,
 }
 
 const initialFormFields: Readonly<FormFields> = {
@@ -35,7 +34,7 @@ const initialFormFields: Readonly<FormFields> = {
   hide: false,
   precision: {},
   decimalColumnDescription: 'base',
-  dateFormat: 'date',
+  showTime: false,
 };
 
 interface Props {
@@ -72,7 +71,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
         hide: column.hide,
         precision: column.type === 'decimal' ? column.precision : initialFormFields.precision,
         decimalColumnDescription: column.type === 'decimal' ? column.description : initialFormFields.decimalColumnDescription,
-        dateFormat: column.type === 'date' ? column.format : initialFormFields.dateFormat,
+        showTime: column.type === 'date' ? column.showTime : initialFormFields.showTime,
       });
     } else {
       setFields(initialFormFields);
@@ -95,11 +94,10 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
         addOrEditJournalColumn({...partialColumn, type: newType});
         break;
       case 'date':
-        // Default format is 'date' if the date format field is invalid
         addOrEditJournalColumn({
           ...partialColumn,
           type: newType,
-          format: isDateColumnFormat(fields.dateFormat) ? fields.dateFormat : 'date',
+          showTime: fields.showTime,
         });
         break;
       case 'decimal':
@@ -215,20 +213,14 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
           </TextField>
         </Grid>
         <Grid item xs={6}>
-          <TextField
-            select
-            label="Date Format"
-            fullWidth
-            variant="outlined"
-            size="small"
-            required={fields.type === 'date'}
+          <FormControlLabel
+            control={<Checkbox />}
+            checked={fields.showTime}
+            onChange={(e, checked) => setFields(s => ({...s, showTime: checked}))}
             disabled={fields.type !== 'date'}
-            value={fields.dateFormat}
-            onChange={(e) => setFields(s => ({...s, dateFormat: e.target.value}))}
-          >
-            <MenuItem value="date">Date</MenuItem>
-            <MenuItem value="datetime">Date & Time</MenuItem>
-          </TextField>
+            label="Show Time"
+            labelPlacement="end"
+          />
         </Grid>
       </Grid>
     </AddEditDialog>

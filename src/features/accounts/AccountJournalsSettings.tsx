@@ -61,7 +61,7 @@ function JournalColumnRow(props: JournalColumnRowProps) {
             `${Object.keys(journalColumn.precision).length} mappings`
         )}
       </TableCell>
-      <TableCell align="center">{ journalColumn.type === 'date' && journalColumn.format }</TableCell>
+      <TableCell align="center">{ journalColumn.type === 'date' && (journalColumn.showTime ? 'Yes' : 'No') }</TableCell>
       <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
       <TableCell align="center">
         <DeleteButton
@@ -159,7 +159,7 @@ function JournalRow(props: JournalRowProps) {
                     <TableCell>Name</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell align="center">Precision</TableCell>
-                    <TableCell align="center">Date Format</TableCell>
+                    <TableCell align="center">Show Time</TableCell>
                     <TableCell align="center">Hide</TableCell>
                     <TableCell align="center"></TableCell>
                   </TableRow>

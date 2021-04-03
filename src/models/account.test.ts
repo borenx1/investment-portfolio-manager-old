@@ -17,13 +17,12 @@ import {
   isExtraColumn,
   isJournalType,
   isJournalColumnRole,
-  isDateColumnFormat,
   isDecimalColumnDescription,
   isExtraColumnType,
   isJournalColumnType,
 } from './account';
 
-const testDateColumn: DateColumn = {name: 'Date', hide: false, format: 'date', type: 'date'};
+const testDateColumn: DateColumn = {name: 'Date', hide: false, showTime: false, type: 'date'};
 const testAssetColumn: AssetColumn = {name: 'Asset', hide: false, type: 'asset'};
 const testTextColumn: TextColumn = {name: 'Text', hide: false, type: 'text'};
 const testIntegerColumn: IntegerColumn = {name: 'Integer', hide: false, type: 'integer'};
@@ -158,16 +157,6 @@ describe('journal column type predicates', () => {
     expect(isJournalColumnRole('extra')).toBe(false);
     expect(isJournalColumnRole('Date')).toBe(false);
     expect(isJournalColumnRole('1')).toBe(false);
-  });
-  test('isDateColumnFormat type predicate', () => {
-    expect(isDateColumnFormat('date')).toBe(true);
-    expect(isDateColumnFormat('datetime')).toBe(true);
-    expect(isDateColumnFormat(undefined)).toBe(false);
-    expect(isDateColumnFormat(null)).toBe(false);
-    expect(isDateColumnFormat(true)).toBe(false);
-    expect(isDateColumnFormat('')).toBe(false);
-    expect(isDateColumnFormat('time')).toBe(false);
-    expect(isDateColumnFormat('Date')).toBe(false);
   });
   test('isDecimalColumnDescription type predicate', () => {
     expect(isDecimalColumnDescription('base')).toBe(true);

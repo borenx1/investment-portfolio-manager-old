@@ -100,16 +100,12 @@ interface BaseJournalColumn {
   name: string;
   hide: boolean;
 }
-export type DateColumnFormat = 'date' | 'datetime';
-export function isDateColumnFormat(obj: any): obj is DateColumnFormat {
-  return typeof obj === 'string' && ['date', 'datetime'].indexOf(obj) !== -1;
-}
 export interface DateColumn extends BaseJournalColumn {
   type: 'date';
-  format: DateColumnFormat;
+  showTime: boolean;
 }
 export function isDateColumn(column: JournalColumn | BaseJournalColumn): column is DateColumn {
-  return 'type' in column && column.type === 'date' && column.format !== undefined;
+  return 'type' in column && column.type === 'date' && 'showTime' in column;
 }
 export interface AssetColumn extends BaseJournalColumn {
   type: 'asset';
@@ -255,9 +251,9 @@ const defaultJournals: Journal[] = [
   createExpenseJournal('Misc fees'),
 ];
 
-export function createTradingColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
+export function createTradingColumns(showTime: boolean = false): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
+    date: {name: 'Date', showTime: showTime, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
@@ -270,9 +266,9 @@ export function createTradingColumns(dateColumnFormat: DateColumnFormat = 'date'
   };
 }
 
-export function createIncomeColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
+export function createIncomeColumns(showTime: boolean = false): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
+    date: {name: 'Date', showTime: showTime, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
@@ -285,9 +281,9 @@ export function createIncomeColumns(dateColumnFormat: DateColumnFormat = 'date')
   };
 }
 
-export function createExpenseColumns(dateColumnFormat: DateColumnFormat = 'date'): JournalColumnSet {
+export function createExpenseColumns(showTime: boolean = false): JournalColumnSet {
   return {
-    date: {name: 'Date', format: dateColumnFormat, type: 'date', hide: false},
+    date: {name: 'Date', showTime: showTime, type: 'date', hide: false},
     base: {name: 'Asset', type: 'asset', hide: false},
     baseAmount: {name: 'Amount', type: 'decimal', description: 'base', precision: {}, hide: false},
     quote: {name: 'Quote', type: 'asset', hide: true},
