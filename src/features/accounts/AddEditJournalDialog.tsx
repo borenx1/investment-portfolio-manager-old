@@ -37,10 +37,10 @@ function AddEditJournalDialog(props: Readonly<Props>) {
   const dispatch = useDispatch();
   const journals = useSelector(selectActiveAccountJournals);
   // journalIndex is set to -1 initially
-  const journal = journals[index] as Journal | undefined;
+  const journal = journals[index];
 
   const handleReset = () => {
-    if (journal) {
+    if (journal !== undefined) {
       setFields({
         name: journal.name,
         type: journal.type,
@@ -51,7 +51,7 @@ function AddEditJournalDialog(props: Readonly<Props>) {
   };
 
   const handleSubmit = () => {
-    if (journal) {
+    if (journal !== undefined) {
       dispatch(editJournalSettings({index: index, name: fields.name, type: fields.type}));
     } else {
       dispatch(addDefaultJournal({name: fields.name, type: fields.type}));

@@ -35,7 +35,7 @@ export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | n
   switch (role) {
     case undefined:
     case null:
-      return role;
+      return null;
     case 'date':
       return 'Date';
     case 'base':
@@ -126,10 +126,10 @@ export function getDecimalColumnPrecision(column: DecimalColumn, baseTicker: str
  * @returns A formatted string with the correct decimal places, or the original value of could not get the precision settings.
  */
 function formatTransactionDecimalColumn(value: number | string, column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): string {
-  if (!new BigNumber(value).isNaN()) {
+  if (new BigNumber(value).isFinite()) {
     const precision = getDecimalColumnPrecision(column, baseTicker, quoteTicker, assets);
     return isNaN(precision) ? new BigNumber(value).toFixed() : roundDown(value, precision).toFixed(precision);
-  } else if (typeof value === 'number' && isNaN(value)) {
+  } else if (typeof value === 'number' && !isFinite(value)) {
     return '';
   }
   return String(value);
@@ -161,7 +161,7 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
     return column.showTime ? new Date(data).toLocaleString(dateLocale) : new Date(data).toLocaleDateString(dateLocale);
   } else if (isBooleanColumn(column)) {
     return data ? 'Yes' : 'No';
-  } else if (data === undefined || (typeof data === 'number' && isNaN(data))) {
+  } else if (data === undefined || (typeof data === 'number' && !isFinite(data))) {
     return '';
   }
   return String(data);

@@ -13,7 +13,6 @@ import AddIcon from '@material-ui/icons/Add';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addJournalColumn, editJournalColumn, selectActiveAccountAssetsAll, selectActiveAccountJournals } from './accountsSlice';
 import {
-  Journal,
   JournalColumn,
   JournalColumnRole,
   JournalColumnType,
@@ -64,12 +63,12 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
 
   const handleAddPrecision = () => {
     if (price) {
-      if (newPrecisionFields.ticker && newPrecisionFields.ticker2 && !isNaN(newPrecisionFields.precision)) {
+      if (newPrecisionFields.ticker && newPrecisionFields.ticker2 && isFinite(newPrecisionFields.precision)) {
         onPrecisionChange?.({...precision, [`${newPrecisionFields.ticker}/${newPrecisionFields.ticker2}`]: newPrecisionFields.precision});
         onNewPrecisionFieldsReset?.();
       }
     } else {
-      if (newPrecisionFields.ticker && !isNaN(newPrecisionFields.precision)) {
+      if (newPrecisionFields.ticker && isFinite(newPrecisionFields.precision)) {
         onPrecisionChange?.({...precision, [newPrecisionFields.ticker]: newPrecisionFields.precision});
         onNewPrecisionFieldsReset?.();
       }
@@ -126,7 +125,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
             variant="outlined"
             size="small"
             required
-            value={isNaN(p) ? '' : p}
+            value={isFinite(p) ? p : ''}
             onChange={(e) => onPrecisionChange?.({...precision, [t]: Math.max(parseInt(e.target.value), 0)})}
           />
         </Grid>,
@@ -178,7 +177,7 @@ function DecimalColumnSettings(props: DecimalColumnSettingsProps) {
           variant="outlined"
           size="small"
           required
-          value={isNaN(newPrecisionFields.precision) ? '' : newPrecisionFields.precision}
+          value={isFinite(newPrecisionFields.precision) ? newPrecisionFields.precision : ''}
           onChange={(e) => onNewPrecisionFieldsChange?.({...newPrecisionFields, precision: Math.max(parseInt(e.target.value), 0)})}
         />
       </Grid>
@@ -233,7 +232,7 @@ function AddEditJournalColumnDialog(props: Readonly<Props>) {
   const journals = useSelector(selectActiveAccountJournals);
   const allAssets = useSelector(selectActiveAccountAssetsAll);
   // journalIndex is set to -1 initially
-  const journal = journals[index] as Journal | undefined;
+  const journal = journals[index];
   // column is the selected column if the props index and role are valid, else undefined
   const column = (journal !== undefined && role !== null && role !== undefined) ? getJournalColumn(journal, role) : undefined;
 

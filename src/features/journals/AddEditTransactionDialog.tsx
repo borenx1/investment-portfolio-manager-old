@@ -62,11 +62,11 @@ function AddEditTransactionDialog(props: Props) {
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
   const journal = useSelector(selectActiveAccountJournals)[journalIndex];
-  const transaction: Transaction | undefined = journal?.transactions[transactionIndex];
+  const transaction = journal?.transactions[transactionIndex];
   const assets = useSelector(selectActiveAccountAssetsAll);
   
-  const basePrecision = getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets);
-  const quotePrecision = getDecimalColumnPrecision(journal.columns['quoteAmount'], fields.base, fields.quote, assets);
+  const basePrecision = journal ? getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets) : NaN;
+  const quotePrecision = journal ? getDecimalColumnPrecision(journal.columns['quoteAmount'], fields.base, fields.quote, assets) : NaN;
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'baseAmount') {
@@ -161,13 +161,13 @@ function AddEditTransactionDialog(props: Props) {
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <TextField
-            type={journal.columns.date.showTime ? "datetime-local" : "date"}
+            type={journal?.columns.date.showTime ? "datetime-local" : "date"}
             size="small"
             label="Date"
             fullWidth
             required
             inputProps={{step: 1}}
-            value={dateToString(fields.date, journal.columns.date.showTime)}
+            value={dateToString(fields.date, journal?.columns.date.showTime)}
             onChange={(e) => setFields(s => ({...s, date: new Date(e.target.value)}))}
             InputLabelProps={{shrink: true}}
           />
@@ -181,7 +181,7 @@ function AddEditTransactionDialog(props: Props) {
             label="Amount"
             required
             helperText={fields.base && `${basePrecision} max decimal places`}
-            value={fields.baseAmount.isNaN() ? '' : fields.baseAmount.toFixed()}
+            value={fields.baseAmount.isFinite() ? fields.baseAmount.toFixed() : ''}
             inputProps={{min: 0, step: fields.base ? 1/Math.pow(10, basePrecision) : 1}}
             onChange={handleFieldChange}
           />
@@ -210,7 +210,7 @@ function AddEditTransactionDialog(props: Props) {
             label="Total"
             required
             helperText={fields.quote && `${quotePrecision} max decimal places`}
-            value={fields.quoteAmount.isNaN() ? '' : fields.quoteAmount.toFixed()}
+            value={fields.quoteAmount.isFinite() ? fields.quoteAmount.toFixed() : ''}
             inputProps={{min: 0, step: fields.quote ? 1/Math.pow(10, quotePrecision) : 1}}
             onChange={handleFieldChange}
           />
@@ -238,7 +238,7 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Price"
             required
-            value={fields.price.isNaN() ? '' : fields.price.toFixed()}
+            value={fields.price.isFinite() ? fields.price.toFixed() : ''}
             onChange={handleFieldChange}
           />
         </Grid>
@@ -263,7 +263,7 @@ function AddEditTransactionDialog(props: Props) {
             fullWidth
             size="small"
             label="Fee"
-            value={fields.fee.isNaN() ? '' : fields.fee.toFixed()}
+            value={fields.fee.isFinite() ? fields.fee.toFixed() : ''}
             inputProps={{min: 0, step: fields.feeCurrency === 'base' ?
               (fields.base ? 1/Math.pow(10, basePrecision) : 1) :
               (fields.quote ? 1/Math.pow(10, quotePrecision) : 1)

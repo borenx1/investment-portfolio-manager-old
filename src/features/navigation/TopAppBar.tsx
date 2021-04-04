@@ -63,7 +63,7 @@ function TopAppBar(props: Props) {
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
-          [classes.appBarDrawerOpen]: props.drawerOpen
+          [classes.appBarDrawerOpen!]: props.drawerOpen
         })}
       >
         <Toolbar>

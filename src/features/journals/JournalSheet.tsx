@@ -75,6 +75,8 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
             </Box>
           </TableCell>;
         })}
+        {/* Empty header for transaction settings button */}
+        <TableCell align="center"></TableCell>
     </TableRow>
   );
 }
@@ -104,20 +106,20 @@ function JournalRow(props: Readonly<JournalRowProps>) {
   const classes = useJournalRowStyles();
 
   const journal = useSelector(selectActiveAccountJournals)[journalIndex];
-  const transaction = journal.transactions[transactionIndex];
+  const transaction = journal?.transactions[transactionIndex];
 
   return (
     <TableRow
       hover
       className={classes.root}
     >
-      {journal.columnOrder.map((role) => {
+      {journal?.columnOrder.map((role) => {
         const column = getJournalColumn(journal, role);
         return !column.hide && <TableCell
           align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
           key={role}
         >
-          { transactionDataDisplay(transaction, role, journal, assets) }
+          { transaction && transactionDataDisplay(transaction, role, journal, assets) }
         </TableCell>;
       })}
       <TableCell>
@@ -161,8 +163,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
   const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
   const assets = useSelector(selectActiveAccountAssetsAll);
-  const journals = useSelector(selectActiveAccountJournals);
-  const journal = journals[props.journal];
+  const journal = useSelector(selectActiveAccountJournals)[props.journal];
 
   const openAddDialog = () => {
     setSelectedTransaction(-1);
@@ -193,7 +194,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
       <Box role="tabpanel">
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" className={classes.title}>
-            { journal.name }
+            { journal?.name }
           </Typography>
           <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
             <MoreVertIcon />
@@ -205,10 +206,10 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
             stickyHeader
           >
             <TableHead>
-              <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} />
+              { journal && <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} /> }
             </TableHead>
             <TableBody>
-              {journal.transactions.map((_, index) => (
+              {journal?.transactions.map((_, index) => (
                 <JournalRow
                   journal={props.journal}
                   transaction={index}

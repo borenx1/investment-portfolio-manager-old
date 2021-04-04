@@ -44,8 +44,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
   const classes = useStyles(props);
   const { journal: journalIndex, onDialogClose, open, displayRoleDefault, editHide } = props;
   const dispatch = useDispatch();
-  const journals = useSelector(selectActiveAccountJournals);
-  const journal = journals[journalIndex] as Journal | undefined;
+  const journal = useSelector(selectActiveAccountJournals)[journalIndex];
   // The actual column order in the global state
   const columnOrder = journal?.columnOrder ?? [];
   // The edit column order in the dialog. Confirmed when the "edit" button is clicked.
@@ -69,14 +68,16 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
   };
 
   const handleReorderColumn = (index: number, newIndex: number) => {
-    const newColumnOrder = [...dialogColumnOrder];
-    newColumnOrder.splice(newIndex, 0, newColumnOrder.splice(index, 1)[0]);
-    setDialogColumnOrder(newColumnOrder);
+    if (dialogColumnOrder[index] !== undefined) {
+      const newColumnOrder = [...dialogColumnOrder];
+      newColumnOrder.splice(newIndex, 0, newColumnOrder.splice(index, 1)[0]!);
+      setDialogColumnOrder(newColumnOrder);
+    }
   };
 
   const handleToggleHide = (role: JournalColumnRole) => {
-    const hiddenIndex = hiddenColumns.indexOf(role);
     const newHiddenColumns = [...hiddenColumns];
+    const hiddenIndex = hiddenColumns.indexOf(role);
     if (hiddenIndex === -1) {
       newHiddenColumns.push(role);
     } else {
