@@ -1,22 +1,13 @@
-function decimalFactor(precision?: number): number {
-  if (precision === undefined || isNaN(precision) || precision < 0) {
-    return NaN;
+import BigNumber from "bignumber.js";
+
+/**
+ * Rounds down a number to the given decimal places. Returns the original number if decimals is not given or NaN.
+ * @param value The number to round down.
+ * @param decimals The number of decimal places to round down to.
+ */
+export function roundDown(value: BigNumber.Value, decimals?: number): BigNumber {
+  if (decimals === undefined || isNaN(decimals) || decimals < 0) {
+    return new BigNumber(value);
   }
-  return Math.pow(10, Math.trunc(precision));
-}
-
-export function roundDown(value: number, precision?: number): number {
-  const factor = decimalFactor(precision)
-  if (isNaN(factor)) {
-    return value;
-  }
-  return Math.floor(value * factor) / factor;
-}
-
-export function multiply(n1: number, n2: number, precision?: number) {
-  return roundDown(n1 * n2, precision);
-}
-
-export function divide(dividend: number, divisor: number, precision?: number) {
-  return roundDown(dividend / divisor, precision);
+  return new BigNumber(value).decimalPlaces(decimals, BigNumber.ROUND_DOWN);
 }
