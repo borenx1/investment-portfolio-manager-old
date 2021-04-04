@@ -4,8 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll } from '../accounts/accountsSlice';
-import { Transaction, dateToString } from '../../models/account';
+import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
+import { Transaction, dateToString, getDecimalColumnPrecision } from '../../models/account';
+import { roundDown } from '../../models/math';
 
 export interface FormFields {
   date: string;
@@ -39,18 +40,42 @@ interface Props {
 }
 
 function AddEditTransactionDialog(props: Props) {
-  const { journal, transaction, open, onDialogClose } = props;
+  const { journal: journalIndex, transaction, open, onDialogClose } = props;
   const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
+  const journals = useSelector(selectActiveAccountJournals);
+  const journal = journals[journalIndex];
   const assets = useSelector(selectActiveAccountAssetsAll);
+
+  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const basePrecision = getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets);
+    const quotePrecision = getDecimalColumnPrecision(journal.columns['quoteAmount'], fields.base, fields.quote, assets);
+    const pricePrecision = getDecimalColumnPrecision(journal.columns['price'], fields.base, fields.quote, assets);
+    if (e.target.name === 'baseAmount') {
+      setFields(s => ({
+        ...s,
+        baseAmount: roundDown(Math.max(parseFloat(e.target.value), 0), basePrecision),
+      }))
+    } else if (e.target.name === 'quoteAmount') {
+      setFields(s => ({
+        ...s,
+        quoteAmount: roundDown(Math.max(parseFloat(e.target.value), 0), quotePrecision),
+      }))
+    } else if (e.target.name === 'price') {
+      setFields(s => ({
+        ...s,
+        price: roundDown(Math.max(parseFloat(e.target.value), 0), pricePrecision),
+      }))
+    }
+  };
 
   const resetForm = () => {
     if (transaction === null || transaction === undefined) {
       setFields({
         ...initialFormFields,
         date: dateToString(new Date()),
-        base: account?.assets[0]?.ticker ?? '',
+        base: account?.assets[0]?.ticker ?? account?.settings.accountingCurrency.ticker ?? '',
         quote: account?.settings.accountingCurrency.ticker ?? '',
       });
     } else {
@@ -72,7 +97,7 @@ function AddEditTransactionDialog(props: Props) {
     // TODO input validation
     if (transaction === null || transaction === undefined) {
       dispatch(addTransaction({
-        journal: journal,
+        journal: journalIndex,
         transaction: {
           date: fields.date,
           base: fields.base,
@@ -118,12 +143,13 @@ function AddEditTransactionDialog(props: Props) {
         <Grid item xs={8}>
           <TextField
             type="number"
+            name="baseAmount"
             fullWidth
             size="small"
             label="Amount"
             required
             value={isNaN(fields.baseAmount) ? '' : fields.baseAmount}
-            onChange={(e) => setFields(s => ({...s, baseAmount: Math.max(parseFloat(e.target.value), 0)}))}
+            onChange={handleFieldChange}
           />
         </Grid>
         <Grid item xs={4}>
@@ -144,12 +170,13 @@ function AddEditTransactionDialog(props: Props) {
         <Grid item xs={8}>
           <TextField
             type="number"
+            name="quoteAmount"
             fullWidth
             size="small"
             label="Total"
             required
             value={isNaN(fields.quoteAmount) ? '' : fields.quoteAmount}
-            onChange={(e) => setFields(s => ({...s, quoteAmount: Math.max(parseFloat(e.target.value), 0)}))}
+            onChange={handleFieldChange}
           />
         </Grid>
         <Grid item xs={4}>
@@ -170,12 +197,13 @@ function AddEditTransactionDialog(props: Props) {
         <Grid item xs={8}>
           <TextField
             type="number"
+            name="price"
             fullWidth
             size="small"
             label="Price"
             required
             value={isNaN(fields.price) ? '' : fields.price}
-            onChange={(e) => setFields(s => ({...s, price: Math.max(parseFloat(e.target.value), 0)}))}
+            onChange={handleFieldChange}
           />
         </Grid>
         <Grid item xs={4}>
