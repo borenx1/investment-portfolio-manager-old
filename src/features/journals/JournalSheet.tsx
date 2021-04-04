@@ -96,8 +96,10 @@ const useJournalRowStyles = makeStyles((theme) => ({
     '& > *': {
       borderBottom: '1px solid rgba(224, 224, 224, 1)',
       borderRight: '1px solid rgba(224, 224, 224, 1)',
+      padding: theme.spacing(0.25, 1),
       '&:last-child': {
         borderRight: 'none',
+        paddingRight: theme.spacing(1),
       },
     },
   },
@@ -135,7 +137,7 @@ function JournalRow(props: Readonly<JournalRowProps>) {
             { transaction && transactionDataDisplay(transaction, role, journal, assets) }
           </TableCell>;
         })}
-        <TableCell>
+        <TableCell align="center">
           <IconButton size="small" onClick={(e) => setMenuAnchor(e.currentTarget)}>
             <MoreVertIcon fontSize="small" />
           </IconButton>
