@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
@@ -80,13 +80,15 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
 }
 
 interface JournalRowProps {
-  journal: Journal,
-  transaction: Transaction,
-  assets?: Asset[],
+  journal: Readonly<Journal>;
+  transaction: Readonly<Transaction>;
+  assets?: Asset[];
+  onRowClick?: (transaction: Transaction) => void;
 }
 
-const useJournalRowStyles = makeStyles((theme) => ({
+const useJournalRowStyles = makeStyles<Theme, JournalRowProps>((theme) => ({
   root: {
+    cursor: props => props.onRowClick ? 'pointer' : undefined,
     '& > *': {
       borderBottom: '1px solid rgba(224, 224, 224, 1)',
       borderRight: '1px solid rgba(224, 224, 224, 1)',
@@ -98,11 +100,15 @@ const useJournalRowStyles = makeStyles((theme) => ({
 }));
 
 function JournalRow(props: Readonly<JournalRowProps>) {
-  const { journal, transaction, assets } = props;
-  const classes = useJournalRowStyles();
+  const { journal, transaction, assets, onRowClick } = props;
+  const classes = useJournalRowStyles(props);
 
   return (
-    <TableRow hover className={classes.root}>
+    <TableRow
+      hover
+      onClick={() => onRowClick?.(transaction)}
+      className={classes.root}
+    >
       {journal.columnOrder.map((role) => {
         const column = getJournalColumn(journal, role);
         return !column.hide && <TableCell
@@ -196,7 +202,13 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
             </TableHead>
             <TableBody>
               {journal.transactions.map((tx, index) => (
-                <JournalRow journal={journal} transaction={tx} assets={assets} key={index} />
+                <JournalRow
+                  journal={journal}
+                  transaction={tx}
+                  assets={assets}
+                  onRowClick={(tx) => openEditDialog(tx)}
+                  key={index}
+                />
               ))}
             </TableBody>
           </Table>
