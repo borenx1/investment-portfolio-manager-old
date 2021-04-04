@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Table from '@material-ui/core/Table';
@@ -37,8 +35,10 @@ import {
 } from '../../models/account';
 
 interface JournalHeadersProps {
-  journal: Journal,
-  onSettingsClick?: (role: JournalColumnRole) => void,
+  journal: Journal;
+  onEditColumnSettings?: (role: JournalColumnRole) => void;
+  onEditJournalSettings?: () => void;
+  onEditColumnLayout?: () => void;
 }
 
 const useJournalHeadersStyles = makeStyles((theme) => ({
@@ -46,40 +46,65 @@ const useJournalHeadersStyles = makeStyles((theme) => ({
     '& > *': {
       borderBottom: '1px solid rgba(224, 224, 224, 1)',
       borderRight: '1px solid rgba(224, 224, 224, 1)',
+      padding: theme.spacing(0.75, 1),
       '&:last-child': {
         borderRight: 'none',
+        paddingRight: theme.spacing(1),
       },
     },
-  },
-  columnSettings: {
-    marginLeft: 'auto',
   },
 }));
 
 function JournalHeaders(props: Readonly<JournalHeadersProps>) {
+  const { journal, onEditColumnSettings, onEditJournalSettings, onEditColumnLayout } = props;
   const classes = useJournalHeadersStyles();
+  const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
+
+  const handleEditJournalSettings = () => {
+    onEditJournalSettings?.();
+    setMenuAnchor(null);
+  };
+
+  const handleEditColumnLayout = () => {
+    onEditColumnLayout?.();
+    setMenuAnchor(null);
+  };
 
   return (
-    <TableRow className={classes.root}>
-        {props.journal.columnOrder.map((role) => {
-          const column = getJournalColumn(props.journal, role);
+    <React.Fragment>
+      <TableRow className={classes.root}>
+        {journal.columnOrder.map((role) => {
+          const column = getJournalColumn(journal, role);
           return !column.hide && <TableCell key={role}>
             <Box display="flex">
-              {column.name}
+              <Box component="span" flexGrow={1}>
+                { column.name }
+              </Box>
               <IconButton
                 size="small"
                 edge="end"
-                onClick={() => props.onSettingsClick?.(role)}
-                className={classes.columnSettings}
+                onClick={() => onEditColumnSettings?.(role)}
               >
                 <SettingsIcon fontSize="small" style={{fontSize:'1rem'}} />
               </IconButton>
             </Box>
           </TableCell>;
         })}
-        {/* Empty header for transaction settings button */}
-        <TableCell align="center"></TableCell>
-    </TableRow>
+        <TableCell align="center">
+          <IconButton color="secondary" onClick={(e) => setMenuAnchor(e.currentTarget)} size="small">
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <Menu
+        anchorEl={menuAnchor}
+        open={menuAnchor !== null}
+        onClose={() => setMenuAnchor(null)}
+      >
+        <MenuItem onClick={handleEditJournalSettings}>Settings</MenuItem>
+        <MenuItem onClick={handleEditColumnLayout}>Columns</MenuItem>
+      </Menu>
+    </React.Fragment>
   );
 }
 
@@ -185,7 +210,6 @@ const useStyles = makeStyles((theme) => ({
 
 function JournalSheet(props: Readonly<JournalSheetProps>) {
   const classes = useStyles();
-  const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<number>(-1);
   const [journalSettingsDialogOpen, setJournalSettingsDialogOpen] = useState(false);
@@ -205,87 +229,68 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
     setTransactionDialogOpen(true);
   };
 
-  const openJournalSettingsDialog = () => {
-    setJournalSettingsDialogOpen(true);
-    setMenuAnchor(null);
-  }
-
-  const openJournalColumnOrderDialog = () => {
-    setJournalColumnOrderDialogOpen(true);
-    setMenuAnchor(null);
-  };
-
   const openJournalColumnDialog = (role: JournalColumnRole) => {
     setSelectedJournalColumn(role);
     setJournalColumnDialogOpen(true);
   };
 
   return (
-      <Box role="tabpanel">
-        <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" className={classes.title}>
-            { journal?.name }
-          </Typography>
-          <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
-            <MoreVertIcon />
-          </IconButton>
-        </Toolbar>
-        <TableContainer component={Paper} className={classes.table}>
-          <Table
-            size="small"
-            stickyHeader
-          >
-            <TableHead>
-              { journal && <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} /> }
-            </TableHead>
-            <TableBody>
-              {journal?.transactions.map((_, index) => (
-                <JournalRow
-                  journal={props.journal}
-                  transaction={index}
-                  assets={assets}
-                  onEdit={(j, tx) => openEditDialog(tx)}
-                  key={index}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Fab color="secondary" className={classes.fab} onClick={openAddDialog}>
-          <AddIcon />
-        </Fab>
-        <AddEditTransactionDialog
-          journal={props.journal}
-          transaction={selectedTransaction}
-          open={transactionDialogOpen}
-          onDialogClose={() => setTransactionDialogOpen(false)}
-        />
-        <AddEditJournalDialog
-          journal={props.journal}
-          open={journalSettingsDialogOpen}
-          onDialogClose={() => setJournalSettingsDialogOpen(false)}
-        />
-        <AddEditJournalColumnDialog
-          journal={props.journal}
-          role={selectedJournalColumn}
-          open={journalColumnDialogOpen}
-          onDialogClose={() => setJournalColumnDialogOpen(false)}
-        />
-        <EditJournalColumnOrderDialog
-          journal={props.journal}
-          open={journalColumnOrderDialogOpen}
-          onDialogClose={() => setJournalColumnOrderDialogOpen(false)}
-          editHide
-        />
-        <Menu
-          anchorEl={menuAnchor}
-          open={menuAnchor !== null}
-          onClose={() => setMenuAnchor(null)}
+    <Box role="tabpanel">
+      <TableContainer component={Paper} className={classes.table}>
+        <Table
+          size="small"
+          stickyHeader
         >
-          <MenuItem onClick={openJournalSettingsDialog}>Settings</MenuItem>
-          <MenuItem onClick={openJournalColumnOrderDialog}>Columns</MenuItem>
-        </Menu>
-      </Box>
+          <TableHead>
+            {journal && (
+              <JournalHeaders
+                journal={journal}
+                onEditColumnSettings={openJournalColumnDialog}
+                onEditJournalSettings={() => setJournalSettingsDialogOpen(true)}
+                onEditColumnLayout={() => setJournalColumnOrderDialogOpen(true)}
+              />
+            )}
+          </TableHead>
+          <TableBody>
+            {journal?.transactions.map((_, index) => (
+              <JournalRow
+                journal={props.journal}
+                transaction={index}
+                assets={assets}
+                onEdit={(j, tx) => openEditDialog(tx)}
+                key={index}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Fab color="secondary" className={classes.fab} onClick={openAddDialog}>
+        <AddIcon />
+      </Fab>
+      <AddEditTransactionDialog
+        journal={props.journal}
+        transaction={selectedTransaction}
+        open={transactionDialogOpen}
+        onDialogClose={() => setTransactionDialogOpen(false)}
+      />
+      <AddEditJournalDialog
+        journal={props.journal}
+        open={journalSettingsDialogOpen}
+        onDialogClose={() => setJournalSettingsDialogOpen(false)}
+      />
+      <AddEditJournalColumnDialog
+        journal={props.journal}
+        role={selectedJournalColumn}
+        open={journalColumnDialogOpen}
+        onDialogClose={() => setJournalColumnDialogOpen(false)}
+      />
+      <EditJournalColumnOrderDialog
+        journal={props.journal}
+        open={journalColumnOrderDialogOpen}
+        onDialogClose={() => setJournalColumnOrderDialogOpen(false)}
+        editHide
+      />
+    </Box>
   );
 }
   
