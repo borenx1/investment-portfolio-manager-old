@@ -51,18 +51,18 @@ const initialFormFields: FormFields = {
 
 interface Props {
   journal: number;
-  transaction?: Transaction | null;
+  transaction: number;
   open: boolean;
   onDialogClose?: () => void;
 }
 
 function AddEditTransactionDialog(props: Props) {
-  const { journal: journalIndex, transaction, open, onDialogClose } = props;
+  const { journal: journalIndex, transaction: transactionIndex, open, onDialogClose } = props;
   const [fields, setFields] = useState<FormFields>(initialFormFields);
   const dispatch = useDispatch();
   const account = useSelector(selectActiveAccount);
-  const journals = useSelector(selectActiveAccountJournals);
-  const journal = journals[journalIndex];
+  const journal = useSelector(selectActiveAccountJournals)[journalIndex];
+  const transaction: Transaction | undefined = journal?.transactions[transactionIndex];
   const assets = useSelector(selectActiveAccountAssetsAll);
   
   const basePrecision = getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets);

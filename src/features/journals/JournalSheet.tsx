@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
@@ -80,15 +80,15 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
 }
 
 interface JournalRowProps {
-  journal: Readonly<Journal>;
-  transaction: Readonly<Transaction>;
+  journal: number;
+  transaction: number;
   assets?: Asset[];
-  onRowClick?: (transaction: Transaction) => void;
+  onEdit?: (journal: number, transaction: number) => void;
+  onDelete?: (journal: number, transaction: number) => void;
 }
 
-const useJournalRowStyles = makeStyles<Theme, JournalRowProps>((theme) => ({
+const useJournalRowStyles = makeStyles((theme) => ({
   root: {
-    cursor: props => props.onRowClick ? 'pointer' : undefined,
     '& > *': {
       borderBottom: '1px solid rgba(224, 224, 224, 1)',
       borderRight: '1px solid rgba(224, 224, 224, 1)',
@@ -100,13 +100,15 @@ const useJournalRowStyles = makeStyles<Theme, JournalRowProps>((theme) => ({
 }));
 
 function JournalRow(props: Readonly<JournalRowProps>) {
-  const { journal, transaction, assets, onRowClick } = props;
-  const classes = useJournalRowStyles(props);
+  const { journal: journalIndex, transaction: transactionIndex, assets, onEdit } = props;
+  const classes = useJournalRowStyles();
+
+  const journal = useSelector(selectActiveAccountJournals)[journalIndex];
+  const transaction = journal.transactions[transactionIndex];
 
   return (
     <TableRow
       hover
-      onClick={() => onRowClick?.(transaction)}
       className={classes.root}
     >
       {journal.columnOrder.map((role) => {
@@ -118,6 +120,11 @@ function JournalRow(props: Readonly<JournalRowProps>) {
           { transactionDataDisplay(transaction, role, journal, assets) }
         </TableCell>;
       })}
+      <TableCell>
+        <IconButton size="small">
+          <MoreVertIcon />
+        </IconButton>
+      </TableCell>
     </TableRow>
   );
 }
@@ -148,7 +155,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<number>(-1);
   const [journalSettingsDialogOpen, setJournalSettingsDialogOpen] = useState(false);
   const [journalColumnOrderDialogOpen, setJournalColumnOrderDialogOpen] = useState(false);
   const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
@@ -158,12 +165,12 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const journal = journals[props.journal];
 
   const openAddDialog = () => {
-    setSelectedTransaction(null);
+    setSelectedTransaction(-1);
     setTransactionDialogOpen(true);
   };
 
-  const openEditDialog = (tx: Transaction) => {
-    setSelectedTransaction(tx);
+  const openEditDialog = (transaction: number) => {
+    setSelectedTransaction(transaction);
     setTransactionDialogOpen(true);
   };
 
@@ -201,12 +208,12 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
               <JournalHeaders journal={journal} onSettingsClick={openJournalColumnDialog} />
             </TableHead>
             <TableBody>
-              {journal.transactions.map((tx, index) => (
+              {journal.transactions.map((_, index) => (
                 <JournalRow
-                  journal={journal}
-                  transaction={tx}
+                  journal={props.journal}
+                  transaction={index}
                   assets={assets}
-                  onRowClick={(tx) => openEditDialog(tx)}
+                  onEdit={(j, tx) => openEditDialog(tx)}
                   key={index}
                 />
               ))}
