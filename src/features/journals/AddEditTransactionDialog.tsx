@@ -47,11 +47,12 @@ function AddEditTransactionDialog(props: Props) {
   const journals = useSelector(selectActiveAccountJournals);
   const journal = journals[journalIndex];
   const assets = useSelector(selectActiveAccountAssetsAll);
+  
+  const basePrecision = getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets);
+  const quotePrecision = getDecimalColumnPrecision(journal.columns['quoteAmount'], fields.base, fields.quote, assets);
+  const pricePrecision = getDecimalColumnPrecision(journal.columns['price'], fields.base, fields.quote, assets);
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const basePrecision = getDecimalColumnPrecision(journal.columns['baseAmount'], fields.base, fields.quote, assets);
-    const quotePrecision = getDecimalColumnPrecision(journal.columns['quoteAmount'], fields.base, fields.quote, assets);
-    const pricePrecision = getDecimalColumnPrecision(journal.columns['price'], fields.base, fields.quote, assets);
     if (e.target.name === 'baseAmount') {
       setFields(s => ({
         ...s,
@@ -148,6 +149,7 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Amount"
             required
+            helperText={fields.base && `${basePrecision} max decimal places`}
             value={isNaN(fields.baseAmount) ? '' : fields.baseAmount}
             onChange={handleFieldChange}
           />
@@ -175,6 +177,7 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Total"
             required
+            helperText={fields.quote && `${quotePrecision} max decimal places`}
             value={isNaN(fields.quoteAmount) ? '' : fields.quoteAmount}
             onChange={handleFieldChange}
           />
@@ -216,6 +219,11 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Fee"
             value={isNaN(fields.fee) ? '' : fields.fee}
+            helperText={
+              fields.feeCurrency === 'base' ?
+              (fields.base && `${basePrecision} max decimal places`) :
+              (fields.quote && `${quotePrecision} max decimal places`)
+            }
             onChange={(e) => setFields(s => ({...s, fee: Math.max(parseFloat(e.target.value), 0)}))}
           />
         </Grid>
