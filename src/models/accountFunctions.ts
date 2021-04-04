@@ -89,21 +89,21 @@ export function isRightAlignJournalColumnType(type: JournalColumnType): boolean 
 /**
  * Gets a Decimal Journal Columns's precision from the column settings or default precision.
  * @param column The Decimal Column settings.
- * @param baseTicker The ticker of the base asset/currency.
- * @param quoteTicker The ticker of the quote asset/currency.
+ * @param baseTicker The ticker of the base asset/currency. Empty strings are invalid.
+ * @param quoteTicker The ticker of the quote asset/currency. Empty strings are invalid.
  * @param assets The assets to get the precision from. The baseTicker and quoteTicker will attempt to get the precision here.
  * @returns The precision (number of decimal places) of this column, or NaN if unable get a precision.
  */
 export function getDecimalColumnPrecision(column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): number {
-  const base = assets.find(a => a.ticker === baseTicker);
-  const quote = assets.find(a => a.ticker === quoteTicker);
+  const base = baseTicker ? assets.find(a => a.ticker === baseTicker) : undefined;
+  const quote = quoteTicker ? assets.find(a => a.ticker === quoteTicker) : undefined;
   switch (column.description) {
     case 'base':
-      return column.precision[baseTicker] ?? base?.precision ?? NaN;
+      return baseTicker ? (column.precision[baseTicker] ?? base?.precision ?? NaN) : NaN;
     case 'quote':
-      return column.precision[quoteTicker] ?? quote?.precision ?? NaN;
+      return quoteTicker ? (column.precision[quoteTicker] ?? quote?.precision ?? NaN) : NaN;
     case 'price':
-      return column.precision[`${baseTicker}/${quoteTicker}`] ?? base?.pricePrecision ?? NaN;
+      return (baseTicker && quoteTicker) ? (column.precision[`${baseTicker}/${quoteTicker}`] ?? base?.pricePrecision ?? NaN) : NaN;
     default:
       console.warn(`getDecimalColumnPrecision: Uncatched deciaml column description: ${column.description}.`);
       return NaN;

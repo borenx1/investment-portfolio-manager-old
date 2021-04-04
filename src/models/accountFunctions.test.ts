@@ -78,8 +78,8 @@ describe('testTransactions', () => {
   ];
   describe('getDecimalColumnPrecision', () => {
     test('expected values', () => {
-      expect(getDecimalColumnPrecision(testJournal.columns['baseAmount'], 'BTC', 'USD', testAssets)).toEqual(8);
-      expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], 'BTC', 'USD', testAssets)).toEqual(2);
+      expect(getDecimalColumnPrecision(testJournal.columns['baseAmount'], 'BTC', '', testAssets)).toEqual(8);
+      expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], '', 'USD', testAssets)).toEqual(2);
       expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], 'USD', 'BTC', testAssets)).toEqual(8);
       expect(getDecimalColumnPrecision(testJournal.columns['price'], 'BTC', 'USD', testAssets)).toEqual(2);
       expect(getDecimalColumnPrecision(testJournal.columns['feeBase'], 'BTC', 'USD', testAssets)).toEqual(8);
@@ -87,6 +87,13 @@ describe('testTransactions', () => {
       expect(getDecimalColumnPrecision(testJournalPrecision.columns['baseAmount'], 'BTC', 'USD', testAssets)).toEqual(4);
       expect(getDecimalColumnPrecision(testJournalPrecision.columns['quoteAmount'], 'BTC', 'USD', testAssets)).toEqual(3);
       expect(getDecimalColumnPrecision(testJournalPrecision.columns['price'], 'BTC', 'USD', testAssets)).toEqual(5);
+    });
+    test('NaN results', () => {
+      expect(getDecimalColumnPrecision(testJournal.columns['baseAmount'], 'ETH', 'USD', testAssets)).toEqual(NaN);
+      expect(getDecimalColumnPrecision(testJournal.columns['baseAmount'], '', 'USD', testAssets)).toEqual(NaN);
+      expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], 'BTC', '', testAssets)).toEqual(NaN);
+      expect(getDecimalColumnPrecision(testJournal.columns['price'], '', 'USD', testAssets)).toEqual(NaN);
+      expect(getDecimalColumnPrecision(testJournal.columns['price'], '123', 'USD', testAssets)).toEqual(NaN);
     });
   });
   describe('transactionDataDisplay', () => {
