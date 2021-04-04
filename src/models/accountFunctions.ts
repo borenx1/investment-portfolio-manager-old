@@ -122,9 +122,11 @@ export function getDecimalColumnPrecision(column: DecimalColumn, baseTicker: str
  * @returns A formatted string with the correct decimal places, or the original value of could not get the precision settings.
  */
 function formatTransactionDecimalColumn(value: number | string, column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): string {
-  if (typeof value === 'number' || !new BigNumber(value).isNaN()) {
+  if (!new BigNumber(value).isNaN()) {
     const precision = getDecimalColumnPrecision(column, baseTicker, quoteTicker, assets);
     return isNaN(precision) ? new BigNumber(value).toFixed() : roundDown(value, precision).toFixed(precision);
+  } else if (typeof value === 'number' && isNaN(value)) {
+    return '';
   }
   return String(value);
 }
@@ -148,12 +150,15 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   } else {
     data = transaction[role];
   }
+
   if (isDecimalColumn(column) && (typeof data === 'number' || typeof data === 'string')) {
     return formatTransactionDecimalColumn(data, column, transaction.base, transaction.quote, assets);
   } else if (isDateColumn(column) && typeof data === 'string') {
     return column.showTime ? new Date(data).toLocaleString(dateLocale) : new Date(data).toLocaleDateString(dateLocale);
   } else if (isBooleanColumn(column)) {
     return data ? 'Yes' : 'No';
+  } else if (data === undefined || (typeof data === 'number' && isNaN(data))) {
+    return '';
   }
-  return data !== undefined ? String(data) : '';
+  return String(data);
 }
