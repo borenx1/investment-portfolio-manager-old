@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import BigNumber from 'bignumber.js';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { Transaction, dateToString, getDecimalColumnPrecision } from '../../models/account';
+import { dateToString, getDecimalColumnPrecision } from '../../models/account';
 import { roundDown } from '../../models/math';
 
 function getTransactionType(baseAmount: number, quoteAmount: number, defaultType: TransactionType) {

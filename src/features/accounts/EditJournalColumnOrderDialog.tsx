@@ -15,7 +15,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
 import { editJournalColumn, editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
-import { getJournalColumn, Journal, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
+import { getJournalColumn, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
 
 interface Props {
   open: boolean;

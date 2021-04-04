@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -13,10 +13,13 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Box from '@material-ui/core/Box';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
@@ -30,7 +33,6 @@ import {
   transactionDataDisplay,
   Journal,
   JournalColumnRole,
-  Transaction,
   Asset,
 } from '../../models/account';
 
@@ -102,32 +104,58 @@ const useJournalRowStyles = makeStyles((theme) => ({
 }));
 
 function JournalRow(props: Readonly<JournalRowProps>) {
-  const { journal: journalIndex, transaction: transactionIndex, assets, onEdit } = props;
+  const { journal: journalIndex, transaction: transactionIndex, assets, onEdit, onDelete } = props;
   const classes = useJournalRowStyles();
-
+  const [menuAnchor, setMenuAnchor] = useState<Element | null>(null);
   const journal = useSelector(selectActiveAccountJournals)[journalIndex];
   const transaction = journal?.transactions[transactionIndex];
 
+  const handleEditTransaction = () => {
+    onEdit?.(journalIndex, transactionIndex);
+    setMenuAnchor(null);
+  };
+
+  const handleDeleteTransaction = () => {
+    onDelete?.(journalIndex, transactionIndex);
+    setMenuAnchor(null);
+  };
+
   return (
-    <TableRow
-      hover
-      className={classes.root}
-    >
-      {journal?.columnOrder.map((role) => {
-        const column = getJournalColumn(journal, role);
-        return !column.hide && <TableCell
-          align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
-          key={role}
-        >
-          { transaction && transactionDataDisplay(transaction, role, journal, assets) }
-        </TableCell>;
-      })}
-      <TableCell>
-        <IconButton size="small">
-          <MoreVertIcon />
-        </IconButton>
-      </TableCell>
-    </TableRow>
+    <React.Fragment>
+      <TableRow
+        hover
+        className={classes.root}
+      >
+        {journal?.columnOrder.map((role) => {
+          const column = getJournalColumn(journal, role);
+          return !column.hide && <TableCell
+            align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
+            key={role}
+          >
+            { transaction && transactionDataDisplay(transaction, role, journal, assets) }
+          </TableCell>;
+        })}
+        <TableCell>
+          <IconButton size="small" onClick={(e) => setMenuAnchor(e.currentTarget)}>
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <Menu
+        anchorEl={menuAnchor}
+        open={menuAnchor !== null}
+        onClose={() => setMenuAnchor(null)}
+      >
+        <MenuItem onClick={handleEditTransaction}>
+          <ListItemIcon><EditIcon /></ListItemIcon>
+          Edit
+        </MenuItem>
+        <MenuItem onClick={handleDeleteTransaction}>
+          <ListItemIcon><DeleteIcon /></ListItemIcon>
+          Delete
+        </MenuItem>
+      </Menu>
+    </React.Fragment>
   );
 }
 
