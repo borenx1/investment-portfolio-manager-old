@@ -1,5 +1,5 @@
 import { createTradingJournal, Journal, Transaction, Asset } from "./account";
-import { dateToString, isRightAlignJournalColumnType, journalColumnRoleDisplay, transactionDataDisplay } from "./accountFunctions";
+import { dateToString, getDecimalColumnPrecision, isRightAlignJournalColumnType, journalColumnRoleDisplay, transactionDataDisplay } from "./accountFunctions";
 
 describe('dateToString', () => {
   test('expected values', () => {
@@ -41,7 +41,7 @@ describe('isRightAlignJournalColumnType', () => {
   });
 });
 
-describe('transactionDataDisplay', () => {
+describe('testTransactions', () => {
   const testTransaction: Transaction = {
     date: '01/01/2021',
     base: 'BTC',
@@ -76,24 +76,39 @@ describe('transactionDataDisplay', () => {
       symbol: '₿',
     }
   ];
-  test('expected values', () => {
-    expect(transactionDataDisplay(testTransaction, 'date', testJournal)).toEqual('01/01/2021');
-    expect(transactionDataDisplay(testTransaction, 'base', testJournal)).toEqual('BTC');
-    expect(transactionDataDisplay(testTransaction, 'quote', testJournal)).toEqual('USD');
-    expect(transactionDataDisplay(testTransaction, 'notes', testJournal)).toEqual('Test transaction');
-    expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournal, testAssets)).toEqual('2.00000000');
-    expect(transactionDataDisplay(testTransaction, 'quoteAmount', testJournal, testAssets)).toEqual('90000.00');
-    expect(transactionDataDisplay(testTransaction, 'price', testJournal, testAssets)).toEqual('45000.00');
-    expect(transactionDataDisplay(testTransaction, 'feeBase', testJournal, testAssets)).toEqual('0.00000000');
-    expect(transactionDataDisplay(testTransaction, 'feeQuote', testJournal, testAssets)).toEqual('45.00');
+  describe('getDecimalColumnPrecision', () => {
+    test('expected values', () => {
+      expect(getDecimalColumnPrecision(testJournal.columns['baseAmount'], 'BTC', 'USD', testAssets)).toEqual(8);
+      expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], 'BTC', 'USD', testAssets)).toEqual(2);
+      expect(getDecimalColumnPrecision(testJournal.columns['quoteAmount'], 'USD', 'BTC', testAssets)).toEqual(8);
+      expect(getDecimalColumnPrecision(testJournal.columns['price'], 'BTC', 'USD', testAssets)).toEqual(2);
+      expect(getDecimalColumnPrecision(testJournal.columns['feeBase'], 'BTC', 'USD', testAssets)).toEqual(8);
+      expect(getDecimalColumnPrecision(testJournal.columns['feeQuote'], 'BTC', 'USD', testAssets)).toEqual(2);
+      expect(getDecimalColumnPrecision(testJournalPrecision.columns['baseAmount'], 'BTC', 'USD', testAssets)).toEqual(4);
+      expect(getDecimalColumnPrecision(testJournalPrecision.columns['quoteAmount'], 'BTC', 'USD', testAssets)).toEqual(3);
+      expect(getDecimalColumnPrecision(testJournalPrecision.columns['price'], 'BTC', 'USD', testAssets)).toEqual(5);
+    });
   });
-  test('missing asset settings', () => {
-    expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournal)).toEqual('2');
-    expect(transactionDataDisplay(testTransaction, 'price', testJournal)).toEqual('45000');
-  });
-  test('column precision settings', () => {
-    expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournalPrecision, testAssets)).toEqual('2.0000');
-    expect(transactionDataDisplay(testTransaction, 'quoteAmount', testJournalPrecision, testAssets)).toEqual('90000.000');
-    expect(transactionDataDisplay(testTransaction, 'price', testJournalPrecision, testAssets)).toEqual('45000.00000');
+  describe('transactionDataDisplay', () => {
+    test('expected values', () => {
+      expect(transactionDataDisplay(testTransaction, 'date', testJournal, [], 'en-AU')).toEqual('01/01/2021');
+      expect(transactionDataDisplay(testTransaction, 'base', testJournal)).toEqual('BTC');
+      expect(transactionDataDisplay(testTransaction, 'quote', testJournal)).toEqual('USD');
+      expect(transactionDataDisplay(testTransaction, 'notes', testJournal)).toEqual('Test transaction');
+      expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournal, testAssets)).toEqual('2.00000000');
+      expect(transactionDataDisplay(testTransaction, 'quoteAmount', testJournal, testAssets)).toEqual('90000.00');
+      expect(transactionDataDisplay(testTransaction, 'price', testJournal, testAssets)).toEqual('45000.00');
+      expect(transactionDataDisplay(testTransaction, 'feeBase', testJournal, testAssets)).toEqual('0.00000000');
+      expect(transactionDataDisplay(testTransaction, 'feeQuote', testJournal, testAssets)).toEqual('45.00');
+    });
+    test('missing asset settings', () => {
+      expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournal)).toEqual('2');
+      expect(transactionDataDisplay(testTransaction, 'price', testJournal)).toEqual('45000');
+    });
+    test('column precision settings', () => {
+      expect(transactionDataDisplay(testTransaction, 'baseAmount', testJournalPrecision, testAssets)).toEqual('2.0000');
+      expect(transactionDataDisplay(testTransaction, 'quoteAmount', testJournalPrecision, testAssets)).toEqual('90000.000');
+      expect(transactionDataDisplay(testTransaction, 'price', testJournalPrecision, testAssets)).toEqual('45000.00000');
+    });
   });
 });

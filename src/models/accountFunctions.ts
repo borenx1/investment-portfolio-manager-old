@@ -87,6 +87,30 @@ export function isRightAlignJournalColumnType(type: JournalColumnType): boolean 
 }
 
 /**
+ * Gets a Decimal Journal Columns's precision from the column settings or default precision.
+ * @param column The Decimal Column settings.
+ * @param baseTicker The ticker of the base asset/currency.
+ * @param quoteTicker The ticker of the quote asset/currency.
+ * @param assets The assets to get the precision from. The baseTicker and quoteTicker will attempt to get the precision here.
+ * @returns The precision (number of decimal places) of this column, or NaN if unable get a precision.
+ */
+export function getDecimalColumnPrecision(column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): number {
+  const base = assets.find(a => a.ticker === baseTicker);
+  const quote = assets.find(a => a.ticker === quoteTicker);
+  switch (column.description) {
+    case 'base':
+      return column.precision[baseTicker] ?? base?.precision ?? NaN;
+    case 'quote':
+      return column.precision[quoteTicker] ?? quote?.precision ?? NaN;
+    case 'price':
+      return column.precision[`${baseTicker}/${quoteTicker}`] ?? base?.pricePrecision ?? NaN;
+    default:
+      console.warn(`getDecimalColumnPrecision: Uncatched deciaml column description: ${column.description}.`);
+      return NaN;
+  }
+}
+
+/**
  * Formats a transaction's value to the correct decimal places depending on the column and asset settings.
  * @param value The value to format. String values are attempted to be coerced into numbers.
  * @param column The column settings.
@@ -97,19 +121,8 @@ export function isRightAlignJournalColumnType(type: JournalColumnType): boolean 
  */
 function formatTransactionDecimalColumn(value: number | string, column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): string {
   if (typeof value === 'number' || isNaN(parseFloat(value))) {
-    const base = assets.find(a => a.ticker === baseTicker);
-    const quote = assets.find(a => a.ticker === quoteTicker);
-    let precision: number;
-    if (column.description === 'base') {
-      precision = column.precision[baseTicker] ?? base?.precision ?? -1;
-    } else if (column.description === 'quote') {
-      precision = column.precision[quoteTicker] ?? quote?.precision ?? -1;
-    } else if (column.description === 'price') {
-      precision = column.precision[`${baseTicker}/${quoteTicker}`] ?? base?.pricePrecision ?? -1;
-    } else {
-      precision = -1;
-    }
-    if (precision >= 0) {
+    const precision = getDecimalColumnPrecision(column, baseTicker, quoteTicker, assets);
+    if (!isNaN(precision)) {
       return typeof value === 'number' ? value.toFixed(precision) : parseFloat(value).toFixed(precision);
     };
   }
@@ -124,7 +137,7 @@ function formatTransactionDecimalColumn(value: number | string, column: DecimalC
  * @param assets A list of assets to get the precision settings from (for decimal columns).
  * @returns A formatted string representing the transaction's value to be displayed to the user.
  */
-export function transactionDataDisplay(transaction: Transaction, role: JournalColumnRole, journal: Journal, assets: Asset[] = []): string {
+export function transactionDataDisplay(transaction: Transaction, role: JournalColumnRole, journal: Journal, assets: Asset[] = [], dateLocale?: string): string {
   const column = getJournalColumn(journal, role);
   // Could be undefined due to extra column does not exist
   let data: number | string | boolean | undefined;
@@ -138,7 +151,7 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   if (isDecimalColumn(column) && (typeof data === 'number' || typeof data === 'string')) {
     return formatTransactionDecimalColumn(data, column, transaction.base, transaction.quote, assets);
   } else if (isDateColumn(column) && typeof data === 'string') {
-    return column.showTime ? new Date(data).toLocaleString() : new Date(data).toLocaleDateString();
+    return column.showTime ? new Date(data).toLocaleString(dateLocale) : new Date(data).toLocaleDateString(dateLocale);
   } else if (isBooleanColumn(column)) {
     return data ? 'Yes' : 'No';
   }
