@@ -24,7 +24,7 @@ function getTransactionType(baseAmount: number, quoteAmount: number, defaultType
 
 type TransactionType = 'buy' | 'sell' | 'income' | 'expense';
 export interface FormFields {
-  date: string;
+  date: Date;
   base: string;
   quote: string;
   baseAmount: BigNumber,
@@ -37,7 +37,7 @@ export interface FormFields {
 }
 
 const initialFormFields: FormFields = {
-  date: '',
+  date: new Date(),
   base: '',
   quote: '',
   baseAmount: new BigNumber(NaN),
@@ -101,14 +101,14 @@ function AddEditTransactionDialog(props: Props) {
       // Add
       setFields({
         ...initialFormFields,
-        date: dateToString(new Date()),
+        date: new Date(),
         base: account?.assets[0]?.ticker ?? account?.settings.accountingCurrency.ticker ?? '',
         quote: account?.settings.accountingCurrency.ticker ?? '',
       });
     } else {
       // Edit
       setFields({
-        date: transaction.date,
+        date: new Date(transaction.date),
         base: transaction.base,
         baseAmount: new BigNumber(transaction.baseAmount).abs(),
         quote: transaction.quote,
@@ -129,7 +129,7 @@ function AddEditTransactionDialog(props: Props) {
       dispatch(addTransaction({
         journal: journalIndex,
         transaction: {
-          date: fields.date,
+          date: dateToString(fields.date),
           base: fields.base,
           baseAmount: (fields.type === 'buy' || fields.type === 'income' ? fields.baseAmount : fields.baseAmount.negated()).toNumber(),
           quote: fields.quote,
@@ -161,13 +161,14 @@ function AddEditTransactionDialog(props: Props) {
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <TextField
-            type="datetime-local"
+            type={journal.columns.date.showTime ? "datetime-local" : "date"}
             size="small"
             label="Date"
             fullWidth
             required
-            value={fields.date}
-            onChange={(e) => setFields(s => ({...s, date: e.target.value}))}
+            inputProps={{step: 1}}
+            value={dateToString(fields.date, journal.columns.date.showTime)}
+            onChange={(e) => setFields(s => ({...s, date: new Date(e.target.value)}))}
             InputLabelProps={{shrink: true}}
           />
         </Grid>

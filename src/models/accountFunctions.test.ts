@@ -2,10 +2,16 @@ import { createTradingJournal, Journal, Transaction, Asset } from "./account";
 import { dateToString, getDecimalColumnPrecision, isRightAlignJournalColumnType, journalColumnRoleDisplay, transactionDataDisplay } from "./accountFunctions";
 
 describe('dateToString', () => {
-  test('expected values', () => {
-    expect(dateToString(new Date(2020, 1, 1))).toEqual('2020-01-01T00:00:00');
-    expect(dateToString(new Date(2020, 6, 12, 20, 10))).toEqual('2020-06-12T20:10:00');
-    expect(dateToString(new Date(111, 1, 1, 20, 0))).toEqual('0111-01-01T20:00:00');
+  test('expected (with time)', () => {
+    expect(dateToString(new Date(2020, 0, 1))).toEqual('2020-01-01T00:00:00');
+    expect(dateToString(new Date('01/01/2021'))).toEqual('2021-01-01T00:00:00');
+    expect(dateToString(new Date(2020, 11, 12, 20, 10))).toEqual('2020-12-12T20:10:00');
+    expect(dateToString(new Date(111, 1, 1, 20, 0))).toEqual('0111-02-01T20:00:00');
+  });
+  test('expected (no time)', () => {
+    expect(dateToString(new Date(2021, 0, 1), false)).toEqual('2021-01-01');
+    expect(dateToString(new Date(2020, 6, 12, 20, 10), false)).toEqual('2020-07-12');
+    expect(dateToString(new Date(111, 1, 1, 20, 0), false)).toEqual('0111-02-01');
   });
 });
 
