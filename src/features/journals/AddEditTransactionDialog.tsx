@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
 import { Transaction, dateToString, getDecimalColumnPrecision } from '../../models/account';
-import { roundDown } from '../../models/math';
+import { divide, multiply, roundDown } from '../../models/math';
 
 export interface FormFields {
   date: string;
@@ -54,20 +54,29 @@ function AddEditTransactionDialog(props: Props) {
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'baseAmount') {
-      setFields(s => ({
-        ...s,
-        baseAmount: roundDown(Math.max(parseFloat(e.target.value), 0), basePrecision),
-      }))
+      setFields(s => {
+        const newFields = {...s, baseAmount: roundDown(Math.max(parseFloat(e.target.value), 0), basePrecision)};
+        if (s.price) {
+          newFields.quoteAmount = multiply(newFields.baseAmount, s.price, quotePrecision);
+        }
+        return newFields;
+      })
     } else if (e.target.name === 'quoteAmount') {
-      setFields(s => ({
-        ...s,
-        quoteAmount: roundDown(Math.max(parseFloat(e.target.value), 0), quotePrecision),
-      }))
+      setFields(s => {
+        const newFields = {...s, quoteAmount: roundDown(Math.max(parseFloat(e.target.value), 0), quotePrecision)};
+        if (s.baseAmount) {
+          newFields.price = divide(newFields.quoteAmount, s.baseAmount);
+        }
+        return newFields;
+      })
     } else if (e.target.name === 'price') {
-      setFields(s => ({
-        ...s,
-        price: roundDown(Math.max(parseFloat(e.target.value), 0), pricePrecision),
-      }))
+      setFields(s => {
+        const newFields = {...s, price: Math.max(parseFloat(e.target.value), 0)};
+        if (s.baseAmount) {
+          newFields.quoteAmount = multiply(newFields.price, s.baseAmount, quotePrecision);
+        }
+        return newFields;
+      })
     }
   };
 
@@ -151,6 +160,7 @@ function AddEditTransactionDialog(props: Props) {
             required
             helperText={fields.base && `${basePrecision} max decimal places`}
             value={isNaN(fields.baseAmount) ? '' : fields.baseAmount}
+            inputProps={{min: 0, step: fields.base ? 1/Math.pow(10, basePrecision) : 1}}
             onChange={handleFieldChange}
           />
         </Grid>
@@ -179,6 +189,7 @@ function AddEditTransactionDialog(props: Props) {
             required
             helperText={fields.quote && `${quotePrecision} max decimal places`}
             value={isNaN(fields.quoteAmount) ? '' : fields.quoteAmount}
+            inputProps={{min: 0, step: fields.quote ? 1/Math.pow(10, quotePrecision) : 1}}
             onChange={handleFieldChange}
           />
         </Grid>
@@ -219,12 +230,19 @@ function AddEditTransactionDialog(props: Props) {
             size="small"
             label="Fee"
             value={isNaN(fields.fee) ? '' : fields.fee}
+            inputProps={{min: 0, step: fields.feeCurrency === 'base' ?
+              (fields.base ? 1/Math.pow(10, basePrecision) : 1) :
+              (fields.quote ? 1/Math.pow(10, quotePrecision) : 1)
+            }}
             helperText={
               fields.feeCurrency === 'base' ?
               (fields.base && `${basePrecision} max decimal places`) :
               (fields.quote && `${quotePrecision} max decimal places`)
             }
-            onChange={(e) => setFields(s => ({...s, fee: Math.max(parseFloat(e.target.value), 0)}))}
+            onChange={(e) => setFields(s => ({
+              ...s,
+              fee: roundDown(Math.max(parseFloat(e.target.value), 0), fields.feeCurrency === 'base' ? basePrecision : quotePrecision),
+            }))}
           />
         </Grid>
         <Grid item xs={4}>
