@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -31,14 +31,14 @@ interface JournalColumnRowProps {
   onClick?: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-const useJournalColumnRowStyles = makeStyles(theme => ({
+const useJournalColumnRowStyles = makeStyles<Theme, JournalColumnRowProps>(theme => ({
   root: {
-    cursor: 'pointer',
+    cursor: props => props.onClick ? 'pointer' : undefined,
   },
 }));
 
 function JournalColumnRow(props: JournalColumnRowProps) {
-  const classes = useJournalColumnRowStyles();
+  const classes = useJournalColumnRowStyles(props);
   const { role, journalIndex, journalColumn, onClick } = props;
   const dispatch = useDispatch();
 
@@ -84,9 +84,9 @@ interface JournalRowProps {
   onEditColumnOrder?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const useJournalRowStyles = makeStyles(theme => ({
+const useJournalRowStyles = makeStyles<Theme, JournalRowProps>(theme => ({
   mainRow: {
-    cursor: 'pointer',
+    cursor: props => props.onClick ? 'pointer' : undefined,
     '& > *': {                // select all children
       borderBottom: 'none',   // remove the bottom border of the TableCell children
     },
@@ -113,7 +113,7 @@ const useJournalRowStyles = makeStyles(theme => ({
  * - onClick: Callback when the row is clicked.
  */
 function JournalRow(props: JournalRowProps) {
-  const classes = useJournalRowStyles();
+  const classes = useJournalRowStyles(props);
   const { journal, index, onAddColumn, onEditColumn, onEditColumnOrder, onClick } = props;
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
