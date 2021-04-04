@@ -9,6 +9,20 @@ import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll, sele
 import { Transaction, dateToString, getDecimalColumnPrecision } from '../../models/account';
 import { roundDown } from '../../models/math';
 
+function getTransactionType(baseAmount: number, quoteAmount: number, defaultType: TransactionType) {
+  if (baseAmount > 0 && quoteAmount < 0) {
+    return 'buy';
+  } else if (baseAmount < 0 && quoteAmount > 0) {
+    return 'sell';
+  } else if (baseAmount > 0 && quoteAmount >= 0) {
+    return 'income';
+  } else if (baseAmount < 0 && quoteAmount <= 0) {
+    return 'expense';
+  }
+  return defaultType;
+}
+
+type TransactionType = 'buy' | 'sell' | 'income' | 'expense';
 export interface FormFields {
   date: string;
   base: string;
@@ -16,6 +30,7 @@ export interface FormFields {
   baseAmount: BigNumber,
   quoteAmount: BigNumber,
   price: BigNumber,
+  type: TransactionType;
   fee: BigNumber,
   feeCurrency: 'base' | 'quote',
   notes: string,
@@ -28,6 +43,7 @@ const initialFormFields: FormFields = {
   baseAmount: new BigNumber(NaN),
   quoteAmount: new BigNumber(NaN),
   price: new BigNumber(NaN),
+  type: 'buy',
   fee: new BigNumber(NaN),
   feeCurrency: 'quote',
   notes: '',
@@ -89,19 +105,16 @@ function AddEditTransactionDialog(props: Props) {
         base: account?.assets[0]?.ticker ?? account?.settings.accountingCurrency.ticker ?? '',
         quote: account?.settings.accountingCurrency.ticker ?? '',
       });
-      console.log(fields.baseAmount);
-      console.log(fields.baseAmount.toString());
-      console.log(fields.baseAmount.isNaN());
-      console.log(typeof fields.baseAmount);
     } else {
       // Edit
       setFields({
         date: transaction.date,
         base: transaction.base,
-        baseAmount: new BigNumber(transaction.baseAmount),
+        baseAmount: new BigNumber(transaction.baseAmount).abs(),
         quote: transaction.quote,
-        quoteAmount: new BigNumber(transaction.quoteAmount),
+        quoteAmount: new BigNumber(transaction.quoteAmount).abs(),
         price: new BigNumber(transaction.quoteAmount).div(new BigNumber(transaction.baseAmount)),
+        type: getTransactionType(transaction.baseAmount, transaction.quoteAmount, 'buy'),
         fee: transaction.feeBase !== 0 ? new BigNumber(transaction.feeBase) : new BigNumber(transaction.feeQuote),
         feeCurrency: transaction.feeBase !== 0 ? 'base' : 'quote',
         notes: transaction.notes,
@@ -112,14 +125,15 @@ function AddEditTransactionDialog(props: Props) {
   const handleSubmit = () => {
     // TODO input validation
     if (transaction === null || transaction === undefined) {
+      // Add
       dispatch(addTransaction({
         journal: journalIndex,
         transaction: {
           date: fields.date,
           base: fields.base,
-          baseAmount: fields.baseAmount.toNumber(),
+          baseAmount: (fields.type === 'buy' || fields.type === 'income' ? fields.baseAmount : fields.baseAmount.negated()).toNumber(),
           quote: fields.quote,
-          quoteAmount: fields.quoteAmount.toNumber(),
+          quoteAmount: (fields.type === 'sell' || fields.type === 'income' ? fields.quoteAmount : fields.quoteAmount.negated()).toNumber(),
           feeBase: fields.feeCurrency === 'base' ? fields.fee.toNumber() : 0,
           feeQuote: fields.feeCurrency === 'quote' ? fields.fee.toNumber() : 0,
           notes: fields.notes,
@@ -127,6 +141,7 @@ function AddEditTransactionDialog(props: Props) {
         },
       }));
     } else {
+      // Edit
       // TODO
     }
     onDialogClose?.();
@@ -227,7 +242,19 @@ function AddEditTransactionDialog(props: Props) {
           />
         </Grid>
         <Grid item xs={4}>
-          
+          <TextField
+            select
+            fullWidth
+            size="small"
+            label="Type"
+            value={fields.type}
+            onChange={(e) => setFields(s => ({...s, type: e.target.value as TransactionType}))}
+          >
+            <MenuItem value={'buy'}>Buy</MenuItem>
+            <MenuItem value={'sell'}>Sell</MenuItem>
+            <MenuItem value={'income'}>Income</MenuItem>
+            <MenuItem value={'expense'}>Expense</MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={8}>
           <TextField

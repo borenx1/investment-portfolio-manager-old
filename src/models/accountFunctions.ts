@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import {
   Asset,
   Transaction,
@@ -17,6 +18,7 @@ import {
   isBooleanColumn,
   isDateColumn,
 } from "./account";
+import { roundDown } from "./math";
 
 /**
  * Convert a date to "yyyy-mm-ddThh:mm:ss" format in GMT. Compatible with DateColumn.
@@ -120,11 +122,9 @@ export function getDecimalColumnPrecision(column: DecimalColumn, baseTicker: str
  * @returns A formatted string with the correct decimal places, or the original value of could not get the precision settings.
  */
 function formatTransactionDecimalColumn(value: number | string, column: DecimalColumn, baseTicker: string, quoteTicker: string, assets: Asset[] = []): string {
-  if (typeof value === 'number' || isNaN(parseFloat(value))) {
+  if (typeof value === 'number' || !new BigNumber(value).isNaN()) {
     const precision = getDecimalColumnPrecision(column, baseTicker, quoteTicker, assets);
-    if (!isNaN(precision)) {
-      return typeof value === 'number' ? value.toFixed(precision) : parseFloat(value).toFixed(precision);
-    };
+    return isNaN(precision) ? new BigNumber(value).toFixed() : roundDown(value, precision).toFixed(precision);
   }
   return String(value);
 }
@@ -142,7 +142,7 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   // Could be undefined due to extra column does not exist
   let data: number | string | boolean | undefined;
   if (role === 'price') {
-    data = transaction.quoteAmount / transaction.baseAmount;
+    data = new BigNumber(transaction.quoteAmount).div(new BigNumber(transaction.baseAmount)).abs().toNumber();
   } else if (typeof role === 'number') {
     data = transaction.extra[column.name];
   } else {
