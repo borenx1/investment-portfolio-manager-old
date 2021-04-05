@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -24,7 +24,7 @@ import AddEditTransactionDialog from './AddEditTransactionDialog';
 import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
 import AddEditJournalColumnDialog from '../accounts/AddEditJournalColumnDialog';
 import EditJournalColumnOrderDialog from '../accounts/EditJournalColumnOrderDialog';
-import { selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
+import { deleteTransaction, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
 import {
   getJournalColumn,
   isRightAlignJournalColumnType,
@@ -216,6 +216,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
   const [journalColumnOrderDialogOpen, setJournalColumnOrderDialogOpen] = useState(false);
   const [journalColumnDialogOpen, setJournalColumnDialogOpen] = useState(false);
   const [selectedJournalColumn, setSelectedJournalColumn] = useState<JournalColumnRole | null>(null);
+  const dispatch = useDispatch();
   const assets = useSelector(selectActiveAccountAssetsAll);
   const journal = useSelector(selectActiveAccountJournals)[props.journal];
 
@@ -258,6 +259,7 @@ function JournalSheet(props: Readonly<JournalSheetProps>) {
                 transaction={index}
                 assets={assets}
                 onEdit={(j, tx) => openEditDialog(tx)}
+                onDelete={(j, tx) => dispatch(deleteTransaction({journal: j, index: tx}))}
                 key={index}
               />
             ))}

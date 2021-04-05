@@ -46,26 +46,6 @@ export const accountsSlice = createSlice({
       const name = action.payload || 'New Account';
       state.accounts.push(createDefaultAccount(name));
     },
-    addTransaction: (state, action: PayloadAction<{account?: number, journal: number, transaction: Transaction}>) => {
-      const { account: accountIndex, journal: journalIndex, transaction } = action.payload;
-      const account = state.accounts[accountIndex ?? state.activeAccount];
-      const journal = account?.journals[journalIndex];
-      if (journal !== undefined) {
-        // Insert transaction in the correct order
-        for (let i = journal.transactions.length; i >= 0; i--) {
-          if (i === 0 || new Date(transaction.date) >= new Date(journal.transactions[i-1]!.date)) {
-            journal.transactions.splice(i, 0, transaction);
-            break;
-          }
-        }
-      } else {
-        console.warn(`addTransaction: Journal index ${journalIndex} is out of range for account: ${JSON.stringify(account)}.`);
-      }
-    },
-    editTransaction: (state, action: PayloadAction<{account?: number, journal: number, index: number, transaction: Transaction}>) => {
-      // TODO
-      console.log('TODO');
-    },
     changeAccountingCurrency: (state, action: PayloadAction<{account?: number, currency: Asset}>) => {
       const { account: accountIndex, currency } = action.payload;
       // Updates the active account if no account provided
@@ -209,6 +189,36 @@ export const accountsSlice = createSlice({
         console.warn(`editJournalColumnOrder: Journal index ${index} is out of range for account: ${JSON.stringify(account)}.`);
       }
     },
+    addTransaction: (state, action: PayloadAction<{account?: number, journal: number, transaction: Transaction}>) => {
+      const { account: accountIndex, journal: journalIndex, transaction } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      const journal = account?.journals[journalIndex];
+      if (journal !== undefined) {
+        // Insert transaction in the correct order
+        for (let i = journal.transactions.length; i >= 0; i--) {
+          if (i === 0 || new Date(transaction.date) >= new Date(journal.transactions[i-1]!.date)) {
+            journal.transactions.splice(i, 0, transaction);
+            break;
+          }
+        }
+      } else {
+        console.warn(`addTransaction: Journal index ${journalIndex} is out of range for account: ${JSON.stringify(account)}.`);
+      }
+    },
+    editTransaction: (state, action: PayloadAction<{account?: number, journal: number, index: number, transaction: Transaction}>) => {
+      // TODO
+      console.log('TODO');
+    },
+    deleteTransaction: (state, action: PayloadAction<{account?: number, journal: number, index: number}>) => {
+      const { account: accountIndex, journal: journalIndex, index } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      const journal = account?.journals[journalIndex];
+      if (journal !== undefined) {
+        journal.transactions.splice(index, 1);
+      } else {
+        console.warn(`deleteTransaction: Journal index ${journalIndex} is out of range for account: ${JSON.stringify(account)}.`);
+      }
+    },
   },
 });
 
@@ -217,7 +227,6 @@ export const {
   switchAccount,
   addAccount,
   addDefaultAccount,
-  addTransaction,
   changeAccountingCurrency,
   addAsset,
   editAsset,
@@ -230,6 +239,9 @@ export const {
   editJournalColumn,
   deleteJournalColumn,
   editJournalColumnOrder,
+  addTransaction,
+  editTransaction,
+  deleteTransaction,
 } = accountsSlice.actions;
 
 // Selectors

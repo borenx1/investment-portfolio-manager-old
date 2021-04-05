@@ -148,6 +148,7 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   // Could be undefined due to extra column does not exist
   let data: number | string | boolean | undefined;
   if (role === 'price') {
+    // TODO do this more efficiently
     data = new BigNumber(transaction.quoteAmount).div(new BigNumber(transaction.baseAmount)).abs().toNumber();
   } else if (typeof role === 'number') {
     data = transaction.extra[column.name];
