@@ -18,6 +18,7 @@ import {
   isPriceColumn,
   isTextColumn,
   isExtraColumn,
+  addTransactionOrdered,
 } from '../../models/account';
 
 interface State {
@@ -195,19 +196,26 @@ export const accountsSlice = createSlice({
       const journal = account?.journals[journalIndex];
       if (journal !== undefined) {
         // Insert transaction in the correct order
-        for (let i = journal.transactions.length; i >= 0; i--) {
-          if (i === 0 || new Date(transaction.date) >= new Date(journal.transactions[i-1]!.date)) {
-            journal.transactions.splice(i, 0, transaction);
-            break;
-          }
-        }
+        addTransactionOrdered(journal.transactions, transaction);
       } else {
         console.warn(`addTransaction: Journal index ${journalIndex} is out of range for account: ${JSON.stringify(account)}.`);
       }
     },
     editTransaction: (state, action: PayloadAction<{account?: number, journal: number, index: number, transaction: Transaction}>) => {
-      // TODO
-      console.log('TODO');
+      const { account: accountIndex, journal: journalIndex, index, transaction } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      const journal = account?.journals[journalIndex];
+      const oldTransaction = journal?.transactions[index];
+      if (oldTransaction !== undefined) {
+        if (oldTransaction.date === transaction.date) {
+          journal!.transactions[index] = transaction;
+        } else {
+          journal!.transactions.splice(index, 1);
+          addTransactionOrdered(journal!.transactions, transaction);
+        }
+      } else {
+        console.warn(`editTransaction: Transaction not found: index ${index}, journal ${journalIndex}, account ${JSON.stringify(account)}`);
+      }
     },
     deleteTransaction: (state, action: PayloadAction<{account?: number, journal: number, index: number}>) => {
       const { account: accountIndex, journal: journalIndex, index } = action.payload;

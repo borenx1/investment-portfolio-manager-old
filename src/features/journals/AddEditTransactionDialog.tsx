@@ -5,9 +5,11 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import BigNumber from 'bignumber.js';
 import AddEditDialog from '../../components/AddEditDialog';
-import { addTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
+import { addTransaction, editTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
 import { dateToString, getDecimalColumnPrecision } from '../../models/account';
 import { roundDown } from '../../models/math';
+
+type TransactionType = 'buy' | 'sell' | 'income' | 'expense';
 
 function getTransactionType(baseAmount: number, quoteAmount: number, defaultType: TransactionType) {
   if (baseAmount > 0 && quoteAmount < 0) {
@@ -22,7 +24,19 @@ function getTransactionType(baseAmount: number, quoteAmount: number, defaultType
   return defaultType;
 }
 
-type TransactionType = 'buy' | 'sell' | 'income' | 'expense';
+function fromTransactionType(baseAmount: number, quoteAmount: number, type: TransactionType): [number, number] {
+  switch (type) {
+    case 'buy':
+      return [Math.abs(baseAmount), -Math.abs(quoteAmount)];
+    case 'sell':
+      return [-Math.abs(baseAmount), Math.abs(quoteAmount)];
+    case 'income':
+      return [Math.abs(baseAmount), Math.abs(quoteAmount)];
+    case 'expense':
+      return [-Math.abs(baseAmount), -Math.abs(quoteAmount)];
+  }
+}
+
 export interface FormFields {
   date: Date;
   base: string;
@@ -113,7 +127,7 @@ function AddEditTransactionDialog(props: Props) {
         baseAmount: new BigNumber(transaction.baseAmount).abs(),
         quote: transaction.quote,
         quoteAmount: new BigNumber(transaction.quoteAmount).abs(),
-        price: new BigNumber(transaction.quoteAmount).div(new BigNumber(transaction.baseAmount)),
+        price: new BigNumber(transaction.quoteAmount).div(new BigNumber(transaction.baseAmount)).abs(),
         type: getTransactionType(transaction.baseAmount, transaction.quoteAmount, 'buy'),
         fee: transaction.feeBase !== 0 ? new BigNumber(transaction.feeBase) : new BigNumber(transaction.feeQuote),
         feeCurrency: transaction.feeBase !== 0 ? 'base' : 'quote',
@@ -124,25 +138,31 @@ function AddEditTransactionDialog(props: Props) {
 
   const handleSubmit = () => {
     // TODO input validation
+    const [newBaseAmount, newQuoteAmount] = fromTransactionType(fields.baseAmount.toNumber(), fields.quoteAmount.toNumber(), fields.type);
+    const newTransaction = {
+      date: dateToString(fields.date),
+      base: fields.base,
+      baseAmount: newBaseAmount,
+      quote: fields.quote,
+      quoteAmount: newQuoteAmount,
+      feeBase: fields.feeCurrency === 'base' ? fields.fee.toNumber() : 0,
+      feeQuote: fields.feeCurrency === 'quote' ? fields.fee.toNumber() : 0,
+      notes: fields.notes,
+      extra: {},
+    };
     if (transaction === null || transaction === undefined) {
       // Add
       dispatch(addTransaction({
         journal: journalIndex,
-        transaction: {
-          date: dateToString(fields.date),
-          base: fields.base,
-          baseAmount: (fields.type === 'buy' || fields.type === 'income' ? fields.baseAmount : fields.baseAmount.negated()).toNumber(),
-          quote: fields.quote,
-          quoteAmount: (fields.type === 'sell' || fields.type === 'income' ? fields.quoteAmount : fields.quoteAmount.negated()).toNumber(),
-          feeBase: fields.feeCurrency === 'base' ? fields.fee.toNumber() : 0,
-          feeQuote: fields.feeCurrency === 'quote' ? fields.fee.toNumber() : 0,
-          notes: fields.notes,
-          extra: {},
-        },
+        transaction: newTransaction,
       }));
     } else {
       // Edit
-      // TODO
+      dispatch(editTransaction({
+        journal: journalIndex,
+        index: transactionIndex,
+        transaction: newTransaction,
+      }));
     }
     onDialogClose?.();
   };

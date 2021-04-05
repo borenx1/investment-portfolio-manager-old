@@ -167,3 +167,13 @@ export function transactionDataDisplay(transaction: Transaction, role: JournalCo
   }
   return String(data);
 }
+
+/** Insert transaction in the correct position order by date from newest to oldest. */
+export function addTransactionOrdered(transactions: Transaction[], newTransaction: Transaction): void {
+  for (let i = transactions.length; i >= 0; i--) {
+    if (i === 0 || new Date(newTransaction.date) >= new Date(transactions[i-1]!.date)) {
+      transactions.splice(i, 0, newTransaction);
+      break;
+    }
+  }
+}
