@@ -31,7 +31,7 @@ export function dateToString(date: Date, time: boolean = true) {
   return `${dateString}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
 }
 
-export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | null) {
+export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | null): string | null {
   switch (role) {
     case undefined:
     case null:
