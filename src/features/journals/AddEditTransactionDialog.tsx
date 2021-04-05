@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import BigNumber from 'bignumber.js';
 import AddEditDialog from '../../components/AddEditDialog';
 import { addTransaction, editTransaction, selectActiveAccount, selectActiveAccountAssetsAll, selectActiveAccountJournals } from '../accounts/accountsSlice';
-import { dateToString, getDecimalColumnPrecision } from '../../models/account';
+import { dateToString, getDecimalColumnPrecision, journalColumnRoleDisplay } from '../../models/account';
 import { roundDown } from '../../models/math';
 
 type TransactionType = 'buy' | 'sell' | 'income' | 'expense';
@@ -183,7 +183,7 @@ function AddEditTransactionDialog(props: Props) {
           <TextField
             type={journal?.columns.date.showTime ? "datetime-local" : "date"}
             size="small"
-            label="Date"
+            label={journal?.columns.date.name ?? journalColumnRoleDisplay('date')}
             fullWidth
             required
             inputProps={{step: 1}}
@@ -198,7 +198,7 @@ function AddEditTransactionDialog(props: Props) {
             name="baseAmount"
             fullWidth
             size="small"
-            label="Amount"
+            label={journal?.columns.baseAmount.name ?? journalColumnRoleDisplay('baseAmount')}
             required
             helperText={fields.base && `${basePrecision} max decimal places`}
             value={fields.baseAmount.isFinite() ? fields.baseAmount.toFixed() : ''}
@@ -211,7 +211,7 @@ function AddEditTransactionDialog(props: Props) {
             select
             fullWidth
             size="small"
-            label="Asset"
+            label={journal?.columns.base.name ?? journalColumnRoleDisplay('base')}
             required
             value={fields.base}
             onChange={(e) => setFields(s => ({...s, base: e.target.value}))}
@@ -227,7 +227,7 @@ function AddEditTransactionDialog(props: Props) {
             name="quoteAmount"
             fullWidth
             size="small"
-            label="Total"
+            label={journal?.columns.quoteAmount.name ?? journalColumnRoleDisplay('quoteAmount')}
             required
             helperText={fields.quote && `${quotePrecision} max decimal places`}
             value={fields.quoteAmount.isFinite() ? fields.quoteAmount.toFixed() : ''}
@@ -240,7 +240,7 @@ function AddEditTransactionDialog(props: Props) {
             select
             fullWidth
             size="small"
-            label="Quote Currency"
+            label={journal?.columns.quote.name ?? journalColumnRoleDisplay('quote')}
             required
             value={fields.quote}
             onChange={(e) => setFields(s => ({...s, quote: e.target.value}))}
@@ -256,7 +256,7 @@ function AddEditTransactionDialog(props: Props) {
             name="price"
             fullWidth
             size="small"
-            label="Price"
+            label={journal?.columns.price.name ?? journalColumnRoleDisplay('price')}
             required
             value={fields.price.isFinite() ? fields.price.toFixed() : ''}
             onChange={handleFieldChange}
@@ -268,6 +268,7 @@ function AddEditTransactionDialog(props: Props) {
             fullWidth
             size="small"
             label="Type"
+            required
             value={fields.type}
             onChange={(e) => setFields(s => ({...s, type: e.target.value as TransactionType}))}
           >
@@ -318,7 +319,7 @@ function AddEditTransactionDialog(props: Props) {
             fullWidth
             size="small"
             variant="outlined"
-            label="Notes"
+            label={journal?.columns.notes.name ?? journalColumnRoleDisplay('notes')}
             value={fields.notes}
             onChange={(e) => setFields(s => ({...s, notes: e.target.value}))}
           />
