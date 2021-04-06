@@ -19,6 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddEditTransactionDialog from './AddEditTransactionDialog';
 import AddEditJournalDialog from '../accounts/AddEditJournalDialog';
@@ -103,8 +104,14 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
         open={menuAnchor !== null}
         onClose={() => setMenuAnchor(null)}
       >
-        <MenuItem onClick={handleEditJournalSettings}>Settings</MenuItem>
-        <MenuItem onClick={handleEditColumnLayout}>Columns</MenuItem>
+        <MenuItem onClick={handleEditJournalSettings}>
+          <ListItemIcon><SettingsIcon /></ListItemIcon>
+          Settings
+        </MenuItem>
+        <MenuItem onClick={handleEditColumnLayout}>
+          <ListItemIcon><ViewColumnIcon /></ListItemIcon>
+          Columns
+        </MenuItem>
       </Menu>
     </React.Fragment>
   );
