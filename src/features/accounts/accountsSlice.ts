@@ -19,6 +19,7 @@ import {
   isTextColumn,
   isExtraColumn,
   addTransactionOrdered,
+  getJournalColumn,
 } from '../../models/account';
 
 interface State {
@@ -156,6 +157,18 @@ export const accountsSlice = createSlice({
         }
       }
     },
+    editJournalColumnPartial: (state, action: PayloadAction<{account?: number, index: number, role: JournalColumnRole, column: {name?: string, hide?: boolean}}>) => {
+      const { account: accountIndex, index, role, column } = action.payload;
+      const account = state.accounts[accountIndex ?? state.activeAccount];
+      const journal = account?.journals[index];
+      const oldColumn = journal !== undefined ? getJournalColumn(journal, role) : undefined;
+      if (oldColumn !== undefined) {
+        if (column['name'] !== undefined) oldColumn['name'] = column['name'];
+        if (column['hide'] !== undefined) oldColumn['hide'] = column['hide'];
+      } else {
+        console.warn(`editJournalColumnPartial: Could not get column from journal (${index}) and role (${role}) in account: ${JSON.stringify(account)}.`);
+      }
+    },
     deleteJournalColumn: (state, action: PayloadAction<{account?: number, journalIndex: number, columnIndex: number}>) => {
       const { account: accountIndex, journalIndex, columnIndex } = action.payload;
       const account = state.accounts[accountIndex ?? state.activeAccount];
@@ -245,6 +258,7 @@ export const {
   deleteJournal,
   addJournalColumn,
   editJournalColumn,
+  editJournalColumnPartial,
   deleteJournalColumn,
   editJournalColumnOrder,
   addTransaction,

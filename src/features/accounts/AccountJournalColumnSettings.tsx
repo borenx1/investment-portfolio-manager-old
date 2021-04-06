@@ -7,12 +7,13 @@ import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
+import Switch from '@material-ui/core/Switch';
 import Chip from "@material-ui/core/Chip";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButtonHeading from "../../components/IconButtonHeading";
 import DeleteButton from "../../components/DeleteButton";
-import { deleteJournalColumn } from "./accountsSlice";
+import { deleteJournalColumn, editJournalColumnPartial } from "./accountsSlice";
 import { Journal, JournalColumn, JournalColumnRole, journalColumnRoleDisplay } from "../../models/account";
 
 interface JournalColumnRowProps {
@@ -32,6 +33,14 @@ function JournalColumnRow(props: JournalColumnRowProps) {
   const classes = useJournalColumnRowStyles(props);
   const { role, journalIndex, journalColumn, onClick } = props;
   const dispatch = useDispatch();
+
+  const handleHideColumn = () => {
+    dispatch(editJournalColumnPartial({
+      index: journalIndex,
+      role: role,
+      column: {hide: !journalColumn.hide},
+    }));
+  }
 
   const handleDeleteColumn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (typeof role === 'number') {
@@ -53,7 +62,9 @@ function JournalColumnRow(props: JournalColumnRowProps) {
         )}
       </TableCell>
       <TableCell align="center">{ journalColumn.type === 'date' && (journalColumn.showTime ? 'Yes' : 'No') }</TableCell>
-      <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
+      <TableCell align="center">
+        <Switch size="small" checked={!journalColumn.hide} onChange={handleHideColumn} onClick={(e) => e.stopPropagation()} />
+      </TableCell>
       <TableCell align="center">
         <DeleteButton
           buttonSize="small"
@@ -101,7 +112,7 @@ function AccountJournalColumnSettings(props: Props) {
             <TableCell>Type</TableCell>
             <TableCell align="center">Precision</TableCell>
             <TableCell align="center">Show Time</TableCell>
-            <TableCell align="center">Hide</TableCell>
+            <TableCell align="center">Show</TableCell>
             <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>

@@ -75,20 +75,22 @@ function JournalHeaders(props: Readonly<JournalHeadersProps>) {
       <TableRow className={classes.root}>
         {journal.columnOrder.map((role) => {
           const column = getJournalColumn(journal, role);
-          return !column.hide && <TableCell key={role}>
-            <Box display="flex">
-              <Box component="span" flexGrow={1}>
-                { column.name }
+          return column !== undefined && !column.hide && (
+            <TableCell key={role}>
+              <Box display="flex">
+                <Box component="span" flexGrow={1}>
+                  { column.name }
+                </Box>
+                <IconButton
+                  size="small"
+                  edge="end"
+                  onClick={() => onEditColumnSettings?.(role)}
+                >
+                  <SettingsIcon fontSize="small" style={{fontSize:'1rem'}} />
+                </IconButton>
               </Box>
-              <IconButton
-                size="small"
-                edge="end"
-                onClick={() => onEditColumnSettings?.(role)}
-              >
-                <SettingsIcon fontSize="small" style={{fontSize:'1rem'}} />
-              </IconButton>
-            </Box>
-          </TableCell>;
+            </TableCell>
+          );
         })}
         <TableCell align="center">
           <IconButton color="secondary" onClick={(e) => setMenuAnchor(e.currentTarget)} size="small">
@@ -155,12 +157,14 @@ function JournalRow(props: Readonly<JournalRowProps>) {
       >
         {journal?.columnOrder.map((role) => {
           const column = getJournalColumn(journal, role);
-          return !column.hide && <TableCell
-            align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
-            key={role}
-          >
-            { transaction && transactionDataDisplay(transaction, role, journal, assets) }
-          </TableCell>;
+          return column !== undefined && !column.hide && (
+            <TableCell
+              align={isRightAlignJournalColumnType(column.type) ? 'right' : undefined}
+              key={role}
+            >
+              { transaction && transactionDataDisplay(transaction, role, journal, assets) }
+            </TableCell>
+          );
         })}
         <TableCell align="center">
           <IconButton size="small" onClick={(e) => setMenuAnchor(e.currentTarget)}>

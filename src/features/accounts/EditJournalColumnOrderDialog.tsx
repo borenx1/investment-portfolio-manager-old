@@ -14,7 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import AddEditDialog from '../../components/AddEditDialog';
-import { editJournalColumn, editJournalColumnOrder, selectActiveAccountJournals } from './accountsSlice';
+import { editJournalColumnOrder, editJournalColumnPartial, selectActiveAccountJournals } from './accountsSlice';
 import { getJournalColumn, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
 
 interface Props {
@@ -57,7 +57,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
     if (journal !== undefined) {
       const newHiddenColumns: JournalColumnRole[] = [];
       columnOrder.forEach((role) => {
-        if (getJournalColumn(journal, role).hide) {
+        if (getJournalColumn(journal, role)?.hide) {
           newHiddenColumns.push(role);
         }
       });
@@ -91,9 +91,8 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
       dispatch(editJournalColumnOrder({index: journalIndex, columnOrder: dialogColumnOrder}));
       if (editHide) {
         dialogColumnOrder.forEach(role => {
-          const oldColumn = getJournalColumn(journal, role);
           const newHide = hiddenColumns.indexOf(role) !== -1;
-          dispatch(editJournalColumn({index: journalIndex, role: role, column: {...oldColumn, hide: newHide}}));
+          dispatch(editJournalColumnPartial({index: journalIndex, role: role, column: {hide: newHide}}));
         });
       }
     }
@@ -132,7 +131,7 @@ function EditJournalColumnOrderDialog(props: Readonly<Props>) {
                 </IconButton>
               </Tooltip>
             </ListItemIcon>
-            <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : getJournalColumn(journal!, role).name} />
+            <ListItemText primary={displayRole ? journalColumnRoleDisplay(role) : getJournalColumn(journal!, role)?.name} />
             <ListItemSecondaryAction>
               {editHide && <Tooltip title="Show column">
                 <Checkbox

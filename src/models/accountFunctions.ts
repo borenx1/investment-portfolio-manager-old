@@ -70,7 +70,7 @@ export function journalColumnRoleDisplay(role: JournalColumnRole | undefined | n
 
 // TODO add tests
 // TODO note that this can sometimes return undefined (index out of range)
-export function getJournalColumn(journal: Journal, role: number): ExtraColumn;
+export function getJournalColumn(journal: Journal, role: number): ExtraColumn | undefined;
 export function getJournalColumn(journal: Journal, role: 'date'): DateColumn;
 export function getJournalColumn(journal: Journal, role: 'base' | 'quote'): AssetColumn;
 export function getJournalColumn(journal: Journal, role: 'baseAmount' | 'feeBase'): BaseAmountColumn;
@@ -79,7 +79,7 @@ export function getJournalColumn(journal: Journal, role: 'price'): PriceColumn;
 export function getJournalColumn(journal: Journal, role: 'baseAmount' | 'feeBase' | 'quoteAmount' | 'feeQuote' | 'price'): DecimalColumn;
 export function getJournalColumn(journal: Journal, role: 'notes'): TextColumn;
 export function getJournalColumn(journal: Journal, role: Exclude<JournalColumnRole, number>): JournalColumn;
-export function getJournalColumn(journal: Journal, role: JournalColumnRole): JournalColumn;
+export function getJournalColumn(journal: Journal, role: JournalColumnRole): JournalColumn | undefined;
 export function getJournalColumn(journal: Journal, role: JournalColumnRole) {
   if (typeof role === 'number') {
     return journal.columns.extra[role];
@@ -145,6 +145,9 @@ function formatTransactionDecimalColumn(value: number | string, column: DecimalC
  */
 export function transactionDataDisplay(transaction: Transaction, role: JournalColumnRole, journal: Journal, assets: Asset[] = [], dateLocale?: string): string {
   const column = getJournalColumn(journal, role);
+  if (column === undefined) {
+    return '';
+  }
   // Could be undefined due to extra column does not exist
   let data: number | string | boolean | undefined;
   if (role === 'price') {
