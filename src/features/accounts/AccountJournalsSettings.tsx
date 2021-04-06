@@ -10,9 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddEditJournalDialog from './AddEditJournalDialog';
@@ -21,67 +19,17 @@ import EditJournalColumnOrderDialog from './EditJournalColumnOrderDialog';
 import SettingsSection from '../../components/SettingsSection';
 import IconButtonHeading from '../../components/IconButtonHeading';
 import DeleteButton from '../../components/DeleteButton';
-import { deleteJournal, deleteJournalColumn, selectActiveAccountJournals } from './accountsSlice';
-import { Journal, JournalColumn, JournalColumnRole, journalColumnRoleDisplay } from '../../models/account';
-
-interface JournalColumnRowProps {
-  role: JournalColumnRole;
-  journalIndex: number;
-  journalColumn: JournalColumn;
-  onClick?: React.MouseEventHandler<HTMLTableRowElement>;
-}
-
-const useJournalColumnRowStyles = makeStyles<Theme, JournalColumnRowProps>(theme => ({
-  root: {
-    cursor: props => props.onClick ? 'pointer' : undefined,
-  },
-}));
-
-function JournalColumnRow(props: JournalColumnRowProps) {
-  const classes = useJournalColumnRowStyles(props);
-  const { role, journalIndex, journalColumn, onClick } = props;
-  const dispatch = useDispatch();
-
-  const handleDeleteColumn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (typeof role === 'number') {
-      dispatch(deleteJournalColumn({journalIndex: journalIndex, columnIndex: role}));
-    }
-    e.stopPropagation();
-  };
-
-  return (
-    <TableRow hover onClick={onClick} className={classes.root}>
-      <TableCell>{ journalColumnRoleDisplay(role) }</TableCell>
-      <TableCell>{ journalColumn.name }</TableCell>
-      <TableCell>{ journalColumn.type }</TableCell>
-      <TableCell align="center">
-        {journalColumn.type === 'decimal' && (
-          Object.keys(journalColumn.precision).length === 0 ?
-            'Default' :
-            `${Object.keys(journalColumn.precision).length} mapping(s)`
-        )}
-      </TableCell>
-      <TableCell align="center">{ journalColumn.type === 'date' && (journalColumn.showTime ? 'Yes' : 'No') }</TableCell>
-      <TableCell align="center">{ journalColumn.hide ? 'Yes' : 'No' }</TableCell>
-      <TableCell align="center">
-        <DeleteButton
-          buttonSize="small"
-          iconSize="small"
-          disabled={typeof role !== 'number'}
-          onClick={handleDeleteColumn}
-        />
-      </TableCell>
-    </TableRow>
-  );
-}
+import { deleteJournal, selectActiveAccountJournals } from './accountsSlice';
+import { Journal, JournalColumnRole } from '../../models/account';
+import AccountJournalColumnSettings from './AccountJournalColumnSettings';
 
 interface JournalRowProps {
   index: number;
   journal: Journal;
   onClick?: React.MouseEventHandler<HTMLTableRowElement>;
-  onAddColumn?: React.MouseEventHandler<HTMLButtonElement>;
-  onEditColumn?: (role: JournalColumnRole) => void;
-  onEditColumnOrder?: React.MouseEventHandler<HTMLButtonElement>;
+  onAddColumn?: (journal: number) => void;
+  onEditColumn?: (journal: number, role: JournalColumnRole) => void;
+  onEditColumnOrder?: (journal: number) => void;
 }
 
 const useJournalRowStyles = makeStyles<Theme, JournalRowProps>(theme => ({
@@ -94,10 +42,6 @@ const useJournalRowStyles = makeStyles<Theme, JournalRowProps>(theme => ({
   collapsibleCell: {
     paddingTop: 0,
     paddingBottom: 0,
-  },
-  columnOrderChip: {
-    marginRight: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
   },
 }));
 
@@ -146,58 +90,13 @@ function JournalRow(props: JournalRowProps) {
         <TableCell colSpan={4} className={classes.collapsibleCell}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <IconButtonHeading
-                variant="h6"
-                title={'Columns'}
-                icon={<AddIcon fontSize="small" />}
-                onClick={onAddColumn}
+              <AccountJournalColumnSettings
+                index={index}
+                journal={journal}
+                onAddColumn={onAddColumn}
+                onEditColumn={onEditColumn}
+                onEditColumnOrder={onEditColumnOrder}
               />
-              <Table size="small" aria-label="Journal columns">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell align="center">Precision</TableCell>
-                    <TableCell align="center">Show Time</TableCell>
-                    <TableCell align="center">Hide</TableCell>
-                    <TableCell align="center"></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(journal.columns).map(([role, column]: [string, JournalColumn]) =>
-                    role !== 'extra' && <JournalColumnRow
-                      role={role as JournalColumnRole}
-                      journalIndex={index}
-                      journalColumn={column}
-                      onClick={() => onEditColumn?.(role as JournalColumnRole)}
-                      key={role}
-                    />
-                  )}
-                  {journal.columns.extra.map((column, colIndex: number) =>
-                    <JournalColumnRow
-                      role={colIndex}
-                      journalIndex={index}
-                      journalColumn={column}
-                      onClick={() => onEditColumn?.(colIndex)}
-                      key={colIndex}
-                    />
-                  )}
-                </TableBody>
-              </Table>
-              <Box mt={1}>
-                <IconButtonHeading
-                  variant="h6"
-                  title={'Column Order'}
-                  icon={<EditIcon fontSize="small" />}
-                  onClick={onEditColumnOrder}
-                />
-                <Box display="flex" flexWrap="wrap">
-                  {journal.columnOrder.map(c =>
-                    <Chip label={journalColumnRoleDisplay(c)} className={classes.columnOrderChip} key={c} />
-                  )}
-                </Box>
-              </Box>
             </Box>
           </Collapse>
         </TableCell>
@@ -251,7 +150,7 @@ function AccountJournalsSettings() {
       <SettingsSection>
         <IconButtonHeading
           variant="h6"
-          title={'Journals'}
+          title="Journals"
           icon={<AddIcon fontSize="small" />}
           onClick={openAddJournalDialog}
         />
@@ -271,9 +170,9 @@ function AccountJournalsSettings() {
                   journal={j}
                   index={i}
                   onClick={() => openEditJournalDialog(i)}
-                  onAddColumn={() => openAddColumnDialog(i)}
-                  onEditColumn={role => openEditColumnDialog(i, role)}
-                  onEditColumnOrder={() => openEditColumnOrderDialog(i)}
+                  onAddColumn={(_) => openAddColumnDialog(i)}
+                  onEditColumn={(_, role) => openEditColumnDialog(i, role)}
+                  onEditColumnOrder={(_) => openEditColumnOrderDialog(i)}
                   key={i}
                 />
               )}
