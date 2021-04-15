@@ -18,9 +18,9 @@ import {
   isPriceColumn,
   isTextColumn,
   isExtraColumn,
-  addTransactionOrdered,
   getJournalColumn,
 } from '../../models/account';
+import { addTransactionOrdered } from '../../helper/functions';
 
 interface State {
   readonly accounts: Account[],
