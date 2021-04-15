@@ -33,7 +33,7 @@ const initialState: State = {
 };
 
 export const accountsSlice = createSlice({
-  name: 'transactions',
+  name: 'accounts',
   initialState: initialState,
   reducers: {
     /** Change the active account (-1 for all accounts). Negative numbers are evaluated as -1 (all accounts). */
