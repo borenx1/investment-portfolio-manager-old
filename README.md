@@ -1,8 +1,10 @@
-# investment-portfolio-mananger
+# Investment Portfolio Manager (Old)
+*This project has been completely rewritten using [Next.js](https://nextjs.org/) at https://github.com/borenx1/investment-portfolio-manager*
+
 A website to track your investment portfolio and measure its performance.
 
 ## Website
-https://borenx1.github.io/investment-portfolio-mananger/
+https://borenx1.github.io/investment-portfolio-manager-old/
 
 ## GitHub Pages
 This React app is deployed to GitHub Pages following the guide: https://create-react-app.dev/docs/deployment/#github-pages.
